@@ -1,7 +1,7 @@
 <template>
-  <div class="flex justify-center items-center min-h-screen bg-white">
+  <div class="flex justify-center items-center min-h-screen bg-gray-500">
     <div
-      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default"
+      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6"
     >
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Student Form
@@ -9,26 +9,27 @@
       <h2 class="text-black text-lg font-semibold">First Name:</h2>
       <input
         type="text"
-        v-model="FirstName"
+        v-model="GLFirstName"
         placeholder="Enter here"
         class="input input-bordered w-full mb-4"
       />
       <h2 class="text-black text-lg font-semibold">Last Name:</h2>
       <input
         type="text"
-        v-model="LastName"
+        v-model="GLLastName"
         placeholder="Enter here"
         class="input input-bordered w-full mb-4"
       />
       <h2 class="text-black text-lg font-semibold">NYC Students Email:</h2>
       <input
         type="text"
-        v-model="Email"
+        v-model="GLEmail"
         placeholder="examples@nycstudents.net"
         class="input input-bordered w-full mb-4"
       />
+      <div></div>
       <h2 class="text-black text-lg font-semibold">
-        Are you registering for group?
+        Are you registering for a group?
       </h2>
       <input
         type="checkbox"
@@ -46,34 +47,54 @@
             max="12"
             class="range range-primary"
             step="1"
-            v-model="GroupSize"
+            v-model.number="GroupSize"
+            @input="organizeGroup()"
           />
           <div class="flex justify-between px-2.5 mt-2 text-xs">
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
-            <span>|</span>
+            <span v-for="i in 11" :key="i">|</span>
           </div>
         </div>
         <h3 class="text-black font-semibold text-center mt-4">
           Group Size: {{ GroupSize }}
         </h3>
       </div>
-      <h2
-        class="text-black text-center mt-0"
-        v-for="student in students"
-        :key="student.name"
-      >
-        Smth for listing all ppl in the group's info using v-for
-      </h2>
-      <button class="btn btn-primary w-full" @click="submit()">
+      <div class="mt-6 space-y-3">
+        <div
+          v-for="i in GroupSize - 1"
+          :key="`member-${i}`"
+          class="collapse collapse-arrow bg-base-100 border border-base-300 space-y-2"
+        >
+          <input type="radio" :name="'group-accordion'" :checked="i === 1" />
+          <div class="collapse-title font-semibold">Member {{ i + 1 }}</div>
+
+          <div class="collapse-content text-sm space-y-2">
+            <h2 class="text-white text-lg font-semibold">First Name:</h2>
+            <input
+              type="text"
+              placeholder="Enter"
+              class="input input-bordered w-full"
+              v-model="Group[i].firstName"
+            />
+            <h2 class="text-white text-lg font-semibold">Last Name:</h2>
+            <input
+              type="text"
+              placeholder="Enter"
+              class="input input-bordered w-full"
+              v-model="Group[i].lastName"
+            />
+            <h2 class="text-white text-lg font-semibold">
+              NYC Students Email:
+            </h2>
+            <input
+              type="text"
+              placeholder="examples@nycstudents.net"
+              class="input input-bordered w-full"
+              v-model="Group[i].email"
+            />
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary w-full mt-6" @click="submit()">
         Submit Form
       </button>
     </div>
@@ -83,22 +104,32 @@
 <script lang="js" setup>
 import { ref, computed, onMounted } from 'vue'
 
-const FirstName = ref('')
-const LastName = ref('')
-const Email = ref('')
+const GLFirstName = ref('')
+const GLLastName = ref('')
+const GLEmail = ref('')
 const InGroup = ref(false)
-const GroupSize = ref(2)
+const GroupSize = ref(1)
 const Group = ref([])
 
 function dataCheck() {
   //when excel is here check if input is in the data
-}
-function organizeGroup() {
-  const GroupLeader=[FirstName.value, LastName.value, Email.value]
   //should also check if student is already in a group thats been submitted
 }
+function organizeGroup() {
+  const groupLeader = {
+    firstName: GLFirstName.value,
+    lastName: GLLastName.value,
+    email: GLEmail.value,
+  }
+  for (let i = Group.value.length; i < GroupSize.value; i++) {
+  Group.value.push({ firstName: '', lastName: '', email: '' })
+  }
+  Group.value = Group.value.slice(0, GroupSize.value)
+  Group.value[0] = groupLeader
+}
 function submit() {
-  console.log(Name.value, Email.value, InGroup.value, GroupSize.value)
+  console.log('Group:', Group.value)
+  //push stuff to mongodb
 }
 function createVerificationCode() {
   //will generate code for table leaders that want to make an edit to their group and show it to them
