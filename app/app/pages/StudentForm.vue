@@ -27,7 +27,15 @@
         placeholder="examples@nycstudents.net"
         class="input input-bordered w-full mb-4"
       />
-      <div></div>
+      <h2 class="text-black text-lg font-semibold">
+        OSIS Number (used as verification)
+      </h2>
+      <input
+        type="text"
+        v-model="GLOsis"
+        placeholder="1234567890"
+        class="input input-bordered w-full mb-4"
+      />
       <h2 class="text-black text-lg font-semibold">
         Are you registering for a group?
       </h2>
@@ -35,6 +43,7 @@
         type="checkbox"
         v-model="InGroup"
         class="checkbox checkbox-primary mb-4"
+        @click="clearGroup()"
       />
       <div v-if="InGroup" class="mb-6">
         <h2 class="text-black text-lg font-semibold">
@@ -58,7 +67,7 @@
           Group Size: {{ GroupSize }}
         </h3>
       </div>
-      <div class="mt-6 space-y-3">
+      <div v-if="InGroup" class="mt-6 space-y-3">
         <div
           v-for="i in GroupSize - 1"
           :key="`member-${i}`"
@@ -107,6 +116,7 @@ import { ref, computed, onMounted } from 'vue'
 const GLFirstName = ref('')
 const GLLastName = ref('')
 const GLEmail = ref('')
+const GLOsis = ref('')
 const InGroup = ref(false)
 const GroupSize = ref(1)
 const Group = ref([])
@@ -120,12 +130,30 @@ function organizeGroup() {
     firstName: GLFirstName.value,
     lastName: GLLastName.value,
     email: GLEmail.value,
+    osis: GLOsis.value,
   }
   for (let i = Group.value.length; i < GroupSize.value; i++) {
   Group.value.push({ firstName: '', lastName: '', email: '' })
   }
   Group.value = Group.value.slice(0, GroupSize.value)
+  if (InGroup.value==false) {
+    Group.value.splice(0,Group.value.length)
+  }
+
   Group.value[0] = groupLeader
+}
+function clearGroup() {
+    const groupLeader = {
+    firstName: GLFirstName.value,
+    lastName: GLLastName.value,
+    email: GLEmail.value,
+    osis: GLOsis.value,
+  }
+    if (InGroup.value==false) {
+        Group.value.splice(1,Group.value.length)
+        Group.value.push(groupLeader)
+    }
+    console.log(Group.value)
 }
 function submit() {
   console.log('Group:', Group.value)
