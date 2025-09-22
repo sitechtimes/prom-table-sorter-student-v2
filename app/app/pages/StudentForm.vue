@@ -11,7 +11,7 @@
         <h2 class="text-black text-lg font-semibold">First Name:</h2>
         <input
           type="text"
-          v-model="GLFirstName"
+          v-model="groupLeader.firstName"
           placeholder="Enter here"
           class="input input-bordered w-full mb-4"
           required
@@ -20,7 +20,7 @@
         <h2 class="text-black text-lg font-semibold">Last Name:</h2>
         <input
           type="text"
-          v-model="GLLastName"
+          v-model="groupLeader.lastName"
           placeholder="Enter here"
           class="input input-bordered w-full mb-4"
           required
@@ -29,7 +29,7 @@
         <h2 class="text-black text-lg font-semibold">NYC Students Email:</h2>
         <input
           type="email"
-          v-model="GLEmail"
+          v-model="groupLeader.email"
           placeholder="examples@nycstudents.net"
           class="input input-bordered w-full mb-4"
           required
@@ -40,7 +40,7 @@
         </h2>
         <input
           type="text"
-          v-model="GLOsis"
+          v-model="groupLeader.osis"
           placeholder="123456789"
           class="input input-bordered w-full mb-4"
           required
@@ -82,12 +82,11 @@
         <div v-if="InGroup" class="mt-6 space-y-3">
           <div
             v-for="i in GroupSize - 1"
-            :key="`member-${i}`"
+            :key="i"
             class="collapse collapse-arrow bg-base-100 border border-base-300 space-y-2"
           >
             <input type="radio" :name="'group-accordion'" :checked="i === 1" />
             <div class="collapse-title font-semibold">Member {{ i + 1 }}</div>
-
             <div class="collapse-content text-sm space-y-2">
               <h2 class="text-white text-lg font-semibold">First Name:</h2>
               <input
@@ -132,44 +131,37 @@
 </template>
 
 <script lang="js" setup>
-import { ref, computed, onMounted } from 'vue'
-const GLFirstName = ref('')
-const GLLastName = ref('')
-const GLEmail = ref('')
-const GLOsis = ref('')
+import FormInput from '~/components/FormInput.vue'
+
+const groupLeader = reactive({
+  firstName: "",
+  lastName: "",
+  email: "",
+  osis: "",
+})
 const InGroup = ref(false)
 const GroupSize = ref(1)
 const Group = ref([])
 
+definePageMeta({
+  middleware: 'auth'
+})
 function dataCheck() {
   //when excel is here check if input is in the data
   //should also check if student is already in a group thats been submitted
 }
 function organizeGroup() {
-  const groupLeader = {
-    firstName: GLFirstName.value,
-    lastName: GLLastName.value,
-    email: GLEmail.value,
-    osis: GLOsis.value,
-  }
-  for (let i = Group.value.length; i < GroupSize.value; i++) {
-    Group.value.push({ firstName: '', lastName: '', email: '' })
-  }
-  Group.value = Group.value.slice(0, GroupSize.value)
   if (!InGroup.value) {
-    Group.value.splice(0,Group.value.length)
+    Group.length = 0
+  } else {
+    for (let i = Group.value.length; i < GroupSize.value; i++) {
+      Group.value.push({ firstName: '', lastName: '', email: '' })
+    }
+    Group.length = InGroup.value
   }
-
   Group.value[0] = groupLeader
 }
 function clearGroup() {
-  const groupLeader = {
-    firstName: GLFirstName.value,
-    lastName: GLLastName.value,
-    email: GLEmail.value,
-    osis: GLOsis.value,
-  }
-
   if (InGroup.value) {
     GroupSize.value = 2
     organizeGroup()
@@ -180,12 +172,9 @@ function clearGroup() {
 }
 function submit() {
   console.log('Group:', Group.value)
-  //push stuff to mongodb
+  //will push stuff to mongodb; log for now
 }
 function createVerificationCode() {
   //will generate code for table leaders that want to make an edit to their group and show it to them
 }
-definePageMeta({
-  middleware: 'auth'
-})
 </script>
