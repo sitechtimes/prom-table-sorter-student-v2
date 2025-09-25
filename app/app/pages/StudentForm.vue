@@ -9,41 +9,33 @@
 
       <form @submit.prevent="submit">
         <h2 class="text-black text-lg font-semibold">First Name:</h2>
-        <input
-          type="text"
+        <FileInput
           v-model="groupLeader.firstName"
+          type="text"
           placeholder="Enter here"
-          class="input input-bordered w-full mb-4"
-          required
         />
 
         <h2 class="text-black text-lg font-semibold">Last Name:</h2>
-        <input
-          type="text"
+        <FileInput
           v-model="groupLeader.lastName"
+          type="text"
           placeholder="Enter here"
-          class="input input-bordered w-full mb-4"
-          required
         />
 
         <h2 class="text-black text-lg font-semibold">NYC Students Email:</h2>
-        <input
-          type="email"
+        <FileInput
           v-model="groupLeader.email"
+          type="email"
           placeholder="examples@nycstudents.net"
-          class="input input-bordered w-full mb-4"
-          required
         />
 
         <h2 class="text-black text-lg font-semibold">
           OSIS Number (used as verification)
         </h2>
-        <input
-          type="text"
+        <FileInput
           v-model="groupLeader.osis"
+          type="text"
           placeholder="123456789"
-          class="input input-bordered w-full mb-4"
-          required
         />
 
         <h2 class="text-black text-lg font-semibold">
@@ -89,30 +81,26 @@
             <div class="collapse-title font-semibold">Member {{ i + 1 }}</div>
             <div class="collapse-content text-sm space-y-2">
               <h2 class="text-white text-lg font-semibold">First Name:</h2>
-              <input
+              <FileInput
+                v-model="Group[i]!.firstName"
                 type="text"
                 placeholder="Enter"
-                class="input input-bordered w-full"
-                v-model="Group[i].firstName"
-                required
               />
+
               <h2 class="text-white text-lg font-semibold">Last Name:</h2>
-              <input
+              <FileInput
+                v-model="Group[i]!.lastName"
                 type="text"
                 placeholder="Enter"
-                class="input input-bordered w-full"
-                v-model="Group[i].lastName"
-                required
               />
+
               <h2 class="text-white text-lg font-semibold">
                 NYC Students Email:
               </h2>
-              <input
+              <FileInput
+                v-model="Group[i]!.email"
                 type="email"
                 placeholder="examples@nycstudents.net"
-                class="input input-bordered w-full"
-                v-model="Group[i].email"
-                required
               />
             </div>
           </div>
@@ -130,48 +118,48 @@
   </div>
 </template>
 
-<script lang="js" setup>
-import FormInput from '~/components/FormInput.vue'
+<script lang="ts" setup>
+import type { Student } from "~/interfaces/Students";
+import { reactive, ref } from "vue";
 
-const groupLeader = reactive({
+const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
   email: "",
   osis: "",
-})
-const InGroup = ref(false)
-const GroupSize = ref(1)
-const Group = ref([])
+});
+const InGroup = ref<boolean>(false);
+const GroupSize = ref<number>(1);
+const Group = ref<Student[]>([groupLeader]);
 
 definePageMeta({
-  middleware: 'auth'
-})
+  middleware: "auth",
+});
 function dataCheck() {
   //when excel is here check if input is in the data
   //should also check if student is already in a group thats been submitted
 }
 function organizeGroup() {
   if (!InGroup.value) {
-    Group.length = 0
+    Group.value = [groupLeader];
   } else {
     for (let i = Group.value.length; i < GroupSize.value; i++) {
-      Group.value.push({ firstName: '', lastName: '', email: '' })
+      Group.value.push({ firstName: "", lastName: "", email: "" });
     }
-    Group.length = InGroup.value
   }
-  Group.value[0] = groupLeader
+  Group.value[0] = groupLeader;
 }
 function clearGroup() {
   if (InGroup.value) {
-    GroupSize.value = 2
-    organizeGroup()
+    GroupSize.value = 2;
+    organizeGroup();
   } else {
-    GroupSize.value = 1
-    Group.value = [groupLeader]
+    GroupSize.value = 1;
+    Group.value = [groupLeader];
   }
 }
 function submit() {
-  console.log('Group:', Group.value)
+  console.log("Group:", Group.value);
   //will push stuff to mongodb; log for now
 }
 function createVerificationCode() {
