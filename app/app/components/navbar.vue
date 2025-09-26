@@ -8,6 +8,7 @@
       <ul
         tabindex="0"
         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+        <li><NuxtLink to="/">Home</NuxtLink></li>
         <li><NuxtLink to="/visualizer">Visualizer</NuxtLink></li>
         <li><NuxtLink to="/groups">Make Groups</NuxtLink></li>
         <li><NuxtLink to="/adminLogin">Admin Login</NuxtLink></li>

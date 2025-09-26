@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-base-200 h-screen">
-      <div class="grid grid-cols-1 md:grid-cols-3 space-y-2 place-items-center h-7/8 md:h-3/4">
+    <div class="h-screen">
+      <div class="grid grid-cols-1 md:grid-cols-3 space-y-2 place-items-center h-7/8 md:h-3/8">
         <div class="card bg-base-100 w-7/8 h-11/12 shadow-sm">
     <div class="card-body">
     <h2 class="card-title">Visualizer</h2>
