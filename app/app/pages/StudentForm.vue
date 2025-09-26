@@ -6,38 +6,35 @@
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Student Form
       </h1>
-
       <form @submit.prevent="submit">
-        <h2 class="text-black text-lg font-semibold">First Name:</h2>
-        <FileInput
+        <FormInput
+          category="First Name"
+          color="black"
           v-model="groupLeader.firstName"
           type="text"
           placeholder="Enter here"
         />
-
-        <h2 class="text-black text-lg font-semibold">Last Name:</h2>
-        <FileInput
+        <FormInput
+          category="Last Name"
+          color="black"
           v-model="groupLeader.lastName"
           type="text"
           placeholder="Enter here"
         />
-
-        <h2 class="text-black text-lg font-semibold">NYC Students Email:</h2>
-        <FileInput
+        <FormInput
+          category="NYC Students Email"
+          color="black"
           v-model="groupLeader.email"
           type="email"
           placeholder="examples@nycstudents.net"
         />
-
-        <h2 class="text-black text-lg font-semibold">
-          OSIS Number (used as verification)
-        </h2>
-        <FileInput
+        <FormInput
+          category="OSIS"
+          color="black"
           v-model="groupLeader.osis"
           type="text"
           placeholder="123456789"
         />
-
         <h2 class="text-black text-lg font-semibold">
           Are you registering for a group?
         </h2>
@@ -63,7 +60,7 @@
               @input="organizeGroup()"
             />
             <div class="flex justify-between px-2.5 mt-2 text-xs">
-              <span v-for="i in 11" :key="i">|</span>
+              <span v-for="i in 11">|</span>
             </div>
           </div>
           <h3 class="text-black font-semibold text-center mt-4">
@@ -74,30 +71,28 @@
         <div v-if="InGroup" class="mt-6 space-y-3">
           <div
             v-for="i in GroupSize - 1"
-            :key="i"
             class="collapse collapse-arrow bg-base-100 border border-base-300 space-y-2"
           >
             <input type="radio" :name="'group-accordion'" :checked="i === 1" />
             <div class="collapse-title font-semibold">Member {{ i + 1 }}</div>
             <div class="collapse-content text-sm space-y-2">
-              <h2 class="text-white text-lg font-semibold">First Name:</h2>
-              <FileInput
+              <FormInput
+                category="First Name"
+                color="white"
                 v-model="Group[i]!.firstName"
                 type="text"
                 placeholder="Enter"
               />
-
-              <h2 class="text-white text-lg font-semibold">Last Name:</h2>
-              <FileInput
+              <FormInput
+                category="Last Name"
+                color="white"
                 v-model="Group[i]!.lastName"
                 type="text"
                 placeholder="Enter"
               />
-
-              <h2 class="text-white text-lg font-semibold">
-                NYC Students Email:
-              </h2>
-              <FileInput
+              <FormInput
+                category="NYC Students Email"
+                color="white"
                 v-model="Group[i]!.email"
                 type="email"
                 placeholder="examples@nycstudents.net"
@@ -119,17 +114,15 @@
 </template>
 
 <script lang="ts" setup>
-import type { Student } from "~/interfaces/Students";
-import { reactive, ref } from "vue";
-
+import type { Student } from "~/interfaces/Students"; //marks errors after removing this import but still works w/ out it
 const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
   email: "",
   osis: "",
 });
-const InGroup = ref<boolean>(false);
-const GroupSize = ref<number>(1);
+const InGroup = ref(false);
+const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
 
 definePageMeta({
@@ -142,12 +135,13 @@ function dataCheck() {
 function organizeGroup() {
   if (!InGroup.value) {
     Group.value = [groupLeader];
+    return;
   } else {
     for (let i = Group.value.length; i < GroupSize.value; i++) {
       Group.value.push({ firstName: "", lastName: "", email: "" });
+      Group.value[0] = groupLeader;
     }
   }
-  Group.value[0] = groupLeader;
 }
 function clearGroup() {
   if (InGroup.value) {
