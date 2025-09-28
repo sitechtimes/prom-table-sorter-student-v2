@@ -1,7 +1,8 @@
 <template>
   <div>
     <label
-      :class="'text-' + color + ' text-xl font-bold text-center mb-6'"
+      class="text-xl font-bold text-center mb-6"
+      :class="'text-' + color"
       for="category"
       >{{ category }}:</label
     >

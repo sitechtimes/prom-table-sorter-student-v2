@@ -103,7 +103,7 @@
 
         <button
           type="submit"
-          class="btn btn-secondary w-full mt-6"
+          class="btn btn-primary w-full mt-6"
           @click="submit()"
         >
           Submit Form
@@ -114,7 +114,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Student } from "~/interfaces/Students"; //marks errors after removing this import but still works w/ out it
+import type { Student } from "~/interfaces/Students"; //I tried removing it and reloading the window but it still leaves errors
 const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
@@ -136,11 +136,10 @@ function organizeGroup() {
   if (!InGroup.value) {
     Group.value = [groupLeader];
     return;
-  } else {
-    for (let i = Group.value.length; i < GroupSize.value; i++) {
-      Group.value.push({ firstName: "", lastName: "", email: "" });
-      Group.value[0] = groupLeader;
-    }
+  }
+  for (let i = Group.value.length; i < GroupSize.value; i++) {
+    Group.value.push({ firstName: "", lastName: "", email: "" });
+    Group.value[0] = groupLeader;
   }
 }
 function clearGroup() {
