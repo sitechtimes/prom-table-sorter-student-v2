@@ -114,7 +114,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { Student } from "~/interfaces/Students"; //I tried removing it and reloading the window but it still leaves errors
 const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
