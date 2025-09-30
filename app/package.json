@@ -6,7 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "format": "prettier --write",
+    "format": "prettier --write \"**/*.{js,ts,vue,css,scss,md,json}\"",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
