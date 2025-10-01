@@ -1,5 +1,7 @@
 <template>
   <div>
-    <h1 class="btn btn-primary">Hello</h1>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
