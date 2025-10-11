@@ -114,7 +114,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { Student } from "~/interfaces/Students"; //I tried removing it and reloading the window but it still leaves errors
 const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
@@ -129,8 +128,7 @@ definePageMeta({
   middleware: "auth",
 });
 function dataCheck() {
-  //when excel is here check if input is in the data
-  //should also check if student is already in a group thats been submitted
+  //being done via backend
 }
 function organizeGroup() {
   if (!InGroup.value) {
