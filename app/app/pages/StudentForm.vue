@@ -124,9 +124,9 @@ const InGroup = ref(false);
 const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
 
-definePageMeta({
-  middleware: "auth",
-});
+// definePageMeta({
+//   middleware: "auth",
+// }); momentarily commented out
 function dataCheck() {
   //when excel is here check if input is in the data
   //should also check if student is already in a group thats been submitted
