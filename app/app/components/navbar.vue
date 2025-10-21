@@ -31,7 +31,7 @@
       <!-- <a class="btn btn-ghost text-xl">SITHS Prom Table Sorter</a> -->
     </div>
     <div class="navbar-center">
-      <NuxtLink to="/" class="btn btn-ghost text-xl md:text-3xl"
+      <NuxtLink to="/" class="btn btn-ghost text-xl"
         >Prom Table Sorter</NuxtLink
       >
     </div>
