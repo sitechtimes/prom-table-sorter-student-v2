@@ -8,8 +8,8 @@
              <img src="/flow-chart-svgrepo-com.svg" class="h-1/2 hidden md:block"/>
           </figure>
         <div class="card-body">
-          <h2 class="card-title font-bold md:text-2xl">Visualizer</h2>
-          <p>To be added.</p>
+          <h2 class="card-title font-bold md:text-4xl">Visualizer</h2>
+          <p class="md:text-lg">To be added.</p>
           <div
             class="card-actions justify-end underline font-semibold md:text-xl"
           >
@@ -22,8 +22,8 @@
                <img src="/student-card-svgrepo-com.svg" class="h-1/2 hidden md:block"/>
           </figure>
         <div class="card-body">
-          <h2 class="card-title font-bold md:text-2xl">Submit Your Group</h2>
-          <p>Students, go here to make your prom groups.</p>
+          <h2 class="card-title font-bold md:text-4xl">Submit Your Group</h2>
+          <p class="md:text-lg">Students, go here to make your prom groups.</p>
           <div
             class="card-actions justify-end underline font-semibold md:text-xl"
           >
@@ -36,8 +36,8 @@
              <img src="/admin-svgrepo-com.svg" class="h-1/2 hidden md:block"/>
           </figure>
         <div class="card-body">
-          <h2 class="card-title font-bold md:text-2xl">Admin View</h2>
-          <p>Administrator, click here to go to the admin log in page.</p>
+          <h2 class="card-title font-bold md:text-4xl">Admin View</h2>
+          <p class="md:text-lg">Administrator, click here to go to the admin log in page.</p>
           <div
             class="card-actions justify-end underline font-semibold md:text-xl"
           >
