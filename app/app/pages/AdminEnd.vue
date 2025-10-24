@@ -1,23 +1,44 @@
 <template>
   <div class="flex justify-center items-center min-h-screen bg-gray-500">
     <div
-      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6"
+      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6 form"
     >
-      <h1 class="text-black text-3xl font-bold text-center mb-6">
-        Enter a range for table sizes:
-      </h1>
       <div>
+        <h1 class="text-black text-3xl font-bold text-center mb-6">
+          Upload Excel file of those who paid
+        </h1>
+        <label class="uploadBtn" for="upload-file2"><img src="" /></label>
+        <input
+          id="upload-file2"
+          class="upload-btn"
+          type="file"
+          name="input-groups"
+          ref="uploadedPaidFile"
+          accept=".xlsx"
+          @change="validDataFormat = !validDataFormat"
+        />
+
+        <img
+          class="example"
+          @click="showpaidExample = !showpaidExample"
+          src=""
+        />
+      </div>
+      <div>
+        <h1 class="text-black text-3xl font-bold text-center mb-6">
+          Enter a range for table sizes:
+        </h1>
         <h2 class="text-black font-semibold text-center mt-4">From</h2>
         <input
           type="number"
           class="input input-bordered mb-4"
-          v-model.number="peopleTableMin"
+          v-model.number="minSeats"
         />
         <h2 class="text-black font-semibold text-center mt-4">to</h2>
         <input
           type="number"
           class="input input-bordered mb-4"
-          v-model.number="peopleTableMax"
+          v-model.number="maxSeats"
         />
       </div>
       <h1 class="text-black text-3xl font-bold text-center mb-6">
@@ -37,11 +58,11 @@
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Students that have paid and not at a table:
       </h1>
-      <h2>{{ noTable }}</h2>
+      <h2>{{ noSeat }}</h2>
       <TableVisualizer />
     </div>
 
-    <button class="btn" @click="sortTables">List of all tables</button>
+    <button class="btn" @click="">List of all tables</button>
 
     <div class="overflow-x-auto">
       <table class="table">
@@ -65,39 +86,23 @@
 </template>
 
 <script lang="ts" setup>
-const peopleTableMin = ref<number>();
-const peopleTableMax = ref<number>();
+const ExcelJS = require("exceljs"); //reading excel for people who have paid and aren't entered in a group
+//all excelJS variables
+const dataFormat = ref(null);
+const cellRange = ref([null, null]);
+const searchAllCells = ref(false);
+const validDataFormat = ref(true);
+//other variables
+const minSeats = ref<number>();
+const maxSeats = ref<number>();
 const tableCount = ref<number>(0);
 const notPaid = ref<Student[]>([]);
-const noTable = ref<Student[]>([]);
-const Tables = ref<Table[]>([]);
+const noSeat = ref<Student[]>([]);
+const Groups = ref<Array<Group>>([]);
+const Tables = ref<Group[]>([]);
+let showpaidExample = ref(false);
 
 function populateArrays() {
-  // This will populate the notPaid and noTable arrays using MongoDB
+  // This will populate the notPaid and noSeat (compare all students entered vs. students who paid) once excel is imported and using mongoDB data
 }
-
-function sortTables() {
-  for (let i = 1; i <= tableCount.value; i++) {
-    // Use data from MongoDB to create all the tables
-  }
-}
-
-async function retrieveData() {
-  try {
-    const res = await fetch("", {
-      // backend here
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await res.json();
-    console.log("Pulled:", data);
-  } catch (err) {
-    alert("Couldn't pull data from MongoDB");
-    console.log(err);
-  }
-}
-
-onMounted(() => retrieveData());
 </script>

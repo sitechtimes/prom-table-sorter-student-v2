@@ -1,4 +1,5 @@
 export interface Table {
-    groupLeader: Student;
-    members: Array<Student>;
+    capacity: number
+    unoccupiedSeats: number
+    occupants: Array<Group>
 }

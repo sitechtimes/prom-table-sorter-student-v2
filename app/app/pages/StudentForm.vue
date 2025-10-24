@@ -124,9 +124,6 @@ const InGroup = ref(false);
 const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
 
-definePageMeta({
-  middleware: "auth",
-});
 function dataCheck() {
   //being done via backend
 }
