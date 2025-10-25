@@ -15,7 +15,6 @@
           name="input-groups"
           ref="uploadedPaidFile"
           accept=".xlsx"
-          @change="validDataFormat = !validDataFormat"
         />
 
         <img
@@ -42,29 +41,27 @@
         />
       </div>
       <h1 class="text-black text-3xl font-bold text-center mb-6">
-        Enter an input for number of tables:
-      </h1>
-      <div>
-        <input
-          type="number"
-          class="input input-bordered mb-4"
-          v-model.number="tableCount"
-        />
-      </div>
-      <h1 class="text-black text-3xl font-bold text-center mb-6">
         Students that haven't paid and not at a table:
       </h1>
-      <h2>{{ notPaid }}</h2>
+      <h2>
+        <div v-for="student in notPaid" :key="student.osis">
+          {{ student.firstName }} {{ student.lastName }}
+        </div>
+      </h2>
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Students that have paid and not at a table:
       </h1>
-      <h2>{{ noSeat }}</h2>
+      <h2>
+        <div v-for="student in noSeat" :key="student.id">
+          {{ student.name }}
+        </div>
+      </h2>
       <TableVisualizer />
     </div>
 
     <button class="btn" @click="">List of all tables</button>
-
     <div class="overflow-x-auto">
+      <!--Update this to display members by all groups in a table then all individuals at a table-->
       <table class="table">
         <thead>
           <tr>
@@ -74,10 +71,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(table, i) in Tables">
+          <tr v-for="(group, i) in Groups">
             <th>{{ i + 1 }}</th>
-            <td>{{ table?.groupLeader }}</td>
-            <td>{{ table?.members }}</td>
+            <td>{{ group?.groupLeader }}</td>
+            <td>{{ group?.members }}</td>
           </tr>
         </tbody>
       </table>
@@ -86,23 +83,87 @@
 </template>
 
 <script lang="ts" setup>
-const ExcelJS = require("exceljs"); //reading excel for people who have paid and aren't entered in a group
 //all excelJS variables
-const dataFormat = ref(null);
-const cellRange = ref([null, null]);
-const searchAllCells = ref(false);
-const validDataFormat = ref(true);
+const ExcelJS = require("exceljs"); //reading excel for people who have paid and aren't entered in a group
+const paidFile = ref<HTMLInputElement | null>(null);
 //other variables
 const minSeats = ref<number>();
 const maxSeats = ref<number>();
-const tableCount = ref<number>(0);
 const notPaid = ref<Student[]>([]);
-const noSeat = ref<Student[]>([]);
-const Groups = ref<Array<Group>>([]);
-const Tables = ref<Group[]>([]);
+const noSeat = ref<ImportedStudent[]>([]);
+const Groups = ref<Group[]>([]);
+const Tables = ref<Table[]>([]);
 let showpaidExample = ref(false);
 
-function populateArrays() {
-  // This will populate the notPaid and noSeat (compare all students entered vs. students who paid) once excel is imported and using mongoDB data
+interface ImportedStudent {
+  id: string | number;
+  name: string;
+}
+
+async function fetchGroups() {
+  try {
+    const res = await fetch(""); //backend
+    if (!res.ok) throw Error("couldnt fetch data");
+    const data: Group[] = await res.json();
+    Groups.value = data;
+  } catch (error) {
+    alert(error);
+  }
+}
+async function getPaidList() {
+  if (!paidFile.value || !paidFile.value.files?.[0]) {
+    alert("Please upload a paid list Excel file.");
+    return [];
+  }
+
+  try {
+    const workbook = new ExcelJS.Workbook();
+    const fileBuffer = await paidFile.value.files[0].arrayBuffer();
+    await workbook.xlsx.load(fileBuffer);
+
+    const paidSheet = workbook.worksheets[0];
+    const paidList = <ImportedStudent[]>[];
+
+    for (let i = 1; i <= paidSheet.actualRowCount; i++) {
+      const name = paidSheet.getCell(`A${i}`).value;
+      const id = paidSheet.getCell(`B${i}`).value ?? i; //if cell is empty
+      if (name) {
+        paidList.push({ name: String(name), id });
+      }
+    }
+
+    return paidList;
+  } catch (error) {
+    alert(error);
+    return [];
+  }
+}
+async function compareSeatAndPay() {
+  const paidList = await getPaidList();
+  const attending: Student[] = Groups.value.flatMap(
+    (group: Group) => group.members
+  );
+  const paidIDs = paidList.map((p) => String(p.id));
+  notPaid.value = attending.filter(
+    (person) => !paidIDs.includes(String(person.osis ?? ""))
+  );
+  const attendingIDs = attending.map((p) => String(p.osis ?? ""));
+  noSeat.value = paidList.filter((p) => !attendingIDs.includes(String(p.id)));
+}
+async function executeSort() {
+  await fetchGroups();
+
+  try {
+    Tables.value = rangeSort(
+      Groups.value,
+      algoFunctionOptions,
+      maxSeats.value,
+      minSeats.value
+    ) as Table[];
+
+    await compareSeatAndPay();
+  } catch (error: any) {
+    alert(error.message);
+  }
 }
 </script>
