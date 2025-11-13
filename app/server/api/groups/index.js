@@ -1,7 +1,5 @@
 import connectDB from "../../utils/db";
 import Group from "../../models/Group";
-import studentsInGroupMiddleware from "../../middleware/studentsInGroupMiddleware";
-import validateStudentsMiddleware from "../../middleware/validateStudentsMiddleware";
 import Student from "../../models/studentInfo";
 
 export default defineEventHandler(async (event) => {
@@ -29,10 +27,12 @@ export default defineEventHandler(async (event) => {
     })
   );
 
+  //if some students dont exist throw an error with the indexes
   if (failedIndexes.length > 0) {
-    return res.status(400).json({
+    throw createError({
+      statusCode: 400,
       message: "Some students could not be validated.",
-      failedIndexes,
+      data: { failedIndexes },
     });
   }
 
@@ -59,23 +59,21 @@ export default defineEventHandler(async (event) => {
     { $match: { "matchedEmails.0": { $exists: true } } },
   ]);
 
+  //if there are students already in groups throw an error with their indexes
   if (existingStudents.length > 0) {
-    const indexes = [];
     allPeople.forEach((dict, index) => {
-      if (
-        existingStudents[0].matchedEmails.includes(
-          dict.email.trim().toLowerCase()
-        )
-      ) {
-        indexes.push(index);
+      if (existingStudents[0].matchedEmails.includes(dict.email.trim().toLowerCase())) {
+        failedIndexes.push(index);
       }
     });
-    return res.status(400).json({
-      message: "Some students already in other groups",
-      duplicates: indexes,
+    throw createError({
+      statusCode: 400,
+      message: "Some students already exist in other groups.",
+      data: { failedIndexes },
     });
   }
-  ``;
+
+  //once validation stuff is done post the actual group
   const group = await Group.create(body);
-  return { message: "Group created", group };
+  return { message: "Group created successfully", group };
 });
