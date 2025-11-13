@@ -4,9 +4,8 @@ import Student from "../../models/studentInfo";
 
 export default defineEventHandler(async (event) => {
   await connectDB();
-  const body = await readBody(body);
+  const body = await readBody(event);
 
-  await validateStudentsMiddleware(body);
   const { leader, members } = body;
 
   if (!leader) {
@@ -18,6 +17,7 @@ export default defineEventHandler(async (event) => {
   //validate students (check if they exist in the big excel)
   await Promise.all(
     allPeople.map(async (person, index) => {
+      console.log(person);
       const match = await Student.findOne({
         first_name: person.first_name.toLowerCase(),
         last_name: person.last_name.toLowerCase(),
@@ -62,7 +62,11 @@ export default defineEventHandler(async (event) => {
   //if there are students already in groups throw an error with their indexes
   if (existingStudents.length > 0) {
     allPeople.forEach((dict, index) => {
-      if (existingStudents[0].matchedEmails.includes(dict.email.trim().toLowerCase())) {
+      if (
+        existingStudents[0].matchedEmails.includes(
+          dict.email.trim().toLowerCase()
+        )
+      ) {
         failedIndexes.push(index);
       }
     });
