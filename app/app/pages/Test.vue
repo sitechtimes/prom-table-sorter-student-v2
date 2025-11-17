@@ -21,18 +21,18 @@ const submitGroup = async () => {
 
   const groupData = {
     leader: {
-      first_name: "A",
-      last_name: "A",
-      email: "test4@gmail.com",
+      first_name: "Jane",
+      last_name: "Doe",
+      email: "test3@gmail.com",
       osis: 123456789,
     },
     members: [
-      {
-        first_name: "A",
-        last_name: "B",
-        email: "test5@gmail.com",
-        osis: 987654321,
-      },
+      // {
+      //   first_name: "A",
+      //   last_name: "B",
+      //   email: "test5@gmail.com",
+      //   osis: 987654321,
+      // },
       //   {
       //     first_name: "Charlie",
       //     last_name: "Kim",
@@ -43,7 +43,7 @@ const submitGroup = async () => {
   };
 
   try {
-    const res = await $fetch("/api/groups", {
+    const res = await $fetch("/api/createGroup", {
       method: "POST",
       body: groupData,
     });

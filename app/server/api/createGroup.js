@@ -1,6 +1,6 @@
-import connectDB from "../../utils/db";
-import Group from "../../models/Group";
-import Student from "../../models/studentInfo";
+import connectDB from "../utils/db";
+import Group from "../models/Group";
+import Student from "../models/studentInfo";
 
 export default defineEventHandler(async (event) => {
   await connectDB();
@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
   //validate students (check if they exist in the big excel)
   await Promise.all(
     allPeople.map(async (person, index) => {
-      console.log(person);
       const match = await Student.findOne({
         first_name: person.first_name.toLowerCase(),
         last_name: person.last_name.toLowerCase(),
@@ -30,7 +29,7 @@ export default defineEventHandler(async (event) => {
   //if some students dont exist throw an error with the indexes
   if (failedIndexes.length > 0) {
     throw createError({
-      statusCode: 400,
+      statusCode: 599,
       message: "Some students could not be validated.",
       data: { failedIndexes },
     });
@@ -71,7 +70,7 @@ export default defineEventHandler(async (event) => {
       }
     });
     throw createError({
-      statusCode: 400,
+      statusCode: 599,
       message: "Some students already exist in other groups.",
       data: { failedIndexes },
     });
