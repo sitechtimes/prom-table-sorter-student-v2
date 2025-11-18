@@ -38,8 +38,6 @@ export default defineEventHandler(async (event) => {
 
   const emails = allPeople.map((person) => person.email.trim().toLowerCase());
 
-  
-
   //checks if the students are in another group already by concatenating all the emails already in groups and comparing it to list of emails being submitted
   const existingStudents = await Group.aggregate([
     {
