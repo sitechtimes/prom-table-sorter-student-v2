@@ -41,7 +41,7 @@
         />
       </div>
       <h1 class="text-black text-3xl font-bold text-center mb-6">
-        Students that haven't paid and not at a table:
+        Students that haven't paid and at a table:
       </h1>
       <h2>
         <div v-for="student in notPaid" :key="student.osis">
@@ -91,7 +91,158 @@ const minSeats = ref<number>();
 const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
 const noSeat = ref<ImportedStudent[]>([]);
-const Groups = ref<Group[]>([]);
+const Groups = ref<Group[]>([
+  //asked chatgpt to generate example groups for me
+  // Small group - 1 member
+  {
+    groupLeader: {
+      firstName: "Ava",
+      lastName: "Johnson",
+      email: "ava.johnson@nycstudents.net",
+      osis: "102938475",
+    },
+    members: [
+      {
+        firstName: "Mila",
+        lastName: "Chen",
+        email: "mila.chen@nycstudents.net",
+      },
+    ],
+  },
+
+  // Medium group - 3 members
+  {
+    groupLeader: {
+      firstName: "Leo",
+      lastName: "Rossi",
+      email: "leo.rossi@nycstudents.net",
+      osis: "564738291",
+    },
+    members: [
+      {
+        firstName: "Noah",
+        lastName: "Smith",
+        email: "noah.smith@nycstudents.net",
+      },
+      {
+        firstName: "Ella",
+        lastName: "Rivera",
+        email: "ella.rivera@nycstudents.net",
+      },
+      {
+        firstName: "Lucas",
+        lastName: "Kim",
+        email: "lucas.kim@nycstudents.net",
+      },
+    ],
+  },
+
+  // Large group - 7 members
+  {
+    groupLeader: {
+      firstName: "Sofia",
+      lastName: "Martinez",
+      email: "sofia.martinez@nycstudents.net",
+      osis: "948372615",
+    },
+    members: [
+      {
+        firstName: "Olivia",
+        lastName: "Brown",
+        email: "olivia.brown@nycstudents.net",
+      },
+      {
+        firstName: "Henry",
+        lastName: "Lee",
+        email: "henry.lee@nycstudents.net",
+      },
+      {
+        firstName: "Aiden",
+        lastName: "Patel",
+        email: "aiden.patel@nycstudents.net",
+      },
+      {
+        firstName: "Grace",
+        lastName: "Wong",
+        email: "grace.wong@nycstudents.net",
+      },
+      {
+        firstName: "James",
+        lastName: "Lopez",
+        email: "james.lopez@nycstudents.net",
+      },
+      {
+        firstName: "Chloe",
+        lastName: "Adams",
+        email: "chloe.adams@nycstudents.net",
+      },
+      {
+        firstName: "Ethan",
+        lastName: "Nguyen",
+        email: "ethan.nguyen@nycstudents.net",
+      },
+    ],
+  },
+
+  // Very large group - 10 members
+  {
+    groupLeader: {
+      firstName: "Isabella",
+      lastName: "Green",
+      email: "isabella.green@nycstudents.net",
+      osis: "127483920",
+    },
+    members: [
+      {
+        firstName: "Daniel",
+        lastName: "King",
+        email: "daniel.king@nycstudents.net",
+      },
+      { firstName: "Ari", lastName: "Gold", email: "ari.gold@nycstudents.net" },
+      {
+        firstName: "Luna",
+        lastName: "Castro",
+        email: "luna.castro@nycstudents.net",
+      },
+      {
+        firstName: "Elijah",
+        lastName: "Diaz",
+        email: "elijah.diaz@nycstudents.net",
+      },
+      {
+        firstName: "Riley",
+        lastName: "Morris",
+        email: "riley.morris@nycstudents.net",
+      },
+      {
+        firstName: "Zoe",
+        lastName: "Clark",
+        email: "zoe.clark@nycstudents.net",
+      },
+      {
+        firstName: "Mateo",
+        lastName: "Santos",
+        email: "mateo.santos@nycstudents.net",
+      },
+      {
+        firstName: "Nora",
+        lastName: "Baker",
+        email: "nora.baker@nycstudents.net",
+      },
+      {
+        firstName: "Sebastian",
+        lastName: "Reyes",
+        email: "sebastian.reyes@nycstudents.net",
+      },
+      {
+        firstName: "Liam",
+        lastName: "Turner",
+        email: "liam.turner@nycstudents.net",
+      },
+    ],
+  },
+]);
+
 const Tables = ref<Table[]>([]);
 let showpaidExample = ref(false);
 
