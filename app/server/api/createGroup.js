@@ -14,12 +14,13 @@ export default defineEventHandler(async (event) => {
 
   const allPeople = [leader, ...(members || [])];
   const failedIndexes = [];
+
   //validate students (check if they exist in the big excel)
   await Promise.all(
     allPeople.map(async (person, index) => {
       const match = await Student.findOne({
-        first_name: person.first_name.toLowerCase(),
-        last_name: person.last_name.toLowerCase(),
+        firstName: person.firstName.toLowerCase(),
+        lastName: person.lastName.toLowerCase(),
         email: person.email.toLowerCase(),
       });
       if (!match) failedIndexes.push(index);
@@ -36,6 +37,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const emails = allPeople.map((person) => person.email.trim().toLowerCase());
+
+  
 
   //checks if the students are in another group already by concatenating all the emails already in groups and comparing it to list of emails being submitted
   const existingStudents = await Group.aggregate([

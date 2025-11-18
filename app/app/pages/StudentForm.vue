@@ -55,6 +55,7 @@
           v-model="groupLeader.firstName"
           type="text"
           placeholder="Enter here"
+          :class="hasError(0) ? 'border-red-500 border-2' : ''"
         />
         <FormInput
           category="Last Name"
@@ -62,6 +63,7 @@
           v-model="groupLeader.lastName"
           type="text"
           placeholder="Enter here"
+          :class="hasError(0) ? 'border-red-500 border-2' : ''"
         />
         <FormInput
           category="NYC Students Email"
@@ -69,6 +71,7 @@
           v-model="groupLeader.email"
           type="email"
           placeholder="examples@nycstudents.net"
+          :class="hasError(0) ? 'border-red-500 border-2' : ''"
         />
         <FormInput
           category="OSIS"
@@ -76,6 +79,7 @@
           v-model="groupLeader.osis"
           type="text"
           placeholder="123456789"
+          :class="hasError(0) ? 'border-red-500 border-2' : ''"
         />
         <h2 class="text-black text-lg font-semibold">
           Are you registering for a group?
@@ -126,6 +130,7 @@
                 v-model="Group[i]!.firstName"
                 type="text"
                 placeholder="Enter"
+                :class="hasError(i) ? 'border-red-500 border-2' : ''"
               />
               <FormInput
                 category="Last Name"
@@ -133,6 +138,7 @@
                 v-model="Group[i]!.lastName"
                 type="text"
                 placeholder="Enter"
+                :class="hasError(i) ? 'border-red-500 border-2' : ''"
               />
               <FormInput
                 category="NYC Students Email"
@@ -140,6 +146,7 @@
                 v-model="Group[i]!.email"
                 type="email"
                 placeholder="examples@nycstudents.net"
+                :class="hasError(i) ? 'border-red-500 border-2' : ''"
               />
             </div>
           </div>
@@ -175,6 +182,12 @@ const groupLeader = reactive<Student>({
 const InGroup = ref(false);
 const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
+
+// error handling for if students fail validation/duplicate checks
+const failedIndexes = ref<number[]>([]);
+function hasError(index: number) {
+  return failedIndexes.value.includes(index);
+}
 
 async function leaderLogin() {
   const response = await fetch(""); //pull data from mongodb using backend
@@ -214,12 +227,16 @@ function clearGroup() {
     Group.value = [groupLeader];
   }
 }
+
+// submit function getting called twice for some reason? need to fix
+
 async function submit() {
   //make sure leaders and data are on mongodb **being done on backend? (if not i'll do it)**
   const dataPush = {
     leader: groupLeader,
     members: Group.value.slice(1),
   };
+  console.log("dataPush:", dataPush);
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
@@ -258,11 +275,19 @@ async function submit() {
       });
       const data = await res.json();
       console.log("Pushed:", data);
+      failedIndexes.value = [];
+      if (!res.ok) {
+        failedIndexes.value = data.data.failedIndexes;
+        console.log("Failed Indexes:", failedIndexes.value);
+        console.log("second test:", hasError(1));
+        alert("Some entries had errors. Please check highlighted fields.");
+      } else {
+        alert("Submission successful!");
+      }
     } catch (err) {
       alert("couldnt push data to mongodb");
       console.log(err);
     }
-    console.log("Group:", Group.value);
   }
 }
 </script>
