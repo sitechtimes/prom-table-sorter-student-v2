@@ -248,6 +248,7 @@ async function submit() {
     }
   } else {
     try {
+      console.log(dataPush.leader.email);
       const res = await fetch("/api/createGroup", {
         //push data here (using backend)
         method: "POST",

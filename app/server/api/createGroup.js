@@ -18,8 +18,8 @@ export default defineEventHandler(async (event) => {
   await Promise.all(
     allPeople.map(async (person, index) => {
       const match = await Student.findOne({
-        first_name: person.first_name.toLowerCase(),
-        last_name: person.last_name.toLowerCase(),
+        first_name: person.firstName.toLowerCase(),
+        last_name: person.lastName.toLowerCase(),
         email: person.email.toLowerCase(),
       });
       if (!match) failedIndexes.push(index);
