@@ -48,7 +48,7 @@
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Student Form
       </h1>
-      <form @submit.prevent="submit()">
+      <form>
         <FormInput
           category="First Name"
           color="black"
