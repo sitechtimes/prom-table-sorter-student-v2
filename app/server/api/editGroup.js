@@ -29,5 +29,56 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  //Get the list of emails of the people in the old unedited group by the information of the leader
+  const oldGroup = await Group.findOne({ leader: leader.email });
+  const oldEmails = [oldGroup.leader, ...(oldGroup.members || [])].map(
+    (p) => p.email
+  );
+
+  //get list of emails in the new group(the body) then remove the emails from the old group and run the check to see if any of the new emails are already assigned to other groups
+  const newEmails = [leader, ...(members || [])].map((p) => p.email);
+  const emailsToCheck = newEmails.filter((email) => !oldEmails.includes(email));
+
+  const existingStudents = await Group.aggregate([
+    {
+      $project: {
+        _id: 0,
+        matchedEmails: {
+          $setIntersection: [
+            emailsToCheck,
+            {
+              $concatArrays: [
+                ["$leader.email"],
+                { $ifNull: ["$members.email", []] },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    { $match: { "matchedEmails.0": { $exists: true } } },
+  ]);
+
+  //if there are students already in groups throw an error with their indexes
+  if (existingStudents.length > 0) {
+    allPeople.forEach((dict, index) => {
+      if (
+        existingStudents[0].matchedEmails.includes(
+          dict.email.trim().toLowerCase()
+        )
+      ) {
+        failedIndexes.push(index);
+      }
+    });
+    throw createError({
+      statusCode: 599,
+      message: "Some students already exist in other groups.",
+      data: { failedIndexes },
+    });
+  }
+
+  await Group.find(body._id, body, { new: true });
+  const group = await Group.findBy;
+
   return { message: "Group edited successfully", group };
 });
