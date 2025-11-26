@@ -1,16 +1,17 @@
 <template>
-  <div class="flex justify-center items-center min-h-screen bg-gray-500">
+  <!--asked chatgpt to make styling better cause its an eyesore to look at, eventually replace styling-->
+  <div class="flex flex-col items-center min-h-screen bg-gray-200 py-8">
     <div
-      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6 form"
+      class="card w-full border border-gray-300 max-w-3xl bg-white shadow-2xl p-8 rounded-2xl cursor-default form"
     >
       <div>
-        <h1 class="text-black text-3xl font-bold text-center mb-4">
+        <h1 class="text-black text-3xl font-bold text-center mb-6">
           Upload Excel file of those who paid
         </h1>
         <label class="uploadBtn" for="upload-file2"><img src="" /></label>
         <input
           id="upload-file2"
-          class="file-input"
+          class="file-input file-input-bordered w-full"
           type="file"
           name="input-groups"
           ref="paidFile"
@@ -18,93 +19,125 @@
           @change="compareSeatAndPay"
         />
         <button
-          class="btn mt-4 mb-2"
+          class="btn btn-secondary mt-4 mb-2 w-full"
           @click="showPaidExample = !showPaidExample"
         >
           Click here to open/close example
         </button>
         <img
-          class="example"
+          class="example mx-auto rounded-lg shadow"
           v-if="showPaidExample"
           src="../assets/paidExample.png"
         />
       </div>
+
       <div>
-        <h1 class="text-black text-3xl font-bold text-center mb-6">
+        <h1 class="text-black text-2xl font-bold text-center mb-4">
           Enter a range for table sizes:
         </h1>
-        <h2 class="text-black font-semibold text-center mt-4">From</h2>
-        <input
-          type="number"
-          class="input input-bordered mb-4"
-          v-model.number="minSeats"
-        />
-        <h2 class="text-black font-semibold text-center mt-4">to</h2>
-        <input
-          type="number"
-          class="input input-bordered mb-4"
-          v-model.number="maxSeats"
-        />
+        <div class="flex gap-4 justify-center">
+          <div>
+            <h2 class="text-black font-semibold text-center">From</h2>
+            <input
+              type="number"
+              class="input input-bordered"
+              v-model.number="minSeats"
+            />
+          </div>
+          <div>
+            <h2 class="text-black font-semibold text-center">To</h2>
+            <input
+              type="number"
+              class="input input-bordered"
+              v-model.number="maxSeats"
+            />
+          </div>
+        </div>
       </div>
-      <h1 class="text-black text-3xl font-bold text-center mb-4">
+
+      <h1 class="text-black text-2xl font-bold text-center my-6">
         Students that haven't paid and at a table:
       </h1>
-      <h2>
+      <div>
         <div
           v-if="notPaid.length !== 0"
           v-for="student in notPaid"
           :key="student.osis"
-          class="text-black font-semibold text-center mb-2"
+          class="text-black font-medium text-center mb-1"
         >
           {{ student.firstName }} {{ student.lastName }}
         </div>
-        <h2 v-else class="text-black font-semibold text-center mb-2">
+        <p v-else class="text-gray-500 text-center italic">
           Empty, enter an excel to display.
-        </h2>
-      </h2>
-      <h1 class="text-black text-3xl font-bold text-center mb-4">
+        </p>
+      </div>
+
+      <h1 class="text-black text-2xl font-bold text-center my-6">
         Students that have paid and not at a table:
       </h1>
-      <h2>
+      <div>
         <div
           v-if="noSeat.length !== 0"
           v-for="student in noSeat"
           :key="student.email"
-          class="text-black font-semibold text-center mb-2"
+          class="text-black font-medium text-center mb-1"
         >
           {{ student.name }}
         </div>
-        <h2 v-else class="text-black font-semibold text-center mb-2">
+        <p v-else class="text-gray-500 text-center italic">
           Empty, enter an excel to display.
-        </h2>
-      </h2>
+        </p>
+      </div>
       <TableVisualizer />
     </div>
 
-    <button class="btn" @click="executeSort()">List of all tables</button>
-    <div class="overflow-x-auto">
-      <!--Update this to display members by all groups in a table then all individuals at a table-->
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Group Leader</th>
-            <th>Members</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(group, i) in Groups">
-            <th>{{ i + 1 }}</th>
-            <td>
-              {{ group?.groupLeader.firstName }}
-              {{ group?.groupLeader.lastName }}
-            </td>
-            <td v-for="member in group.members">
-              {{ member.firstName }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div>
+      <button class="btn btn-primary" @click="executeSort()">
+        List of all tables
+      </button>
+      <div class="overflow-x-auto w-full mt-4" v-if="Tables.length">
+        <table class="table table-zebra w-full bg-white rounded-xl shadow-lg">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Members</th>
+              <th># Of Free Seats Left</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(table, i) in Tables">
+              <th>{{ i + 1 }}</th>
+              <td>
+                <div
+                  v-for="occupant in table.occupants"
+                  :key="occupant.groupLeader.email"
+                  class="mb-2"
+                >
+                  <div class="dropdown dropdown-hover">
+                    <label tabindex="0" class="btn btn-sm btn-outline">
+                      {{ occupant.groupLeader.firstName }}
+                      {{ occupant.groupLeader.lastName }}
+                    </label>
+                    <ul
+                      tabindex="0"
+                      class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-56"
+                    >
+                      <li class="font-bold text-gray-700">Group Members:</li>
+                      <li
+                        v-for="member in occupant.members"
+                        :key="member.email"
+                      >
+                        <a>{{ member.firstName }} {{ member.lastName }}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </td>
+              <td>{{ table.unoccupiedSeats }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -268,8 +301,8 @@ const Tables = ref<Table[]>([]);
 let showPaidExample = ref(false);
 
 interface ImportedStudent {
-  email: string; //may end up being OSIS later on
   name: string;
+  email: string; //may end up being OSIS later on
 }
 
 async function fetchGroups() {
