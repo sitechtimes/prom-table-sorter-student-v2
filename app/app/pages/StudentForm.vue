@@ -228,7 +228,7 @@ function clearGroup() {
   }
 }
 
-// submit function getting called twice for some reason? need to fix
+
 
 async function submit() {
   //make sure leaders and data are on mongodb **being done on backend? (if not i'll do it)**
