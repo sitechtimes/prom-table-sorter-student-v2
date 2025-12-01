@@ -54,9 +54,9 @@ function sortTableSeats(groups: Array<Group>, tables: Array<Table>, groupSortFun
     
         if (!topTable || !group) return null
     
-        if (topTable.unoccupiedSeats >= group.members.length) {
+        if (topTable.unoccupiedSeats >= (group.members.length+1)) {
           topTable.occupants.push(group)
-          topTable.unoccupiedSeats -= group.members.length
+          topTable.unoccupiedSeats -= (group.members.length+1)
         } else {
           return null
         }
@@ -134,7 +134,7 @@ function rangeSort(
     }
     
     throw Error(
-      `ERROR: Groups cannot be sorted into tables with current settings. Try lowering the minimum or increasing the maximum table size.`
+      `ERROR: Groups cannot be sorted into tables with current settings, as a group will end up split up no matter what or a table can not be filled to the minimum. Try lowering the minimum or increasing the maximum table size.`
     )
     
 }
@@ -144,7 +144,7 @@ function arrayLen2D(list2D: Array<Group>): number {
     for (let i = 0; i < list2D.length; i++) {
         const group = list2D[i]
         if (group && group.members) {
-            sum += group.members.length
+            sum += (group.members.length+1)
         }
     }
     return sum

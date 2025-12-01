@@ -25,7 +25,7 @@
           Click here to open/close example
         </button>
         <img
-          class="example mx-auto rounded-lg shadow"
+          class="example mx-auto rounded-lg shadow w-1/2"
           v-if="showPaidExample"
           src="../assets/paidExample.png"
         />
@@ -88,6 +88,16 @@
           Empty, enter an excel to display.
         </p>
       </div>
+      <div class="mt-4 flex items-center gap-2">
+        <input
+          type="checkbox"
+          v-model="includeUnpaidStudents"
+          class="checkbox checkbox-primary"
+        />
+        <label class="text-black font-medium">
+          Include unpaid students in table sorting
+        </label>
+      </div>
       <TableVisualizer />
     </div>
 
@@ -95,8 +105,8 @@
       <button class="btn btn-primary" @click="executeSort()">
         List of all tables
       </button>
-      <div class="overflow-x-auto w-full mt-4" v-if="Tables.length">
-        <table class="table table-zebra w-full bg-white rounded-xl shadow-lg">
+      <div class="overflow-x-auto w-full bg-black mt-4" v-if="Tables.length">
+        <table class="table table-zebra w-full rounded-xl shadow-lg">
           <thead>
             <tr>
               <th></th>
@@ -129,6 +139,12 @@
                       >
                         <a>{{ member.firstName }} {{ member.lastName }}</a>
                       </li>
+                      <li
+                        v-if="occupant.members.length === 0"
+                        class="italic text-gray-500"
+                      >
+                        Singular student, no members
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -137,6 +153,12 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div>
+        <button class="btn btn-primary" @click="printTables">
+          Display tables to copy and paste
+        </button>
+        <!--Needs to be done-->
       </div>
     </div>
   </div>
@@ -149,6 +171,7 @@ const minSeats = ref<number>();
 const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
 const noSeat = ref<ImportedStudent[]>([]);
+const includeUnpaidStudents = ref(false);
 const Groups = ref<Group[]>([
   {
     groupLeader: {
@@ -370,19 +393,140 @@ async function executeSort() {
   await fetchGroups();
 
   try {
-    if (typeof maxSeats.value != "number" || typeof minSeats.value != "number")
+    if (
+      typeof maxSeats.value !== "number" ||
+      typeof minSeats.value !== "number"
+    )
       return alert("Please enter a number for max and min seats");
+
+    await compareSeatAndPay();
+
+    let groupsCopy: Group[] = Groups.value.map((group) => ({
+      groupLeader: { ...group.groupLeader },
+      members: group.members.map((member) => ({ ...member })),
+    }));
+
+    if (includeUnpaidStudents.value === false) {
+      const filteredGroups: Group[] = [];
+
+      for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
+        const group = groupsCopy[groupIndex];
+        if (!group) continue; // skips
+
+        const filteredMembers: Student[] = [];
+        for (
+          let memberIndex = 0;
+          memberIndex < group.members.length;
+          memberIndex++
+        ) {
+          let isUnpaid = false;
+          for (let i = 0; i < notPaid.value.length; i++) {
+            if (notPaid.value[i]!.email === group.members[memberIndex]?.email) {
+              isUnpaid = true;
+              break;
+            }
+          }
+          if (!isUnpaid && group.members[memberIndex]) {
+            filteredMembers.push(group.members[memberIndex]!);
+          }
+        }
+
+        let leaderIsUnpaid = false;
+        for (let i = 0; i < notPaid.value.length; i++) {
+          if (notPaid.value[i]?.email === group.groupLeader?.email) {
+            leaderIsUnpaid = true;
+            break;
+          }
+        }
+
+        if (leaderIsUnpaid) {
+          // assigns new GL if the leader is unpaid, don't actually become group leaders, just for displaying data
+          if (filteredMembers.length > 0) {
+            const newLeader = filteredMembers[0];
+            const newMembers = filteredMembers.slice(1);
+
+            if (newLeader) {
+              filteredGroups.push({
+                groupLeader: {
+                  firstName: newLeader.firstName,
+                  lastName: newLeader.lastName,
+                  email: newLeader.email,
+                  osis: newLeader.email, // not OSIS but has to be set for GL
+                },
+                members: newMembers,
+              });
+            }
+          }
+        } else {
+          if (group.groupLeader) {
+            filteredGroups.push({
+              groupLeader: group.groupLeader,
+              members: filteredMembers,
+            });
+          }
+        }
+      }
+
+      groupsCopy = filteredGroups;
+    }
+
+    const allGroupEmails: string[] = [];
+    for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
+      const group = groupsCopy[groupIndex];
+      if (!group) continue;
+      if (group.groupLeader?.email)
+        allGroupEmails.push(group.groupLeader.email);
+      for (
+        let memberIndex = 0;
+        memberIndex < group.members.length;
+        memberIndex++
+      ) {
+        if (group.members[memberIndex]?.email) {
+          allGroupEmails.push(group.members[memberIndex]!.email);
+        }
+      }
+    }
+
+    const extraStudents: ImportedStudent[] = [];
+    for (let i = 0; i < noSeat.value.length; i++) {
+      if (!allGroupEmails.includes(noSeat.value[i]?.email ?? "")) {
+        extraStudents.push(noSeat.value[i]!);
+      }
+    }
+
+    for (let i = 0; i < extraStudents.length; i++) {
+      const student = extraStudents[i];
+      if (!student?.name || !student?.email) continue;
+      groupsCopy.push({
+        groupLeader: {
+          firstName: student.name.split(" ")[0] ?? "",
+          lastName: student.name.split(" ")[1] ?? "",
+          email: student.email,
+          osis: student.email, //no OSIS to use for them but need to be displayed
+        },
+        members: [],
+      });
+    }
+
     Tables.value = rangeSort(
-      Groups.value,
+      groupsCopy,
       algoFunctionOptions,
       maxSeats.value,
       minSeats.value
     ) as Table[];
 
-    await compareSeatAndPay();
+    console.log(Tables.value);
   } catch (error: any) {
     alert(error.message);
   }
+}
+function printTables() {
+  if (!Tables) return alert("Run the table sort before printing tables.");
+  let stringArray: Array<String> = [];
+  for (let i = 0; i < Tables.value.length; i++) {
+    //
+  }
+  return stringArray;
 }
 onMounted(() => {
   // fetchGroups();
