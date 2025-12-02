@@ -158,13 +158,29 @@
         <button class="btn btn-primary" @click="printTables">
           Display tables to copy and paste
         </button>
-        <!--Needs to be done-->
+        <div
+          v-if="stringArray.length"
+          class="mt-4 bg-white p-4 rounded-xl shadow"
+        >
+          <div
+            v-for="(string, i) in stringArray"
+            :key="i"
+            class="mb-6 pb-4 border-b border-gray-300"
+          >
+            <h2 class="text-xl font-bold mb-2">Table {{ i + 1 }}</h2>
+            <h3 class="whitespace-pre-wrap text-black">{{ string }}</h3>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+//Strict vs lenient mode
+//Strict: check name, osis, email
+//Loose mode: just check name
+//Student form should indicate legal name MUST be used
 import ExcelJS from "exceljs";
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
@@ -172,6 +188,7 @@ const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
 const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
+let stringArray: Array<String> = [];
 const Groups = ref<Group[]>([
   {
     groupLeader: {
@@ -390,8 +407,7 @@ async function compareSeatAndPay() {
   );
 }
 async function executeSort() {
-  await fetchGroups();
-
+  // await fetchGroups();
   try {
     if (
       typeof maxSeats.value !== "number" ||
@@ -411,7 +427,7 @@ async function executeSort() {
 
       for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
         const group = groupsCopy[groupIndex];
-        if (!group) continue; // skips
+        if (!group) continue;
 
         const filteredMembers: Student[] = [];
         for (
@@ -521,13 +537,22 @@ async function executeSort() {
   }
 }
 function printTables() {
-  if (!Tables) return alert("Run the table sort before printing tables.");
-  let stringArray: Array<String> = [];
-  for (let i = 0; i < Tables.value.length; i++) {
-    //
-  }
-  return stringArray;
+  if (!Tables) return alert("Run the table sort before displaying tables.");
+  stringArray = [];
+  Tables.value.forEach((table, i) => {
+    let tableString = `Table ${i + 1}\n`;
+
+    table.occupants.forEach((occupant) => {
+      tableString += `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}\n`;
+      occupant.members.forEach((member) => {
+        tableString += `${member.firstName} ${member.lastName}\n`;
+      });
+    });
+
+    stringArray.push(tableString);
+  });
 }
+
 onMounted(() => {
   // fetchGroups();
 });
