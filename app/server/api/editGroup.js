@@ -77,8 +77,8 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  await Group.find(body._id, body, { new: true });
-  const group = await Group.findBy;
+  await Group.replaceOne({ leader: leader.email }, body);
 
-  return { message: "Group edited successfully", group };
+
+  return { message: "Group edited successfully", body };
 });
