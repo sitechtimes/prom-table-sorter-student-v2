@@ -30,14 +30,17 @@ export default defineEventHandler(async (event) => {
   }
 
   //Get the list of emails of the people in the old unedited group by the information of the leader
-  const oldGroup = await Group.findOne({ leader: leader.email });
+  const oldGroup = await Group.findOne({ "leader.email": leader.email });
   const oldEmails = [oldGroup.leader, ...(oldGroup.members || [])].map(
     (p) => p.email
   );
 
+  console.log("Old Emails: ", oldEmails);
+
   //get list of emails in the new group(the body) then remove the emails from the old group and run the check to see if any of the new emails are already assigned to other groups
   const newEmails = [leader, ...(members || [])].map((p) => p.email);
   const emailsToCheck = newEmails.filter((email) => !oldEmails.includes(email));
+  console.log("Emails to Check: ", emailsToCheck);
 
   const existingStudents = await Group.aggregate([
     {
@@ -77,8 +80,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  await Group.replaceOne({ leader: leader.email }, body);
-
+  await Group.replaceOne({ "leader.email": leader.email }, body);
 
   return { message: "Group edited successfully", body };
 });
