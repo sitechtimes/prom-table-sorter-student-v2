@@ -98,14 +98,29 @@
           Include unpaid students in table sorting
         </label>
       </div>
+      <div class="mt-4 flex items-center gap-2">
+        <input
+          type="checkbox"
+          v-model="looseMode"
+          class="checkbox checkbox-primary"
+        />
+        <label class="text-black font-medium">
+          Filter students loosely (loose: name only, strict: name and email)
+        </label>
+      </div>
       <TableVisualizer />
     </div>
-
-    <div>
-      <button class="btn btn-primary" @click="executeSort()">
-        List of all tables
-      </button>
-      <div class="overflow-x-auto w-full bg-black mt-4" v-if="Tables.length">
+    <button class="btn btn-primary" @click="executeSort()">
+      List of all tables
+    </button>
+    <button class="btn btn-primary" @click="printTables">
+      Display tables to copy and paste
+    </button>
+    <div
+      class="w-full flex flex-col md:flex-row md:items-start md:justify-center gap-8"
+    >
+      >
+      <div class="overflow-x-auto w-1/4 bg-black mt-4" v-if="Tables.length">
         <table class="table table-zebra w-full rounded-xl shadow-lg">
           <thead>
             <tr>
@@ -154,22 +169,17 @@
           </tbody>
         </table>
       </div>
-      <div>
-        <button class="btn btn-primary" @click="printTables">
-          Display tables to copy and paste
-        </button>
+      <div
+        v-if="stringArray.length > 0"
+        class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
+      >
         <div
-          v-if="stringArray.length"
-          class="mt-4 bg-white p-4 rounded-xl shadow"
+          v-for="(string, i) in stringArray"
+          :key="i"
+          class="mb-6 pb-4 border-b border-gray-300"
         >
-          <div
-            v-for="(string, i) in stringArray"
-            :key="i"
-            class="mb-6 pb-4 border-b border-gray-300"
-          >
-            <h2 class="text-xl font-bold mb-2">Table {{ i + 1 }}</h2>
-            <h3 class="whitespace-pre-wrap text-black">{{ string }}</h3>
-          </div>
+          <h2 class="text-xl text-black font-bold mb-2">Table {{ i + 1 }}</h2>
+          <h3 class="whitespace-pre-wrap text-black">{{ string }}</h3>
         </div>
       </div>
     </div>
@@ -188,7 +198,8 @@ const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
 const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
-let stringArray: Array<String> = [];
+const looseMode = ref(false);
+const stringArray = ref<Array<String>>([]);
 const Groups = ref<Group[]>([
   {
     groupLeader: {
@@ -383,28 +394,62 @@ async function getPaidList() {
   }
 }
 async function compareSeatAndPay() {
-  const file = paidFile.value?.files?.[0];
-  if (!file) {
-    alert("Please upload a paid list Excel file.");
-    return [];
-  }
+  //Maybe should check for capitalization errors in students for the excel, use .toLowerCase()
   const paidList = await getPaidList();
   if (!paidList)
     return alert(
       "Couldn't retrieve excel data, please ensure the data follows the example"
     );
-  const attending: Student[] = Groups.value.flatMap((group: Group) => [
+  const groupStudents: Student[] = Groups.value.flatMap((group: Group) => [
     group.groupLeader,
     ...group.members,
   ]);
-  const paidEmails = paidList.map((p) => String(p.email).trim());
-  const attendingEmails = attending.map((p) => String(p.email).trim());
-  notPaid.value = attending.filter(
-    (person) => !paidEmails.includes(String(person.email).trim())
-  );
-  noSeat.value = paidList.filter(
-    (p) => !attendingEmails.includes(String(p.email).trim())
-  );
+
+  if (looseMode.value === true) {
+    //loose mode does not work right now, notpaid and noseat currently return empty arrays
+    notPaid.value = groupStudents.filter((groupStudent) => {
+      !paidList.some(
+        (paidStudent) =>
+          paidStudent.name ===
+          `${groupStudent.firstName} ${groupStudent.lastName}`
+      );
+    });
+    noSeat.value = paidList.filter((paidStudent) => {
+      !groupStudents.some((groupStudent) => {
+        if (
+          `${groupStudent.firstName} ${groupStudent.lastName}` ===
+          paidStudent.name
+        )
+          return true;
+      });
+    });
+    console.log(notPaid.value);
+    console.log(noSeat.value);
+  } else {
+    //strict mode
+    const paidEmails = paidList.map((student) => student.email);
+    const groupEmails = groupStudents.map((student) => student.email);
+    notPaid.value = groupStudents.filter(
+      (groupStudent) =>
+        !paidEmails.includes(groupStudent.email) &&
+        !paidList.some(
+          (paidStudent) =>
+            paidStudent.name ===
+            `${groupStudent.firstName} ${groupStudent.lastName}`
+        )
+    );
+    noSeat.value = paidList.filter(
+      (paidStudent) =>
+        !groupEmails.includes(paidStudent.email) &&
+        !groupStudents.some(
+          (groupStudent) =>
+            `${groupStudent.firstName} ${groupStudent.lastName}` ===
+            paidStudent.name
+        )
+    );
+    console.log(notPaid.value);
+    console.log(noSeat.value);
+  }
 }
 async function executeSort() {
   // await fetchGroups();
@@ -530,26 +575,23 @@ async function executeSort() {
       maxSeats.value,
       minSeats.value
     ) as Table[];
-
-    console.log(Tables.value);
   } catch (error: any) {
     alert(error.message);
   }
 }
 function printTables() {
-  if (!Tables) return alert("Run the table sort before displaying tables.");
-  stringArray = [];
+  if (!(Tables.value.length > 0))
+    return alert("Run the table sort before displaying tables.");
+  stringArray.value = [];
   Tables.value.forEach((table, i) => {
-    let tableString = `Table ${i + 1}\n`;
-
+    let tableString = ``;
     table.occupants.forEach((occupant) => {
       tableString += `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}\n`;
       occupant.members.forEach((member) => {
         tableString += `${member.firstName} ${member.lastName}\n`;
       });
     });
-
-    stringArray.push(tableString);
+    stringArray.value.push(tableString);
   });
 }
 
