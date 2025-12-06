@@ -394,7 +394,6 @@ async function getPaidList() {
   }
 }
 async function compareSeatAndPay() {
-  //Maybe should check for capitalization errors in students for the excel, use .toLowerCase()
   const paidList = await getPaidList();
   if (!paidList)
     return alert(
@@ -406,49 +405,47 @@ async function compareSeatAndPay() {
   ]);
 
   if (looseMode.value === true) {
-    //loose mode does not work right now, notpaid and noseat currently return empty arrays
     notPaid.value = groupStudents.filter((groupStudent) => {
-      !paidList.some(
+      return !paidList.some(
         (paidStudent) =>
-          paidStudent.name ===
-          `${groupStudent.firstName} ${groupStudent.lastName}`
+          paidStudent.name.toLowerCase() ===
+          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
       );
     });
     noSeat.value = paidList.filter((paidStudent) => {
-      !groupStudents.some((groupStudent) => {
-        if (
-          `${groupStudent.firstName} ${groupStudent.lastName}` ===
-          paidStudent.name
-        )
-          return true;
+      return !groupStudents.some((groupStudent) => {
+        return (
+          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
+          paidStudent.name.toLowerCase()
+        );
       });
     });
     console.log(notPaid.value);
     console.log(noSeat.value);
   } else {
     //strict mode
-    const paidEmails = paidList.map((student) => student.email);
-    const groupEmails = groupStudents.map((student) => student.email);
+    const paidEmails = paidList.map((student) => student.email.toLowerCase());
+    const groupEmails = groupStudents.map((student) =>
+      student.email.toLowerCase()
+    );
     notPaid.value = groupStudents.filter(
       (groupStudent) =>
-        !paidEmails.includes(groupStudent.email) &&
+        !paidEmails.includes(groupStudent.email.toLowerCase()) &&
         !paidList.some(
           (paidStudent) =>
-            paidStudent.name ===
-            `${groupStudent.firstName} ${groupStudent.lastName}`
+            paidStudent.name.toLowerCase() ===
+            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
         )
     );
     noSeat.value = paidList.filter(
       (paidStudent) =>
-        !groupEmails.includes(paidStudent.email) &&
+        !groupEmails.includes(paidStudent.email.toLowerCase()) &&
         !groupStudents.some(
           (groupStudent) =>
-            `${groupStudent.firstName} ${groupStudent.lastName}` ===
-            paidStudent.name
+            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
+            paidStudent.name.toLowerCase()
         )
     );
-    console.log(notPaid.value);
-    console.log(noSeat.value);
   }
 }
 async function executeSort() {
