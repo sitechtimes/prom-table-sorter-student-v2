@@ -48,7 +48,7 @@
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Student Form
       </h1>
-      <form>
+      <form @submit.prevent="submit">
         <FormInput
           category="First Name"
           color="black"
@@ -152,11 +152,7 @@
           </div>
         </div>
 
-        <button
-          type="submit"
-          class="btn btn-primary w-full mt-6"
-          @click="submit()"
-        >
+        <button type="submit" class="btn btn-primary w-full mt-6">
           Submit Form
         </button>
       </form>
@@ -228,8 +224,6 @@ function clearGroup() {
   }
 }
 
-
-
 async function submit() {
   //make sure leaders and data are on mongodb **being done on backend? (if not i'll do it)**
   const dataPush = {
@@ -284,6 +278,7 @@ async function submit() {
         alert("Some entries had errors. Please check highlighted fields.");
       } else {
         alert("Submission successful!");
+        console.log("hey");
       }
     } catch (err) {
       alert("couldnt push data to mongodb");
