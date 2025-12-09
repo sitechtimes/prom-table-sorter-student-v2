@@ -1,5 +1,5 @@
 import connectDB from "../utils/db";
-import Group from "../models/Group";
+import Group from "../models/group";
 import Student from "../models/student";
 
 export default defineEventHandler(async (event) => {
