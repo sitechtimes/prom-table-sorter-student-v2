@@ -1,4 +1,4 @@
 export interface Group {
-    groupLeader: Student;
-    members: Array<Student>;
+  leader: Student;
+  members: Array<Student>;
 }
