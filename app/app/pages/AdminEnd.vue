@@ -116,6 +116,7 @@
     <button class="btn btn-primary" @click="printTables">
       Display tables to copy and paste
     </button>
+    <!--Replace below with the visualizer AND suggestions flkjaflkdjaslfkjdsklfjdsalkfljdskafjskladfjsalkfjdsalkdjflskajdflksajdflksajflkdsajdflksjaflksjaklfajslkdfjsalkfjdsalkdfjdsalkdfjslkajfdlksajfldksajfldksajdflkdsjflkdsjaflksdalkjfdsaklfjdlksajfds;alkjfdl;skajflsa;kjfdsl;ka-->
     <div
       class="w-full flex flex-col md:flex-row md:items-start md:justify-center gap-8"
     >
@@ -187,10 +188,6 @@
 </template>
 
 <script lang="ts" setup>
-//Strict vs lenient mode
-//Strict: check name, osis, email
-//Loose mode: just check name
-//Student form should indicate legal name MUST be used
 import ExcelJS from "exceljs";
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
@@ -580,7 +577,7 @@ function printTables() {
   if (!(Tables.value.length > 0))
     return alert("Run the table sort before displaying tables.");
   stringArray.value = [];
-  Tables.value.forEach((table, i) => {
+  Tables.value.forEach((table) => {
     let tableString = ``;
     table.occupants.forEach((occupant) => {
       tableString += `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}\n`;
