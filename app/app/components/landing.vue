@@ -27,7 +27,7 @@
           <div
             class="card-actions justify-end underline font-semibold md:text-xl"
           >
-            <NuxtLink to="/groups">Go To</NuxtLink>
+            <NuxtLink to="/studentForm">Go To</NuxtLink>
           </div>
         </div>
       </div>

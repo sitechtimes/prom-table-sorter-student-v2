@@ -248,7 +248,7 @@ async function submit() {
     }
   } else {
     try {
-      const res = await fetch("", {
+      const res = await fetch("/api/createGroup", {
         //push data here (using backend)
         method: "POST",
         headers: {
