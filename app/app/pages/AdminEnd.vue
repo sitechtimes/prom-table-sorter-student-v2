@@ -169,12 +169,18 @@
           </tbody>
         </table>
       </div>
+      <a v-if="downloadExcelLink == null" disabled class="btn"
+        >Enter an excel for a download link</a
+      >
+      <a v-else :href="downloadExcelLink" class="downloadBtn btn"
+        >Download Comparison</a
+      >
       <div
-        v-if="stringArray.length > 0"
+        v-if="groupPrint.length > 0"
         class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
       >
         <div
-          v-for="(string, i) in stringArray"
+          v-for="(string, i) in groupPrint"
           :key="i"
           class="mb-6 pb-4 border-b border-gray-300"
         >
@@ -199,7 +205,8 @@ const notPaid = ref<Student[]>([]);
 const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
-const stringArray = ref<Array<String>>([]);
+const groupPrint = ref<Array<String>>([]);
+const downloadExcelLink = ref<string | null>(null);
 const Groups = ref<Group[]>([
   {
     groupLeader: {
@@ -355,6 +362,9 @@ interface ImportedStudent {
   name: string;
   email: string; //may end up being OSIS later on
 }
+
+//ADD MEDIA QUERIES AND FIX SITE STYLING
+//ALSO MAKE A DOWNLOADABLE EXCEL OF EVERYTHING
 
 async function fetchGroups() {
   try {
@@ -572,15 +582,56 @@ async function executeSort() {
       maxSeats.value,
       minSeats.value
     ) as Table[];
+    exportAsExcel();
   } catch (error: any) {
     alert(error.message);
   }
 }
+async function exportAsExcel() {
+  const exportWorkbook = new ExcelJS.Workbook();
+  const sortedWorksheet = exportWorkbook.addWorksheet("Comparison Worksheet");
+  sortedWorksheet.getCell("A1").value = "All Tables";
+  sortedWorksheet.getCell("C1").value = "Haven't paid & @ Table";
+  sortedWorksheet.getCell("E1").value = "Paid & Not @ Table";
+
+  let tableIndex = 1;
+  let rowIndex = tableIndex;
+  Tables.value.forEach((table) => {
+    sortedWorksheet.getRow(rowIndex).getCell(1).value = `Table ${tableIndex}`;
+    tableIndex += 1;
+    rowIndex += 1;
+    table.occupants.forEach((occupant) => {
+      sortedWorksheet.getRow(rowIndex).getCell(1).value =
+        `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}`;
+      rowIndex += 1;
+      occupant.members.forEach((member) => {
+        sortedWorksheet.getRow(rowIndex).getCell(1).value =
+          `${member.firstName} ${member.lastName}`;
+        rowIndex += 1;
+      });
+    });
+  });
+
+  for (let i = 0; i < notPaid.value.length; i++) {
+    sortedWorksheet.getRow(i + 1).getCell(3).value =
+      notPaid.value[i]?.firstName && " " && notPaid.value[i]?.lastName;
+  }
+
+  for (let i = 0; i < noSeat.value.length; i++) {
+    sortedWorksheet.getRow(i + 1).getCell(5).value = noSeat.value[i]?.name;
+  }
+
+  const buffer = await exportWorkbook.xlsx.writeBuffer();
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const blob = new Blob([buffer], { type: fileType });
+  downloadExcelLink.value = URL.createObjectURL(blob);
+}
 function printTables() {
   if (!(Tables.value.length > 0))
     return alert("Run the table sort before displaying tables.");
-  stringArray.value = [];
-  Tables.value.forEach((table, i) => {
+  groupPrint.value = [];
+  Tables.value.forEach((table) => {
     let tableString = ``;
     table.occupants.forEach((occupant) => {
       tableString += `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}\n`;
@@ -588,7 +639,7 @@ function printTables() {
         tableString += `${member.firstName} ${member.lastName}\n`;
       });
     });
-    stringArray.value.push(tableString);
+    groupPrint.value.push(tableString);
   });
 }
 

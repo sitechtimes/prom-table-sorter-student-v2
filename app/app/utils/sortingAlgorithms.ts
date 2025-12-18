@@ -40,9 +40,9 @@ function sortTableSeats(groups: Array<Group>, tables: Array<Table>, groupSortFun
     let tableObjs = <Array<Table>>[]
     tables.forEach((table) => {
       tableObjs.push({
-        capacity: table.capacity ?? 0,
-        unoccupiedSeats: table.unoccupiedSeats ?? 0,
-        occupants: [...table.occupants] ?? []
+        capacity: table.capacity||0,
+        unoccupiedSeats: table.unoccupiedSeats||0,
+        occupants: [...table.occupants]||[]
       })
     })
     groups.sort(groupSortFunc)
@@ -64,23 +64,6 @@ function sortTableSeats(groups: Array<Group>, tables: Array<Table>, groupSortFun
     
       return tableObjs
   }
-function mainSort( //delete if not used, doesnt handle edge cases currently
-    mainGroups: Array<Group>,
-    mainTables: Array<Table>,
-    algoOptions: Array<any>
-  ) {
-    let result = null
-    for (let i = 0; i < algoOptions.length; i++) {
-      result = sortTableSeats(
-        mainGroups,
-        mainTables,
-        algoOptions[i].groupSort,
-        algoOptions[i].tableSort
-      )
-      if (result != null) break
-    }
-    return result
-}
 
 function rangeSort(
     groupArr: Array<Group>,
@@ -122,15 +105,12 @@ function rangeSort(
             if (isValidResult) return result
         }
       }
-  
-      // add another table if not working
       tableArr.push({
         capacity: maxSeats,
         unoccupiedSeats: maxSeats,
         occupants: [],
       })
       additionalTables.value+=1
-      //should return additionalTables.value
     }
     
     throw Error(
