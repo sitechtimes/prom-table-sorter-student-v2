@@ -225,12 +225,10 @@ function clearGroup() {
 }
 
 async function submit() {
-  //make sure leaders and data are on mongodb **being done on backend? (if not i'll do it)**
   const dataPush = {
     leader: groupLeader,
     members: Group.value.slice(1),
   };
-  console.log("dataPush:", dataPush);
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
@@ -252,14 +250,12 @@ async function submit() {
         body: JSON.stringify(dataPush),
       });
       const data = await res.json();
-      console.log("Updated:", data);
     } catch (err) {
       alert("couldnt update data on mongodb");
       console.log(err);
     }
   } else {
     try {
-      console.log(dataPush.leader.email);
       const res = await fetch("/api/createGroup", {
         //push data here (using backend)
         method: "POST",
@@ -269,7 +265,6 @@ async function submit() {
         body: JSON.stringify(dataPush),
       });
       const data = await res.json();
-      console.log("Pushed:", data);
       failedIndexes.value = [];
       if (!res.ok) {
         failedIndexes.value = data.data.failedIndexes;
@@ -278,7 +273,6 @@ async function submit() {
         alert("Some entries had errors. Please check highlighted fields.");
       } else {
         alert("Submission successful!");
-        console.log("hey");
       }
     } catch (err) {
       alert("couldnt push data to mongodb");
