@@ -1,17 +1,10 @@
 import connectDB from "../utils/db";
 import Group from "../models/group";
 import Student from "../models/student";
-
 export default defineEventHandler(async (event) => {
   await connectDB();
   const body = await readBody(event);
-
   const { leader, members } = body;
-
-  if (!leader) {
-    throw createError({ statusCode: 400, message: "Missing leader" });
-  }
-
   const allPeople = [leader, ...(members || [])];
   const failedIndexes = [];
 
@@ -36,16 +29,26 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const emails = allPeople.map((person) => person.email.trim().toLowerCase());
+  //Get the list of emails of the people in the old unedited group by the information of the leader
+  const oldGroup = await Group.findOne({ "leader.email": leader.email });
+  const oldEmails = [oldGroup.leader, ...(oldGroup.members || [])].map(
+    (p) => p.email
+  );
 
-  //checks if the students are in another group already by concatenating all the emails already in groups and comparing it to list of emails being submitted
+  console.log("Old Emails: ", oldEmails);
+
+  //get list of emails in the new group(the body) then remove the emails from the old group and run the check to see if any of the new emails are already assigned to other groups
+  const newEmails = [leader, ...(members || [])].map((p) => p.email);
+  const emailsToCheck = newEmails.filter((email) => !oldEmails.includes(email));
+  console.log("Emails to Check: ", emailsToCheck);
+
   const existingStudents = await Group.aggregate([
     {
       $project: {
         _id: 0,
         matchedEmails: {
           $setIntersection: [
-            emails,
+            emailsToCheck,
             {
               $concatArrays: [
                 ["$leader.email"],
@@ -77,7 +80,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  //once validation stuff is done post the actual group
-  const group = await Group.create(body);
-  return { message: "Group created successfully", group };
+  await Group.replaceOne({ "leader.email": leader.email }, body);
+
+  return { message: "Group edited successfully", body };
 });

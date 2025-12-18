@@ -7,5 +7,4 @@ export default async function connectDB() {
 
   await mongoose.connect(process.env.DATABASE_URI);
   isConnected = true;
-  console.log("MongoDB Connected");
 }
