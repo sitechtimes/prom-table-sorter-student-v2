@@ -1,5 +1,4 @@
 <template>
-  <!--asked chatgpt to make styling better cause its an eyesore to look at, eventually replace styling-->
   <div class="flex flex-col items-center min-h-screen bg-gray-200 py-8">
     <div
       class="card w-full border border-gray-300 max-w-3xl bg-white shadow-2xl p-8 rounded-2xl cursor-default form"
@@ -88,6 +87,12 @@
           Empty, enter an excel to display.
         </p>
       </div>
+      <a v-if="downloadExcelLink == null" disabled class="btn">
+        Enter an excel for a download link
+      </a>
+      <a v-else :href="downloadExcelLink" class="downloadBtn btn"
+        >Download Comparison</a
+      >
       <div class="mt-4 flex items-center gap-2">
         <input
           type="checkbox"
@@ -169,12 +174,6 @@
           </tbody>
         </table>
       </div>
-      <a v-if="downloadExcelLink == null" disabled class="btn"
-        >Enter an excel for a download link</a
-      >
-      <a v-else :href="downloadExcelLink" class="downloadBtn btn"
-        >Download Comparison</a
-      >
       <div
         v-if="groupPrint.length > 0"
         class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
@@ -193,10 +192,8 @@
 </template>
 
 <script lang="ts" setup>
-//Strict vs lenient mode
-//Strict: check name, osis, email
-//Loose mode: just check name
-//Student form should indicate legal name MUST be used
+//Needs new styling (with media queries too) and fix type error in sorting algos
+//paid excel needs to also have emails. table print, excel, etc. need a way to differentiate btwn people with the same names
 import ExcelJS from "exceljs";
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
@@ -430,8 +427,6 @@ async function compareSeatAndPay() {
         );
       });
     });
-    console.log(notPaid.value);
-    console.log(noSeat.value);
   } else {
     //strict mode
     const paidEmails = paidList.map((student) => student.email.toLowerCase());
@@ -613,12 +608,12 @@ async function exportAsExcel() {
   });
 
   for (let i = 0; i < notPaid.value.length; i++) {
-    sortedWorksheet.getRow(i + 1).getCell(3).value =
-      notPaid.value[i]?.firstName && " " && notPaid.value[i]?.lastName;
+    sortedWorksheet.getRow(i + 2).getCell(3).value =
+      `${notPaid.value[i]?.firstName} ${notPaid.value[i]?.lastName}`;
   }
 
   for (let i = 0; i < noSeat.value.length; i++) {
-    sortedWorksheet.getRow(i + 1).getCell(5).value = noSeat.value[i]?.name;
+    sortedWorksheet.getRow(i + 2).getCell(5).value = noSeat.value[i]?.name;
   }
 
   const buffer = await exportWorkbook.xlsx.writeBuffer();
