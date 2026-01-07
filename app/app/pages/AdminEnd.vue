@@ -108,7 +108,6 @@
           Filter students loosely (loose: name only, strict: name and email)
         </label>
       </div>
-      <TableVisualizer />
     </div>
     <button class="btn btn-primary" @click="executeSort()">
       List of all tables
@@ -120,6 +119,9 @@
     <div
       class="w-full flex flex-col md:flex-row md:items-start md:justify-center gap-8"
     >
+      <div v-if="Tables.length > 0 && stringArray">
+        <TableVisualizer :tables="Tables" :stringArray="stringArray" />
+      </div>
       >
       <div class="overflow-x-auto w-1/4 bg-black mt-4" v-if="Tables.length">
         <table class="table table-zebra w-full rounded-xl shadow-lg">
@@ -197,6 +199,8 @@ const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
 const stringArray = ref<Array<String>>([]);
+const Tables = ref<Table[]>([]);
+let showPaidExample = ref(false);
 const Groups = ref<Group[]>([
   {
     groupLeader: {
@@ -344,10 +348,6 @@ const Groups = ref<Group[]>([
     ],
   },
 ]);
-
-const Tables = ref<Table[]>([]);
-let showPaidExample = ref(false);
-
 interface ImportedStudent {
   name: string;
   email: string; //may end up being OSIS later on
