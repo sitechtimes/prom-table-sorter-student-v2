@@ -1,79 +1,68 @@
 <template>
-  <!--Needs to actually edit the array with each drag and drop-->
-  <!--Also needs to only be addable to the group if the number of students is less than the unoccupied seats-->
-  <!--Move excel export into here too after merging with main-->
-  <div>
-    <div class="row">
-      <div v-for="(table, tableIndex) in tables" :key="tableIndex" class="col">
-        <div class="grid-square">
-          <h4>Free seats: {{ table.unoccupiedSeats }}</h4>
-          <draggable
-            v-model="table.occupants"
-            group="groups"
-            item-key="id"
-            animation="150"
-            class="list-group"
-          >
-            <template #item="{ element: group }">
-              <div class="list-group-item group">
-                <h2>
-                  {{ group.groupLeader.firstName }}
-                  {{ group.groupLeader.lastName }}'s Group
-                </h2>
-
-                <h3>
-                  Number of Students in Group:
-                  {{ group.members.length + 1 }}
-                </h3>
-              </div>
-            </template>
-          </draggable>
-        </div>
-      </div>
-    </div>
-    <button class="btn" @click="printTables">List Tables</button>
+  <div class="space-y-6">
     <div
-      v-if="stringArray.length > 0"
-      class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
+      v-for="(table, i) in tables"
+      :key="i"
+      class="p-4 bg-white rounded-xl shadow"
     >
-      <div
-        v-for="(string, i) in stringArray"
-        :key="i"
-        class="mb-6 pb-4 border-b border-gray-300"
+      <h4 class="text-lg font-semibold text-gray-700 mb-2">
+        Free seats: {{ table.unoccupiedSeats }}
+      </h4>
+
+      <Draggable
+        v-model="table.occupants"
+        :group="{ name: 'groups', pull: true, put: true }"
+        item-key="groupLeader.osis"
+        :move="
+          (action: {
+            draggedContext: { element: any };
+            relatedContext: { list: any };
+          }) => moveable(action, table)
+        "
+        class="space-y-2"
       >
-        <h2 class="text-xl text-black font-bold mb-2">Table {{ i + 1 }}</h2>
-        <h3 class="whitespace-pre-wrap text-black">{{ string }}</h3>
-      </div>
+        <template #item="{ element: group }">
+          <div
+            class="p-3 border border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-move"
+          >
+            <div class="font-medium text-gray-800">
+              {{ group.groupLeader.firstName }} {{ group.groupLeader.lastName }}
+            </div>
+            <div class="text-sm text-gray-500">
+              Members: {{ group.members.length }}
+            </div>
+          </div>
+        </template>
+      </Draggable>
     </div>
   </div>
 </template>
 
-<script setup>
-import { VueDraggableNext as draggable } from "vue-draggable-next";
+<script setup lang="ts">
+//next to work on: display name and email as well as make it so free seats left updates on the table
+import Draggable from "vuedraggable-esm";
+const props = defineProps<{
+  tables: Table[];
+}>();
 
-const props = defineProps({
-  tables: {
-    type: Array,
-    required: true,
-  },
-  stringArray: {
-    type: Array,
-    required: true,
-  },
-});
-const tables = computed(() => props.tables); //required to mutate props array
+const tables = props.tables;
 
-function printTables() {
-  props.stringArray.length = 0;
-  tables.value.forEach((table) => {
-    let tableString = ``;
-    table.occupants.forEach((occupant) => {
-      tableString += `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}\n`;
-      occupant.members.forEach((member) => {
-        tableString += `${member.firstName} ${member.lastName}\n`;
-      });
-    });
-    props.stringArray.push(tableString);
-  });
+function moveable(
+  evt: { draggedContext: { element: any }; relatedContext: { list: any } },
+  table: Table
+) {
+  const group = evt.draggedContext.element;
+  const list = evt.relatedContext.list;
+
+  const remainingSeats = list.reduce(
+    (acc: number, group: Group) => acc - (group.members.length + 1),
+    table.capacity
+  );
+  table.occupants = remainingSeats;
+  //members randomly disappear when moving sometimes
+  //needs to lock at least one student to each table in order to prevent errors
+  //potential option to remove a table?
+  //maybe make it moveable but an alert will pop up indicating the table size is beyond capacity
+  return group.members.length + 1 <= remainingSeats;
 }
 </script>
