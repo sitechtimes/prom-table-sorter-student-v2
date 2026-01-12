@@ -76,7 +76,6 @@
         </div>
 
         <div class="mt-6 space-y-3">
-          type="text"
           <div
             v-for="(member, i) in members"
             :key="i"
