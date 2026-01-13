@@ -110,7 +110,7 @@
       </div>
     </div>
     <button class="btn btn-primary" @click="executeSort()">
-      List of all tables
+      Sort Tables/Refresh
     </button>
     <button class="btn btn-primary" @click="printTables">
       Display tables to copy and paste
@@ -120,9 +120,12 @@
       class="w-full flex flex-col md:flex-row md:items-start md:justify-center gap-8"
     >
       <div v-if="Tables.length > 0 && stringArray">
-        <TableVisualizer :tables="Tables" :stringArray="stringArray" />
+        <TableVisualizer
+          :tables="Tables"
+          :stringArray="stringArray"
+          :key="updateProps"
+        />
       </div>
-      >
       <div class="overflow-x-auto w-1/4 bg-black mt-4" v-if="Tables.length">
         <table class="table table-zebra w-full rounded-xl shadow-lg">
           <thead>
@@ -137,28 +140,25 @@
               <th>{{ i + 1 }}</th>
               <td>
                 <div
-                  v-for="occupant in table.occupants"
-                  :key="occupant.groupLeader.email"
+                  v-for="group in table.occupants"
+                  :key="group.groupLeader.email"
                   class="mb-2"
                 >
                   <div class="dropdown dropdown-hover">
                     <label tabindex="0" class="btn btn-sm btn-outline">
-                      {{ occupant.groupLeader.firstName }}
-                      {{ occupant.groupLeader.lastName }}
+                      {{ group.groupLeader.firstName }}
+                      {{ group.groupLeader.lastName }}
                     </label>
                     <ul
                       tabindex="0"
                       class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-56"
                     >
                       <li class="font-bold text-gray-700">Group Members:</li>
-                      <li
-                        v-for="member in occupant.members"
-                        :key="member.email"
-                      >
+                      <li v-for="member in group.members" :key="member.email">
                         <a>{{ member.firstName }} {{ member.lastName }}</a>
                       </li>
                       <li
-                        v-if="occupant.members.length === 0"
+                        v-if="group.members.length === 0"
                         class="italic text-gray-500"
                       >
                         Singular student, no members
@@ -200,7 +200,8 @@ const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
 const stringArray = ref<Array<String>>([]);
 const Tables = ref<Table[]>([]);
-let showPaidExample = ref(false);
+const showPaidExample = ref(false);
+const updateProps = ref(0);
 const Groups = ref<Group[]>([
   {
     groupLeader: {
@@ -417,8 +418,6 @@ async function compareSeatAndPay() {
         );
       });
     });
-    console.log(notPaid.value);
-    console.log(noSeat.value);
   } else {
     //strict mode
     const paidEmails = paidList.map((student) => student.email.toLowerCase());
@@ -552,6 +551,7 @@ async function executeSort() {
     for (let i = 0; i < extraStudents.length; i++) {
       const student = extraStudents[i];
       if (!student?.name || !student?.email) continue;
+      updateProps.value += 1;
       groupsCopy.push({
         groupLeader: {
           firstName: student.name.split(" ")[0] ?? "",

@@ -46,21 +46,32 @@ const props = defineProps<{
 }>();
 
 const tables = props.tables;
-
-function moveable(
-  evt: { draggedContext: { element: any }; relatedContext: { list: any } },
-  table: Table
-) {
-  const group = evt.draggedContext.element;
-  const list = evt.relatedContext.list;
-
-  const remainingSeats = list.reduce(
-    (acc: number, group: Group) => acc - (group.members.length + 1),
-    table.capacity
+function calculateSeats(table: Table): number {
+  const occupiedSeats = table.occupants.reduce(
+    (sum, group) => sum + group.members.length + 1,
+    0
   );
-  table.occupants = remainingSeats;
-  //members randomly disappear when moving sometimes
-  //needs to lock at least one student to each table in order to prevent errors
+  return table.capacity - occupiedSeats;
+}
+function moveable(
+  evt: {
+    draggedContext: { element: Group };
+    relatedContext: { list: Group[] };
+  },
+  table: Table
+): boolean {
+  const group = evt.draggedContext.element;
+
+  const incomingSeats = group.members.length + 1;
+
+  const occupiedAfterIncomingGroup = evt.relatedContext.list.reduce(
+    (sum, g) => sum + g.members.length + 1,
+    0
+  );
+
+  const remainingSeats = table.capacity - occupiedAfterIncomingGroup;
+
+  return incomingSeats <= remainingSeats;
   //potential option to remove a table?
   //maybe make it moveable but an alert will pop up indicating the table size is beyond capacity
   return group.members.length + 1 <= remainingSeats;
