@@ -135,6 +135,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
+import {navigateTo} from '#app';
 
 const leader = reactive<Student>({
   firstName: "",
@@ -196,7 +197,7 @@ async function submitEdits() {
 
   try {
     const res = await fetch("/api/editGroup", {
-      method: "POST",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         leader,
@@ -208,11 +209,12 @@ async function submitEdits() {
 
     if (!res.ok) {
       failedIndexes.value = data.data.failedIndexes || [];
-      alert("Some students have errors. Please fix highlighted entries.");
+      alert(data.message);
       return;
     }
 
     alert("Group updated successfully");
+    await navigateTo('/')
   } catch {
     alert("Server error while updating group");
   }
