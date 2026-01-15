@@ -13,9 +13,10 @@
           Remove Table
         </button>
       </div>
-      <h4 class="text-lg font-bold text-gray-700 mb-3">Table: {{ i }}</h4>
+      <h4 class="text-lg font-bold text-gray-700 mb-3">Table: {{ i + 1 }}</h4>
       <h5 class="text-md font-semibold text-gray-700 mb-2" :key="i">
         Free seats: {{ table.unoccupiedSeats }}
+      </h5>
 
       <Draggable
         v-model="table.occupants"
@@ -47,36 +48,49 @@
 </template>
 
 <script setup lang="ts">
-//next to work on: display name and email (basically just use dropdown from the other table) as well as make it so free seats left updates on the table
 //fix styling
-//potentially group together all the single student groups for better visibility with large amounts of table. IDEA: MAKE EACH TABLE A DROP DOWN
+//potentially group together all the single student groups for better visibility with large amounts of table. IDEA: MAKE EACH TABLE A DROP DOWN, copy html stuff from adminEnd
 import Draggable from "vuedraggable-esm";
 const props = defineProps<{
   tables: Table[];
 }>();
-
 const tables = props.tables;
+watch(
+  tables,
+  (tables) => {
+    tables.forEach((table) => {
+      const occupiedSeats = table.occupants.reduce(
+        (sum, group) => sum + group.members.length + 1,
+        0
+      );
+
+      table.unoccupiedSeats = table.capacity - occupiedSeats;
+    });
+  },
+  { deep: true }
+);
 function moveable(
   evt: {
     draggedContext: { element: Group };
     relatedContext: { list: Group[] };
   },
-  table: Table
+  targetTable: Table
 ): boolean {
   const group = evt.draggedContext.element;
-
   const incomingSeats = group.members.length + 1;
 
   const occupiedAfterIncomingGroup = evt.relatedContext.list.reduce(
     (sum, group) => sum + group.members.length + 1,
     0
   );
-
-  const remainingSeats = table.capacity - occupiedAfterIncomingGroup;
-
-  return incomingSeats <= remainingSeats;
-  //potential option to remove a table?
-  //maybe make it moveable but an alert will pop up indicating the table size is beyond capacity
+  const remainingSeats = targetTable.capacity - occupiedAfterIncomingGroup;
+  if (incomingSeats <= remainingSeats) {
+    return true;
+  } else {
+    alert("Too many students at one table");
+    return false;
+  }
+  //make it moveable but an alert will pop up indicating the table size is beyond capacity
 }
 function addTable(tableCapacity: number) {
   tables.push({
