@@ -25,6 +25,7 @@
           <li><NuxtLink to="/">Home</NuxtLink></li>
           <li><NuxtLink to="/visualizer">Visualizer</NuxtLink></li>
           <li><NuxtLink to="/studentForm">Make Groups</NuxtLink></li>
+          <li><NuxtLink to="/studentEdit">Edit Groups</NuxtLink></li>
           <li><NuxtLink to="/adminLogin">Admin Login</NuxtLink></li>
         </ul>
       </div>
