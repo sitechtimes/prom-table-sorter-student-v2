@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   if (failedIndexes.length > 0) {
     throw createError({
       statusCode: 599,
-      message: "Some students could not be validated.",
+      message: "Some students could not be validated. Please check highlighted fields for errors.",
       data: { failedIndexes },
     });
   }
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
     });
     throw createError({
       statusCode: 599,
-      message: "Some students already exist in other groups.",
+      message: "Some students already exist in other groups. Please check highlighted fields.",
       data: { failedIndexes },
     });
   }

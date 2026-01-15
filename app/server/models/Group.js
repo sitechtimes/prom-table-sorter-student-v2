@@ -4,7 +4,7 @@ const personSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
-  osis: { type: Number, required: true },
+  osis: { type: Number, required: false },
   leader: { type: Boolean, default: true },
 });
 
