@@ -115,63 +115,20 @@
     <button class="btn btn-primary" @click="printTables">
       Display tables to copy and paste
     </button>
-    <!--Replace below with the visualizer AND suggestions flkjaflkdjaslfkjdsklfjdsalkfljdskafjskladfjsalkfjdsalkdjflskajdflksajdflksajflkdsajdflksjaflksjaklfajslkdfjsalkfjdsalkdfjdsalkdfjslkajfdlksajfldksajfldksajdflkdsjflkdsjaflksdalkjfdsaklfjdlksajfds;alkjfdl;skajflsa;kjfdsl;ka-->
     <div
-      class="w-full flex flex-col md:flex-row md:items-start md:justify-center gap-8"
+      class="w-full flex flex-col md:flex-row md:flex-wrap md:items-start gap-8"
     >
-      <div v-if="Tables.length > 0 && stringArray">
+      <div class="w-full" v-if="Tables.length > 0 && stringArray">
         <TableVisualizer
           :tables="Tables"
           :stringArray="stringArray"
           :key="updateProps"
         />
       </div>
-      <div class="overflow-x-auto w-1/4 bg-black mt-4" v-if="Tables.length">
-        <table class="table table-zebra w-full rounded-xl shadow-lg">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Members</th>
-              <th># Of Free Seats Left</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(table, i) in Tables">
-              <th>{{ i + 1 }}</th>
-              <td>
-                <div
-                  v-for="group in table.occupants"
-                  :key="group.groupLeader.email"
-                  class="mb-2"
-                >
-                  <div class="dropdown dropdown-hover">
-                    <label tabindex="0" class="btn btn-sm btn-outline">
-                      {{ group.groupLeader.firstName }}
-                      {{ group.groupLeader.lastName }}
-                    </label>
-                    <ul
-                      tabindex="0"
-                      class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-56"
-                    >
-                      <li class="font-bold text-gray-700">Group Members:</li>
-                      <li v-for="member in group.members" :key="member.email">
-                        <a>{{ member.firstName }} {{ member.lastName }}</a>
-                      </li>
-                      <li
-                        v-if="group.members.length === 0"
-                        class="italic text-gray-500"
-                      >
-                        Singular student, no members
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </td>
-              <td>{{ table.unoccupiedSeats }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div
+        class="overflow-x-auto w-1/4 bg-black mt-4"
+        v-if="Tables.length"
+      ></div>
       <div
         v-if="stringArray.length > 0"
         class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
