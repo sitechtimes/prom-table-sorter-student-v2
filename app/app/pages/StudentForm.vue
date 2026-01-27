@@ -2,7 +2,7 @@
   <div class="flex justify-center items-center min-h-screen bg-gray-500">
     <button
       @click="edittingForm = true"
-      class="absolute top-6 bg-primary px-4 py-2 rounded shadow hover:bg-black transition"
+      class="absolute top-3.5 right-15 bg-primary px-4 py-2 rounded shadow hover:bg-black transition"
       v-if="!edittingForm"
     >
       Want to edit a form? Click here

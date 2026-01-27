@@ -532,8 +532,7 @@ async function executeSort() {
     for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
       const group = groupsCopy[groupIndex];
       if (!group) continue;
-      if (group.leader?.email)
-        allGroupEmails.push(group.leader.email);
+      if (group.leader?.email) allGroupEmails.push(group.leader.email);
       for (
         let memberIndex = 0;
         memberIndex < group.members.length;
@@ -592,7 +591,6 @@ async function exportAsExcel() {
     tableIndex += 1;
     rowIndex += 1;
     table.occupants.forEach((occupant) => {
-      tableString += `${occupant.leader.firstName} ${occupant.leader.lastName}\n`;
       occupant.members.forEach((member) => {
         sortedWorksheet.getRow(rowIndex).getCell(1).value =
           `${member.firstName} ${member.lastName}`;
