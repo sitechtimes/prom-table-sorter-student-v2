@@ -13,7 +13,7 @@
         <div
           v-for="(table, i) in tables"
           :key="i"
-          class="bg-white rounded-2xl shadow-lg border border-gray-300 w-[220px] h-[220px] flex flex-col relative ring-offset-2 overflow-visible"
+          class="bg-white rounded-2xl shadow-lg border border-gray-300 w-[220px] h-[220px] flex flex-col relative ring-offset-2 overflow-visible rounded-lg"
           :class="selectedTables.includes(i) ? 'ring-2 ring-purple-500' : ''"
         >
           <div
@@ -58,7 +58,7 @@
               v-model="table.occupants"
               :group="{ name: 'groups', pull: true, put: true }"
               item-key="groupLeader.osis"
-              :move="(evt) => moveable(evt, table)"
+              :move="(evt: any) => moveable(evt, table)"
               class="space-y-2"
             >
               <template #item="{ element: group, index }">
@@ -84,7 +84,7 @@
                           openDropdown?.groupIndex === index
                         "
                         class="absolute z-50 bg-white border rounded-md shadow max-h-40 overflow-y-auto text-xs text-gray-700"
-                        :style="dropdownStyles"
+                        :style="dropdownPosition"
                       >
                         <li class="font-bold mb-1 px-2 py-1">Group Members:</li>
                         <li
@@ -139,7 +139,8 @@
           v-model="tables[tableIndex]!.occupants"
           :group="{ name: 'groups', pull: true, put: true }"
           item-key="groupLeader.osis"
-          :move="(evt) => moveable(evt, tables[tableIndex])"
+          v-if="tables[tableIndex]"
+          :move="(evt: any) => moveable(evt, tables[tableIndex])"
           class="space-y-2 max-h-[200px] overflow-y-auto"
         >
           <template #item="{ element: group }">
@@ -200,11 +201,9 @@ function toggleDropdown(
 ) {
   event.stopPropagation();
   const groupLeader = event.currentTarget as HTMLElement;
-  const rect = groupLeader.getBoundingClientRect(); //gets
-
+  const rect = groupLeader.getBoundingClientRect();
   dropdownPosition.top = `${rect.bottom + window.scrollY}px`;
   dropdownPosition.left = `${rect.left + window.scrollX}px`;
-
   if (
     openDropdown.value?.tableIndex === tableIndex &&
     openDropdown.value?.groupIndex === groupIndex
@@ -214,31 +213,27 @@ function toggleDropdown(
     openDropdown.value = { tableIndex, groupIndex };
   }
 }
-
-//closes on outside click
 window.addEventListener("click", () => {
   openDropdown.value = null;
 });
 
-function moveable(evt: any, table: Table) {
+function moveable(evt: any, table: Table | undefined) {
+  if (table == undefined) return false;
   const group = evt.draggedContext.element;
   if (evt.relatedContext.list === table.occupants) {
     return false;
   }
   const incomingSeats = group.members.length + 1;
-
   const occupiedAfterIncomingGroup = evt.relatedContext.list.reduce(
     (sum: number, group: Group) => sum + group.members.length + 1,
     0
   );
   const remainingSeats = table.capacity - occupiedAfterIncomingGroup;
-
   if (!(incomingSeats <= remainingSeats))
     alert("Too many students at one table");
 
   return true;
 }
-
 function addTable(tableCapacity: number) {
   tables.push({
     capacity: tableCapacity,
