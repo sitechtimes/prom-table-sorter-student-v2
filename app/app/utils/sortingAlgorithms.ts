@@ -49,6 +49,7 @@ function sortTableSeats(
       capacity: table.capacity ?? 0,
       unoccupiedSeats: table.unoccupiedSeats ?? 0,
       occupants: [...table.occupants],
+      overCapacity: false,
     });
   });
   groups.sort(groupSortFunc);
@@ -103,6 +104,7 @@ function rangeSort(
       capacity: maxSeats,
       unoccupiedSeats: maxSeats,
       occupants: [],
+      overCapacity: false,
     });
   }
 
@@ -135,6 +137,7 @@ function rangeSort(
       capacity: maxSeats,
       unoccupiedSeats: maxSeats,
       occupants: [],
+      overCapacity: false,
     });
     additionalTables.value += 1;
     //should return additionalTables.value

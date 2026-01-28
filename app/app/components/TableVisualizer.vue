@@ -57,7 +57,7 @@
             <Draggable
               v-model="table.occupants"
               :group="{ name: 'groups', pull: true, put: true }"
-              item-key="groupLeader.osis"
+              item-key="leader.osis"
               :move="(evt: any) => moveable(evt, table)"
               class="space-y-2"
             >
@@ -74,8 +74,8 @@
                       class="btn btn-xs btn-outline bg-white text-gray-800 border-gray-400 hover:bg-gray-200"
                       @click.stop="toggleDropdown(i, index, $event)"
                     >
-                      {{ group.groupLeader.firstName }}
-                      {{ group.groupLeader.lastName }}
+                      {{ group.leader.firstName }}
+                      {{ group.leader.lastName }}
                     </button>
                     <teleport to="body">
                       <ul
@@ -138,7 +138,7 @@
         <Draggable
           v-model="tables[tableIndex]!.occupants"
           :group="{ name: 'groups', pull: true, put: true }"
-          item-key="groupLeader.osis"
+          item-key="leader.osis"
           v-if="tables[tableIndex]"
           :move="(evt: any) => moveable(evt, tables[tableIndex])"
           class="space-y-2 max-h-[200px] overflow-y-auto"
@@ -148,8 +148,7 @@
               class="p-2 border border-gray-300 rounded bg-white text-xs cursor-move text-gray-800 flex justify-between items-center"
             >
               <span class="font-semibold"
-                >{{ group.groupLeader.firstName }}
-                {{ group.groupLeader.lastName }}</span
+                >{{ group.leader.firstName }} {{ group.leader.lastName }}</span
               >
               <span
                 class="text-gray-600 text-[10px] px-1 bg-gray-200 rounded-full"

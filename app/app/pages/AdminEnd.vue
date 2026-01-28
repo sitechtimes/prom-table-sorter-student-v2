@@ -8,34 +8,28 @@
       <h1 class="text-2xl sm:text-3xl font-bold text-center text-black mb-6">
         Upload Excel file of those who paid
       </h1>
-
       <input
         id="upload-file2"
         class="file-input file-input-bordered w-full mb-4"
         type="file"
-        name="input-groups"
         ref="paidFile"
         accept=".xlsx"
         @change="compareSeatAndPay"
       />
-
       <button
         class="btn btn-secondary w-full mb-4"
         @click="showPaidExample = !showPaidExample"
       >
         Click here to open / close example
       </button>
-
       <img
         v-if="showPaidExample"
         src="../assets/paidExample.png"
         class="mx-auto w-full sm:w-2/3 md:w-1/2 rounded-xl shadow mb-6"
       />
-
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black mb-4">
         Enter a range for table sizes
       </h1>
-
       <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
         <div class="w-full sm:w-32">
           <h2 class="font-semibold text-black text-center mb-1">From</h2>
@@ -45,7 +39,6 @@
             v-model.number="minSeats"
           />
         </div>
-
         <div class="w-full sm:w-32">
           <h2 class="font-semibold text-black text-center mb-1">To</h2>
           <input
@@ -55,11 +48,9 @@
           />
         </div>
       </div>
-
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
         Students that haven't paid and are at a table
       </h1>
-
       <div class="mb-6">
         <div
           v-if="notPaid.length !== 0"
@@ -73,11 +64,9 @@
           Empty, enter an excel to display.
         </p>
       </div>
-
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
         Students that have paid and are not at a table
       </h1>
-
       <div class="mb-6">
         <div
           v-if="noSeat.length !== 0"
@@ -91,18 +80,15 @@
           Empty, enter an excel to display.
         </p>
       </div>
-
       <a
         v-if="downloadExcelLink == null"
         class="btn w-full mb-4 pointer-events-none opacity-60"
       >
         Enter an excel and sort for a download link
       </a>
-
       <a v-else :href="downloadExcelLink" class="btn btn-primary w-full mb-4">
         Download Comparison
       </a>
-
       <div class="flex items-center gap-3 mb-4">
         <input
           type="checkbox"
@@ -113,7 +99,6 @@
           Include unpaid students in table sorting
         </label>
       </div>
-
       <div class="flex items-center gap-3 mb-6">
         <input
           type="checkbox"
@@ -125,89 +110,32 @@
         </label>
       </div>
     </div>
-
-    <button class="btn btn-primary w-full max-w-sm" @click="executeSort()">
-      Sort Tables/Refresh
-    </button>
-    <button class="btn btn-primary" @click="printTables">
-      Display tables to copy and paste
-    </button>
-    <div
-      class="w-full flex flex-col md:flex-row md:items-start md:justify-center gap-8"
+    <button
+      class="btn btn-primary w-full max-w-sm"
+      v-if="Tables.length == 0"
+      @click="executeSort()"
     >
-      >
-      <div class="overflow-x-auto w-1/4 bg-black mt-4" v-if="Tables.length">
-        <table class="table table-zebra w-full rounded-xl shadow-lg">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Members</th>
-              <th># Of Free Seats Left</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(table, i) in Tables">
-              <th>{{ i + 1 }}</th>
-              <td>
-                <div
-                  v-for="occupant in table.occupants"
-                  :key="occupant.groupLeader.email"
-                  class="mb-2"
-                >
-                  <div class="dropdown dropdown-hover">
-                    <label tabindex="0" class="btn btn-sm btn-outline">
-                      {{ occupant.groupLeader.firstName }}
-                      {{ occupant.groupLeader.lastName }}
-                    </label>
-                    <ul
-                      tabindex="0"
-                      class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-56"
-                    >
-                      <li class="font-bold text-gray-700">Group Members:</li>
-                      <li
-                        v-for="member in occupant.members"
-                        :key="member.email"
-                      >
-                        <a>{{ member.firstName }} {{ member.lastName }}</a>
-                      </li>
-                      <li
-                        v-if="occupant.members.length === 0"
-                        class="italic text-gray-500"
-                      >
-                        Singular student, no members
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </td>
-              <td>{{ table.unoccupiedSeats }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div
-        class="overflow-x-auto w-1/4 bg-black mt-4"
-        v-if="Tables.length"
-      ></div>
-      <div
-        v-if="stringArray.length > 0"
-        class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
-      >
-        <div
-          v-for="(string, i) in stringArray"
-          :key="i"
-          class="mb-6 pb-4 border-b border-gray-300"
-        >
-          <h2 class="text-xl text-black font-bold mb-2">Table {{ i + 1 }}</h2>
-          <h3 class="whitespace-pre-wrap text-black">{{ string }}</h3>
-        </div>
+      Sort Tables
+    </button>
+    <button
+      class="btn btn-primary w-full max-w-sm"
+      v-else
+      @click="executeSort()"
+    >
+      Refresh Sort
+    </button>
+    <div v-if="Tables.length > 0" class="w-full flex justify-center px-4">
+      <div class="w-full">
+        <TableVisualizer :tables="Tables" :key="updateProps" />
       </div>
     </div>
+    <button class="btn btn-primary mb-4" @click="fetchGroups">
+      Load Groups
+    </button>
+    <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
   </div>
-
-  <button class="btn btn-primary mb-4" @click="fetchGroups">Load Groups</button>
-  <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
 </template>
+
 <script lang="ts" setup>
 import ExcelJS from "exceljs";
 const paidFile = ref<HTMLInputElement | null>(null);
