@@ -150,13 +150,13 @@
               <td>
                 <div
                   v-for="occupant in table.occupants"
-                  :key="occupant.groupLeader.email"
+                  :key="occupant.leader.email"
                   class="mb-2"
                 >
                   <div class="dropdown dropdown-hover">
                     <label tabindex="0" class="btn btn-sm btn-outline">
-                      {{ occupant.groupLeader.firstName }}
-                      {{ occupant.groupLeader.lastName }}
+                      {{ occupant.leader.firstName }}
+                      {{ occupant.leader.lastName }}
                     </label>
                     <ul
                       tabindex="0"
@@ -188,6 +188,9 @@
       </div>
     </div>
   </div>
+
+  <button class="btn btn-primary mb-4" @click="fetchGroups">Load Groups</button>
+  <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
 </template>
 <script lang="ts" setup>
 import ExcelJS from "exceljs";
@@ -201,7 +204,7 @@ const looseMode = ref(false);
 const downloadExcelLink = ref<string | null>(null);
 const Groups = ref<Group[]>([
   {
-    groupLeader: {
+    leader: {
       firstName: "Ava",
       lastName: "Johnson",
       email: "avaj583920174@nycstudents.net",
@@ -216,7 +219,7 @@ const Groups = ref<Group[]>([
     ],
   },
   {
-    groupLeader: {
+    leader: {
       firstName: "Leo",
       lastName: "Rossi",
       email: "leor839174620@nycstudents.net",
@@ -241,7 +244,7 @@ const Groups = ref<Group[]>([
     ],
   },
   {
-    groupLeader: {
+    leader: {
       firstName: "Sofia",
       lastName: "Martinez",
       email: "sofiam260591834@nycstudents.net",
@@ -286,7 +289,7 @@ const Groups = ref<Group[]>([
     ],
   },
   {
-    groupLeader: {
+    leader: {
       firstName: "Isabella",
       lastName: "Green",
       email: "isabellag728104563@nycstudents.net",
@@ -357,13 +360,16 @@ interface ImportedStudent {
 
 async function fetchGroups() {
   try {
-    const res = await fetch(""); //backend
+    const res = await fetch("/api/allGroups"); //backend
     if (!res.ok) throw Error("couldnt fetch data");
     const data: Group[] = await res.json();
     Groups.value = data;
   } catch (error) {
     alert(error);
   }
+}
+function logGroups() {
+  console.log(Groups.value);
 }
 async function getPaidList() {
   const file = paidFile.value?.files?.[0];
@@ -396,7 +402,7 @@ async function compareSeatAndPay() {
   const paidList = await getPaidList();
   if (!paidList) return;
   const groupStudents: Student[] = Groups.value.flatMap((group: Group) => [
-    group.groupLeader,
+    group.leader,
     ...group.members,
   ]);
 
@@ -454,7 +460,7 @@ async function executeSort() {
     await compareSeatAndPay();
 
     let groupsCopy: Group[] = Groups.value.map((group) => ({
-      groupLeader: { ...group.groupLeader },
+      leader: { ...group.leader },
       members: group.members.map((member) => ({ ...member })),
     }));
 
@@ -485,7 +491,7 @@ async function executeSort() {
 
         let leaderIsUnpaid = false;
         for (let i = 0; i < notPaid.value.length; i++) {
-          if (notPaid.value[i]?.email === group.groupLeader?.email) {
+          if (notPaid.value[i]?.email === group.leader?.email) {
             leaderIsUnpaid = true;
             break;
           }
@@ -499,7 +505,7 @@ async function executeSort() {
 
             if (newLeader) {
               filteredGroups.push({
-                groupLeader: {
+                leader: {
                   firstName: newLeader.firstName,
                   lastName: newLeader.lastName,
                   email: newLeader.email,
@@ -510,9 +516,9 @@ async function executeSort() {
             }
           }
         } else {
-          if (group.groupLeader) {
+          if (group.leader) {
             filteredGroups.push({
-              groupLeader: group.groupLeader,
+              leader: group.leader,
               members: filteredMembers,
             });
           }
@@ -526,8 +532,7 @@ async function executeSort() {
     for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
       const group = groupsCopy[groupIndex];
       if (!group) continue;
-      if (group.groupLeader?.email)
-        allGroupEmails.push(group.groupLeader.email);
+      if (group.leader?.email) allGroupEmails.push(group.leader.email);
       for (
         let memberIndex = 0;
         memberIndex < group.members.length;
@@ -550,7 +555,7 @@ async function executeSort() {
       const student = extraStudents[i];
       if (!student?.name || !student?.email) continue;
       groupsCopy.push({
-        groupLeader: {
+        leader: {
           firstName: student.name.split(" ")[0] ?? "",
           lastName: student.name.split(" ")[1] ?? "",
           email: student.email,
@@ -586,11 +591,6 @@ async function exportAsExcel() {
     tableIndex += 1;
     rowIndex += 1;
     table.occupants.forEach((occupant) => {
-      sortedWorksheet.getRow(rowIndex).getCell(1).value =
-        `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}`;
-      sortedWorksheet.getRow(rowIndex).getCell(2).value =
-        occupant.groupLeader.email;
-      rowIndex += 1;
       occupant.members.forEach((member) => {
         sortedWorksheet.getRow(rowIndex).getCell(1).value =
           `${member.firstName} ${member.lastName}`;
