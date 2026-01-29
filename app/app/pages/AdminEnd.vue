@@ -1,69 +1,62 @@
 <template>
-  <!--asked chatgpt to make styling better cause its an eyesore to look at, eventually replace styling-->
-  <div class="flex flex-col items-center min-h-screen bg-gray-200 py-8">
+  <div
+    class="min-h-screen bg-gray-200 flex flex-col items-center px-3 sm:px-6 py-8 gap-8"
+  >
     <div
-      class="card w-full border border-gray-300 max-w-3xl bg-white shadow-2xl p-8 rounded-2xl cursor-default form"
+      class="w-full max-w-3xl bg-white border border-gray-300 shadow-2xl rounded-2xl p-5 sm:p-6 md:p-8"
     >
-      <div>
-        <h1 class="text-black text-3xl font-bold text-center mb-6">
-          Upload Excel file of those who paid
-        </h1>
-        <label class="uploadBtn" for="upload-file2"><img src="" /></label>
-        <input
-          id="upload-file2"
-          class="file-input file-input-bordered w-full"
-          type="file"
-          name="input-groups"
-          ref="paidFile"
-          accept=".xlsx"
-          @change="compareSeatAndPay"
-        />
-        <button
-          class="btn btn-secondary mt-4 mb-2 w-full"
-          @click="showPaidExample = !showPaidExample"
-        >
-          Click here to open/close example
-        </button>
-        <img
-          class="example mx-auto rounded-lg shadow w-1/2"
-          v-if="showPaidExample"
-          src="../assets/paidExample.png"
-        />
-      </div>
-
-      <div>
-        <h1 class="text-black text-2xl font-bold text-center mb-4">
-          Enter a range for table sizes:
-        </h1>
-        <div class="flex gap-4 justify-center">
-          <div>
-            <h2 class="text-black font-semibold text-center">From</h2>
-            <input
-              type="number"
-              class="input input-bordered"
-              v-model.number="minSeats"
-            />
-          </div>
-          <div>
-            <h2 class="text-black font-semibold text-center">To</h2>
-            <input
-              type="number"
-              class="input input-bordered"
-              v-model.number="maxSeats"
-            />
-          </div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-center text-black mb-6">
+        Upload Excel file of those who paid
+      </h1>
+      <input
+        id="upload-file2"
+        class="file-input file-input-bordered w-full mb-4"
+        type="file"
+        ref="paidFile"
+        accept=".xlsx"
+        @change="compareSeatAndPay"
+      />
+      <button
+        class="btn btn-secondary w-full mb-4"
+        @click="showPaidExample = !showPaidExample"
+      >
+        Click here to open / close example
+      </button>
+      <img
+        v-if="showPaidExample"
+        src="../assets/paidExample.png"
+        class="mx-auto w-full sm:w-2/3 md:w-1/2 rounded-xl shadow mb-6"
+      />
+      <h1 class="text-xl sm:text-2xl font-bold text-center text-black mb-4">
+        Enter a range for table sizes
+      </h1>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+        <div class="w-full sm:w-32">
+          <h2 class="font-semibold text-black text-center mb-1">From</h2>
+          <input
+            type="number"
+            class="input input-bordered w-full"
+            v-model.number="minSeats"
+          />
+        </div>
+        <div class="w-full sm:w-32">
+          <h2 class="font-semibold text-black text-center mb-1">To</h2>
+          <input
+            type="number"
+            class="input input-bordered w-full"
+            v-model.number="maxSeats"
+          />
         </div>
       </div>
-
-      <h1 class="text-black text-2xl font-bold text-center my-6">
-        Students that haven't paid and at a table:
+      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
+        Students that haven't paid and are at a table
       </h1>
-      <div>
+      <div class="mb-6">
         <div
           v-if="notPaid.length !== 0"
           v-for="student in notPaid"
           :key="student.osis"
-          class="text-black font-medium text-center mb-1"
+          class="text-black text-center font-medium mb-1"
         >
           {{ student.firstName }} {{ student.lastName }}
         </div>
@@ -71,16 +64,15 @@
           Empty, enter an excel to display.
         </p>
       </div>
-
-      <h1 class="text-black text-2xl font-bold text-center my-6">
-        Students that have paid and not at a table:
+      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
+        Students that have paid and are not at a table
       </h1>
-      <div>
+      <div class="mb-6">
         <div
           v-if="noSeat.length !== 0"
           v-for="student in noSeat"
           :key="student.email"
-          class="text-black font-medium text-center mb-1"
+          class="text-black text-center font-medium mb-1"
         >
           {{ student.name }}
         </div>
@@ -88,7 +80,16 @@
           Empty, enter an excel to display.
         </p>
       </div>
-      <div class="mt-4 flex items-center gap-2">
+      <a
+        v-if="downloadExcelLink == null"
+        class="btn w-full mb-4 pointer-events-none opacity-60"
+      >
+        Enter an excel and sort for a download link
+      </a>
+      <a v-else :href="downloadExcelLink" class="btn btn-primary w-full mb-4">
+        Download Comparison
+      </a>
+      <div class="flex items-center gap-3 mb-4">
         <input
           type="checkbox"
           v-model="includeUnpaidStudents"
@@ -98,51 +99,40 @@
           Include unpaid students in table sorting
         </label>
       </div>
-      <div class="mt-4 flex items-center gap-2">
+      <div class="flex items-center gap-3 mb-6">
         <input
           type="checkbox"
           v-model="looseMode"
           class="checkbox checkbox-primary"
         />
         <label class="text-black font-medium">
-          Filter students loosely (loose: name only, strict: name and email)
+          Filter students loosely (name only) or strictly (name and email)
         </label>
       </div>
     </div>
-    <button class="btn btn-primary" @click="executeSort()">
-      Sort Tables/Refresh
-    </button>
-    <button class="btn btn-primary" @click="printTables">
-      Display tables to copy and paste
-    </button>
-    <div
-      class="w-full flex flex-col md:flex-row md:flex-wrap md:items-start gap-8"
+    <button
+      class="btn btn-primary w-full max-w-sm"
+      v-if="Tables.length == 0"
+      @click="executeSort()"
     >
-      <div class="w-full" v-if="Tables.length > 0 && stringArray">
-        <TableVisualizer
-          :tables="Tables"
-          :stringArray="stringArray"
-          :key="updateProps"
-        />
-      </div>
-      <div
-        class="overflow-x-auto w-1/4 bg-black mt-4"
-        v-if="Tables.length"
-      ></div>
-      <div
-        v-if="stringArray.length > 0"
-        class="mt-4 bg-white p-4 rounded-xl shadow w-1/2"
-      >
-        <div
-          v-for="(string, i) in stringArray"
-          :key="i"
-          class="mb-6 pb-4 border-b border-gray-300"
-        >
-          <h2 class="text-xl text-black font-bold mb-2">Table {{ i + 1 }}</h2>
-          <h3 class="whitespace-pre-wrap text-black">{{ string }}</h3>
-        </div>
+      Sort Tables
+    </button>
+    <button
+      class="btn btn-primary w-full max-w-sm"
+      v-else
+      @click="executeSort()"
+    >
+      Refresh Sort
+    </button>
+    <div v-if="Tables.length > 0" class="w-full flex justify-center px-4">
+      <div class="w-full">
+        <TableVisualizer :tables="Tables" :key="updateProps" />
       </div>
     </div>
+    <button class="btn btn-primary mb-4" @click="fetchGroups">
+      Load Groups
+    </button>
+    <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
   </div>
 </template>
 
@@ -155,13 +145,13 @@ const notPaid = ref<Student[]>([]);
 const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
-const stringArray = ref<Array<String>>([]);
+const downloadExcelLink = ref<string | null>(null);
 const Tables = ref<Table[]>([]);
 const showPaidExample = ref(false);
 const updateProps = ref(0);
 const Groups = ref<Group[]>([
   {
-    groupLeader: {
+    leader: {
       firstName: "Ava",
       lastName: "Johnson",
       email: "avaj583920174@nycstudents.net",
@@ -176,7 +166,7 @@ const Groups = ref<Group[]>([
     ],
   },
   {
-    groupLeader: {
+    leader: {
       firstName: "Leo",
       lastName: "Rossi",
       email: "leor839174620@nycstudents.net",
@@ -201,7 +191,7 @@ const Groups = ref<Group[]>([
     ],
   },
   {
-    groupLeader: {
+    leader: {
       firstName: "Sofia",
       lastName: "Martinez",
       email: "sofiam260591834@nycstudents.net",
@@ -246,7 +236,7 @@ const Groups = ref<Group[]>([
     ],
   },
   {
-    groupLeader: {
+    leader: {
       firstName: "Isabella",
       lastName: "Green",
       email: "isabellag728104563@nycstudents.net",
@@ -308,18 +298,21 @@ const Groups = ref<Group[]>([
 ]);
 interface ImportedStudent {
   name: string;
-  email: string; //may end up being OSIS later on
+  email: string;
 }
 
 async function fetchGroups() {
   try {
-    const res = await fetch(""); //backend
+    const res = await fetch("/api/allGroups"); //backend
     if (!res.ok) throw Error("couldnt fetch data");
     const data: Group[] = await res.json();
     Groups.value = data;
   } catch (error) {
     alert(error);
   }
+}
+function logGroups() {
+  console.log(Groups.value);
 }
 async function getPaidList() {
   const file = paidFile.value?.files?.[0];
@@ -350,12 +343,9 @@ async function getPaidList() {
 }
 async function compareSeatAndPay() {
   const paidList = await getPaidList();
-  if (!paidList)
-    return alert(
-      "Couldn't retrieve excel data, please ensure the data follows the example"
-    );
+  if (!paidList) return;
   const groupStudents: Student[] = Groups.value.flatMap((group: Group) => [
-    group.groupLeader,
+    group.leader,
     ...group.members,
   ]);
 
@@ -376,7 +366,6 @@ async function compareSeatAndPay() {
       });
     });
   } else {
-    //strict mode
     const paidEmails = paidList.map((student) => student.email.toLowerCase());
     const groupEmails = groupStudents.map((student) =>
       student.email.toLowerCase()
@@ -409,11 +398,12 @@ async function executeSort() {
       typeof minSeats.value !== "number"
     )
       return alert("Please enter a number for max and min seats");
-
+    const file = paidFile.value?.files?.[0];
+    if (!file) return alert("Please upload a paid list Excel file.");
     await compareSeatAndPay();
 
     let groupsCopy: Group[] = Groups.value.map((group) => ({
-      groupLeader: { ...group.groupLeader },
+      leader: { ...group.leader },
       members: group.members.map((member) => ({ ...member })),
     }));
 
@@ -444,21 +434,21 @@ async function executeSort() {
 
         let leaderIsUnpaid = false;
         for (let i = 0; i < notPaid.value.length; i++) {
-          if (notPaid.value[i]?.email === group.groupLeader?.email) {
+          if (notPaid.value[i]?.email === group.leader?.email) {
             leaderIsUnpaid = true;
             break;
           }
         }
 
         if (leaderIsUnpaid) {
-          // assigns new GL if the leader is unpaid, don't actually become group leaders, just for displaying data
+          //assigns new GL if the leader is unpaid, don't actually become group leaders, just for displaying data
           if (filteredMembers.length > 0) {
             const newLeader = filteredMembers[0];
             const newMembers = filteredMembers.slice(1);
 
             if (newLeader) {
               filteredGroups.push({
-                groupLeader: {
+                leader: {
                   firstName: newLeader.firstName,
                   lastName: newLeader.lastName,
                   email: newLeader.email,
@@ -469,9 +459,9 @@ async function executeSort() {
             }
           }
         } else {
-          if (group.groupLeader) {
+          if (group.leader) {
             filteredGroups.push({
-              groupLeader: group.groupLeader,
+              leader: group.leader,
               members: filteredMembers,
             });
           }
@@ -485,8 +475,7 @@ async function executeSort() {
     for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
       const group = groupsCopy[groupIndex];
       if (!group) continue;
-      if (group.groupLeader?.email)
-        allGroupEmails.push(group.groupLeader.email);
+      if (group.leader?.email) allGroupEmails.push(group.leader.email);
       for (
         let memberIndex = 0;
         memberIndex < group.members.length;
@@ -510,7 +499,7 @@ async function executeSort() {
       if (!student?.name || !student?.email) continue;
       updateProps.value += 1;
       groupsCopy.push({
-        groupLeader: {
+        leader: {
           firstName: student.name.split(" ")[0] ?? "",
           lastName: student.name.split(" ")[1] ?? "",
           email: student.email,
@@ -526,24 +515,49 @@ async function executeSort() {
       maxSeats.value,
       minSeats.value
     ) as Table[];
+    exportAsExcel();
   } catch (error: any) {
     alert(error.message);
   }
 }
-function printTables() {
-  if (!(Tables.value.length > 0))
-    return alert("Run the table sort before displaying tables.");
-  stringArray.value = [];
+async function exportAsExcel() {
+  const exportWorkbook = new ExcelJS.Workbook();
+  const sortedWorksheet = exportWorkbook.addWorksheet("Comparison Worksheet");
+  sortedWorksheet.getCell("A1").value = "All Tables";
+  sortedWorksheet.getCell("B1").value = "Emails";
+  sortedWorksheet.getCell("F1").value = "Haven't paid & @ Table";
+  sortedWorksheet.getCell("H1").value = "Paid & Not @ Table";
+
+  let tableIndex = 1;
+  let rowIndex = tableIndex;
   Tables.value.forEach((table) => {
-    let tableString = ``;
+    sortedWorksheet.getRow(rowIndex).getCell(1).value = `Table ${tableIndex}`;
+    tableIndex += 1;
+    rowIndex += 1;
     table.occupants.forEach((occupant) => {
-      tableString += `${occupant.groupLeader.firstName} ${occupant.groupLeader.lastName}\n`;
       occupant.members.forEach((member) => {
-        tableString += `${member.firstName} ${member.lastName}\n`;
+        sortedWorksheet.getRow(rowIndex).getCell(1).value =
+          `${member.firstName} ${member.lastName}`;
+        sortedWorksheet.getRow(rowIndex).getCell(2).value = member.email;
+        rowIndex += 1;
       });
     });
-    stringArray.value.push(tableString);
   });
+
+  for (let i = 0; i < notPaid.value.length; i++) {
+    sortedWorksheet.getRow(i + 2).getCell(6).value =
+      `${notPaid.value[i]?.firstName} ${notPaid.value[i]?.lastName}`;
+  }
+
+  for (let i = 0; i < noSeat.value.length; i++) {
+    sortedWorksheet.getRow(i + 2).getCell(8).value = noSeat.value[i]?.name;
+  }
+
+  const buffer = await exportWorkbook.xlsx.writeBuffer();
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const blob = new Blob([buffer], { type: fileType });
+  downloadExcelLink.value = URL.createObjectURL(blob);
 }
 
 onMounted(() => {
