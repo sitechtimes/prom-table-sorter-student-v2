@@ -128,10 +128,6 @@
         />
       </div>
     </div>
-    <button class="btn btn-primary mb-4" @click="fetchGroups">
-      Load Groups
-    </button>
-    <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
   </div>
 </template>
 
@@ -147,153 +143,7 @@ const looseMode = ref(false);
 const tables = ref<Table[]>([]);
 const showPaidExample = ref(false);
 const updateProps = ref(0);
-const Groups = ref<Group[]>([
-  {
-    leader: {
-      firstName: "Ava",
-      lastName: "Johnson",
-      email: "avaj583920174@nycstudents.net",
-      osis: "102938475",
-    },
-    members: [
-      {
-        firstName: "Mila",
-        lastName: "Chen",
-        email: "milac491027365@nycstudents.net",
-      },
-    ],
-  },
-  {
-    leader: {
-      firstName: "Leo",
-      lastName: "Rossi",
-      email: "leor839174620@nycstudents.net",
-      osis: "564738291",
-    },
-    members: [
-      {
-        firstName: "Noah",
-        lastName: "Smith",
-        email: "noahs720493158@nycstudents.net",
-      },
-      {
-        firstName: "Ella",
-        lastName: "Rivera",
-        email: "ellar@nycstudents.net",
-      },
-      {
-        firstName: "Lucas",
-        lastName: "Kim",
-        email: "lucask947205613@nycstudents.net",
-      },
-    ],
-  },
-  {
-    leader: {
-      firstName: "Sofia",
-      lastName: "Martinez",
-      email: "sofiam260591834@nycstudents.net",
-      osis: "948372615",
-    },
-    members: [
-      {
-        firstName: "Olivia",
-        lastName: "Brown",
-        email: "oliviab@nycstudents.net",
-      },
-      {
-        firstName: "Henry",
-        lastName: "Lee",
-        email: "henryl572019463@nycstudents.net",
-      },
-      {
-        firstName: "Aiden",
-        lastName: "Patel",
-        email: "aidenp604937128@nycstudents.net",
-      },
-      {
-        firstName: "Grace",
-        lastName: "Wong",
-        email: "gracew932741650@nycstudents.net",
-      },
-      {
-        firstName: "James",
-        lastName: "Lopez",
-        email: "jamesl875103942@nycstudents.net",
-      },
-      {
-        firstName: "Chloe",
-        lastName: "Adams",
-        email: "chloea514620987@nycstudents.net",
-      },
-      {
-        firstName: "Ethan",
-        lastName: "Nguyen",
-        email: "ethann309875416@nycstudents.net",
-      },
-    ],
-  },
-  {
-    leader: {
-      firstName: "Isabella",
-      lastName: "Green",
-      email: "isabellag728104563@nycstudents.net",
-      osis: "127483920",
-    },
-    members: [
-      {
-        firstName: "Daniel",
-        lastName: "King",
-        email: "danielk190473826@nycstudents.net",
-      },
-      {
-        firstName: "Ari",
-        lastName: "Gold",
-        email: "arig543298710@nycstudents.net",
-      },
-      {
-        firstName: "Luna",
-        lastName: "Castro",
-        email: "lunac817205349@nycstudents.net",
-      },
-      {
-        firstName: "Elijah",
-        lastName: "Diaz",
-        email: "elijahd605819274@nycstudents.net",
-      },
-      {
-        firstName: "Riley",
-        lastName: "Morris",
-        email: "rileym290471685@nycstudents.net",
-      },
-      {
-        firstName: "Zoe",
-        lastName: "Clark",
-        email: "zoec958201647@nycstudents.net",
-      },
-      {
-        firstName: "Mateo",
-        lastName: "Santos",
-        email: "mateos481935027@nycstudents.net",
-      },
-      {
-        firstName: "Nora",
-        lastName: "Baker",
-        email: "norab702185934@nycstudents.net",
-      },
-      {
-        firstName: "Sebastian",
-        lastName: "Reyes",
-        email: "sebastianr614209875@nycstudents.net",
-      },
-      {
-        firstName: "Liam",
-        lastName: "Turner",
-        email: "liamt879216340@nycstudents.net",
-      },
-    ],
-  },
-]);
+const Groups = ref<Group[]>();
 
 async function fetchGroups() {
   try {
@@ -304,9 +154,6 @@ async function fetchGroups() {
   } catch (error) {
     alert(error);
   }
-}
-function logGroups() {
-  console.log(Groups.value);
 }
 async function getPaidList() {
   const file = paidFile.value?.files?.[0];
@@ -338,6 +185,7 @@ async function getPaidList() {
 async function compareSeatAndPay() {
   const paidList = await getPaidList();
   if (!paidList) return;
+  if (!Groups.value) return;
   const groupStudents: Student[] = Groups.value.flatMap((group: Group) => [
     group.leader,
     ...group.members,
@@ -395,7 +243,7 @@ async function executeSort() {
     const file = paidFile.value?.files?.[0];
     if (!file) return alert("Please upload a paid list Excel file.");
     await compareSeatAndPay();
-
+    if (!Groups.value) return;
     let groupsCopy: Group[] = Groups.value.map((group) => ({
       leader: { ...group.leader },
       members: group.members.map((member) => ({ ...member })),
@@ -514,6 +362,6 @@ async function executeSort() {
   }
 }
 onMounted(() => {
-  // fetchGroups();
+  fetchGroups();
 });
 </script>
