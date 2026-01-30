@@ -1,4 +1,12 @@
 <template>
+  <div class="flex items-center justify-center">
+    <ExcelExport
+      :tables="tables"
+      :notPaid="notPaid"
+      :notRegistered="notRegistered"
+    />
+  </div>
+
   <div class="flex flex-col lg:flex-row w-full px-4 sm:px-6 py-6 gap-6">
     <div class="flex-1">
       <div class="flex items-center justify-between mb-6">
@@ -13,7 +21,7 @@
         <div
           v-for="(table, i) in tables"
           :key="i"
-          class="bg-white rounded-2xl shadow-lg border border-gray-300 w-[220px] h-[220px] flex flex-col relative ring-offset-2 overflow-visible rounded-lg"
+          class="bg-white rounded-2xl shadow-lg border border-gray-300 w-[300px] h-[300px] flex flex-col relative ring-offset-2 overflow-visible rounded-lg"
           :class="selectedTables.includes(i) ? 'ring-2 ring-purple-500' : ''"
         >
           <div
@@ -22,6 +30,12 @@
           >
             <div>
               <h4 class="font-bold text-gray-800">Table {{ i + 1 }}</h4>
+              <p
+                v-if="!table.overCapacity"
+                class="text-xs font-medium text-gray-700"
+              >
+                Students @ table: {{ table.capacity - table.unoccupiedSeats }}
+              </p>
               <p
                 v-if="!table.overCapacity"
                 class="text-xs font-medium text-gray-700"
@@ -163,10 +177,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
 import Draggable from "vuedraggable-esm";
 
-const props = defineProps<{ tables: Table[] }>();
+const props = defineProps<{
+  tables: Table[];
+  notPaid: Student[];
+  notRegistered: ImportedStudent[];
+}>();
 const tables = props.tables;
 const selectedTables = ref<number[]>([]);
 const openDropdown = ref<{ tableIndex: number; groupIndex: number } | null>(

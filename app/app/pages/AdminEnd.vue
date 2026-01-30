@@ -49,7 +49,7 @@
         </div>
       </div>
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
-        Students that haven't paid and are at a table
+        Students that haven't paid and are registered
       </h1>
       <div class="mb-6">
         <div
@@ -65,12 +65,12 @@
         </p>
       </div>
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
-        Students that have paid and are not at a table
+        Students that have paid and arent registered
       </h1>
       <div class="mb-6">
         <div
-          v-if="noSeat.length !== 0"
-          v-for="student in noSeat"
+          v-if="notRegistered.length !== 0"
+          v-for="student in notRegistered"
           :key="student.email"
           class="text-black text-center font-medium mb-1"
         >
@@ -80,15 +80,6 @@
           Empty, enter an excel to display.
         </p>
       </div>
-      <a
-        v-if="downloadExcelLink == null"
-        class="btn w-full mb-4 pointer-events-none opacity-60"
-      >
-        Enter an excel and sort for a download link
-      </a>
-      <a v-else :href="downloadExcelLink" class="btn btn-primary w-full mb-4">
-        Download Comparison
-      </a>
       <div class="flex items-center gap-3 mb-4">
         <input
           type="checkbox"
@@ -106,13 +97,16 @@
           class="checkbox checkbox-primary"
         />
         <label class="text-black font-medium">
-          Filter students loosely (name only) or strictly (name and email)
+          Filter students loosely (name only)
         </label>
+        <h4 class="text-black font-small">
+          (Filtering strictly uses both name & email)
+        </h4>
       </div>
     </div>
     <button
       class="btn btn-primary w-full max-w-sm"
-      v-if="Tables.length == 0"
+      v-if="tables.length == 0"
       @click="executeSort()"
     >
       Sort Tables
@@ -124,9 +118,14 @@
     >
       Refresh Sort
     </button>
-    <div v-if="Tables.length > 0" class="w-full flex justify-center px-4">
+    <div v-if="tables.length > 0" class="w-full flex justify-center px-4">
       <div class="w-full">
-        <TableVisualizer :tables="Tables" :key="updateProps" />
+        <TableVisualizer
+          :tables="tables"
+          :notPaid="notPaid"
+          :notRegistered="notRegistered"
+          :key="updateProps"
+        />
       </div>
     </div>
     <button class="btn btn-primary mb-4" @click="fetchGroups">
@@ -142,11 +141,10 @@ const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
 const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
-const noSeat = ref<ImportedStudent[]>([]);
+const notRegistered = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
-const downloadExcelLink = ref<string | null>(null);
-const Tables = ref<Table[]>([]);
+const tables = ref<Table[]>([]);
 const showPaidExample = ref(false);
 const updateProps = ref(0);
 const Groups = ref<Group[]>([
@@ -296,10 +294,6 @@ const Groups = ref<Group[]>([
     ],
   },
 ]);
-interface ImportedStudent {
-  name: string;
-  email: string;
-}
 
 async function fetchGroups() {
   try {
@@ -357,7 +351,7 @@ async function compareSeatAndPay() {
           `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
       );
     });
-    noSeat.value = paidList.filter((paidStudent) => {
+    notRegistered.value = paidList.filter((paidStudent) => {
       return !groupStudents.some((groupStudent) => {
         return (
           `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
@@ -379,7 +373,7 @@ async function compareSeatAndPay() {
             `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
         )
     );
-    noSeat.value = paidList.filter(
+    notRegistered.value = paidList.filter(
       (paidStudent) =>
         !groupEmails.includes(paidStudent.email.toLowerCase()) &&
         !groupStudents.some(
@@ -488,9 +482,9 @@ async function executeSort() {
     }
 
     const extraStudents: ImportedStudent[] = [];
-    for (let i = 0; i < noSeat.value.length; i++) {
-      if (!allGroupEmails.includes(noSeat.value[i]?.email ?? "")) {
-        extraStudents.push(noSeat.value[i]!);
+    for (let i = 0; i < notRegistered.value.length; i++) {
+      if (!allGroupEmails.includes(notRegistered.value[i]?.email ?? "")) {
+        extraStudents.push(notRegistered.value[i]!);
       }
     }
 
@@ -509,57 +503,16 @@ async function executeSort() {
       });
     }
 
-    Tables.value = rangeSort(
+    tables.value = rangeSort(
       groupsCopy,
       algoFunctionOptions,
       maxSeats.value,
       minSeats.value
     ) as Table[];
-    exportAsExcel();
   } catch (error: any) {
     alert(error.message);
   }
 }
-async function exportAsExcel() {
-  const exportWorkbook = new ExcelJS.Workbook();
-  const sortedWorksheet = exportWorkbook.addWorksheet("Comparison Worksheet");
-  sortedWorksheet.getCell("A1").value = "All Tables";
-  sortedWorksheet.getCell("B1").value = "Emails";
-  sortedWorksheet.getCell("F1").value = "Haven't paid & @ Table";
-  sortedWorksheet.getCell("H1").value = "Paid & Not @ Table";
-
-  let tableIndex = 1;
-  let rowIndex = tableIndex;
-  Tables.value.forEach((table) => {
-    sortedWorksheet.getRow(rowIndex).getCell(1).value = `Table ${tableIndex}`;
-    tableIndex += 1;
-    rowIndex += 1;
-    table.occupants.forEach((occupant) => {
-      occupant.members.forEach((member) => {
-        sortedWorksheet.getRow(rowIndex).getCell(1).value =
-          `${member.firstName} ${member.lastName}`;
-        sortedWorksheet.getRow(rowIndex).getCell(2).value = member.email;
-        rowIndex += 1;
-      });
-    });
-  });
-
-  for (let i = 0; i < notPaid.value.length; i++) {
-    sortedWorksheet.getRow(i + 2).getCell(6).value =
-      `${notPaid.value[i]?.firstName} ${notPaid.value[i]?.lastName}`;
-  }
-
-  for (let i = 0; i < noSeat.value.length; i++) {
-    sortedWorksheet.getRow(i + 2).getCell(8).value = noSeat.value[i]?.name;
-  }
-
-  const buffer = await exportWorkbook.xlsx.writeBuffer();
-  const fileType =
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-  const blob = new Blob([buffer], { type: fileType });
-  downloadExcelLink.value = URL.createObjectURL(blob);
-}
-
 onMounted(() => {
   // fetchGroups();
 });
