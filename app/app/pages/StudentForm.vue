@@ -1,12 +1,13 @@
 <template>
   <div class="flex justify-center items-center min-h-screen bg-gray-500">
-    <button
+    <NuxtLink
       @click="edittingForm = true"
       class="absolute top-3.5 right-15 bg-primary px-4 py-2 rounded shadow hover:bg-black transition"
       v-if="!edittingForm"
+      to="/StudentEdit"
     >
       Want to edit a form? Click here
-    </button>
+    </NuxtLink>
     <div
       class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6"
     >
@@ -126,8 +127,7 @@
 </template>
 
 <script lang="ts" setup>
-import {navigateTo} from '#app';
-
+import { navigateTo } from "#app";
 
 const groupLeader = reactive<Student>({
   firstName: "",
@@ -138,13 +138,14 @@ const groupLeader = reactive<Student>({
 const InGroup = ref(false);
 const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
+const edittingForm = ref(false);
+const loggedIn = ref(false);
 
 // error handling for if students fail validation/duplicate checks
 const failedIndexes = ref<number[]>([]);
 function hasError(index: number) {
   return failedIndexes.value.includes(index);
 }
-
 
 function organizeGroup() {
   if (!InGroup.value) {
@@ -196,12 +197,11 @@ async function submit() {
       alert(data.message);
     } else {
       alert("Submission successful!");
-      await navigateTo('/')
+      await navigateTo("/");
     }
   } catch (err) {
     alert("couldnt push data to mongodb");
     console.log(err);
   }
 }
-
 </script>
