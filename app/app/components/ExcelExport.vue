@@ -7,7 +7,7 @@
   </a>
 
   <a v-else :href="downloadExcelLink" class="btn btn-primary w-full mb-4">
-    Download Comparison
+    Download Tables (Excel File)
   </a>
 </template>
 <script setup lang="ts">

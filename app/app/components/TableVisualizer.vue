@@ -7,8 +7,13 @@
     />
   </div>
 
-  <div class="flex flex-col lg:flex-row w-full px-4 sm:px-6 py-6 gap-6">
-    <div class="flex-1">
+  <div
+    class="flex flex-col lg:flex-row lg:flex-nowrap w-full px-4 sm:px-6 py-6 gap-6"
+  >
+    <div
+      class="min-w-0 transition-all duration-300"
+      :class="comparisonOpen ? 'lg:w-[calc(100%-360px)]' : 'w-full'"
+    >
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Table Layout</h2>
         <button class="btn btn-primary" @click="addTable(tables[0]!.capacity)">
@@ -16,7 +21,12 @@
         </button>
       </div>
       <div
-        class="grid gap-6 place-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        class="grid gap-6 items-start justify-start w-full transition-all duration-300"
+        :class="
+          comparisonOpen
+            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+        "
       >
         <div
           v-for="(table, i) in tables"
@@ -193,6 +203,7 @@ const dropdownPosition = reactive<{ top: string; left: string }>({
   top: "0px",
   left: "0px",
 });
+const comparisonOpen = computed(() => selectedTables.value.length > 0);
 
 watch(
   tables,
@@ -209,7 +220,7 @@ watch(
   { deep: true }
 );
 
-//below for dropdown to work with scrolling
+//below for drop to work with scrolling
 function toggleDropdown(
   tableIndex: number,
   groupIndex: number,
