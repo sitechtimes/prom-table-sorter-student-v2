@@ -72,7 +72,6 @@
               step="1"
               v-model.number="GroupSize"
               @input="organizeGroup()"
-              :disabled="loggedIn"
             />
             <div class="flex justify-between px-2.5 mt-2 text-xs">
               <span v-for="i in 11">|</span>
@@ -130,7 +129,7 @@
 
 <script lang="ts" setup>
 import { navigateTo } from "#app";
-//open all dropdowns on submit
+
 const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
@@ -177,6 +176,8 @@ async function submit() {
     leader: groupLeader,
     members: Group.value.slice(1),
   };
+  console.log(dataPush);
+
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
