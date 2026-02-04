@@ -5,7 +5,7 @@ import Student from "../models/student";
 export default defineEventHandler(async (event) => {
   await connectDB();
   const body = await readBody(event);
-  console.log(body)
+  //console.log(body)
 
   const { leader, members } = body;
 
@@ -25,14 +25,15 @@ export default defineEventHandler(async (event) => {
         email: person.email.toLowerCase(),
       });
       if (!match) failedIndexes.push(index);
-    })
+    }),
   );
 
   //if some students dont exist throw an error with the indexes
   if (failedIndexes.length > 0) {
     throw createError({
       statusCode: 599,
-      message: "Some students could not be validated. Please check highlighted fields for errors.",
+      message:
+        "Some students could not be validated. Please check highlighted fields for errors.",
       data: { failedIndexes },
     });
   }
@@ -65,7 +66,7 @@ export default defineEventHandler(async (event) => {
     allPeople.forEach((dict, index) => {
       if (
         existingStudents[0].matchedEmails.includes(
-          dict.email.trim().toLowerCase()
+          dict.email.trim().toLowerCase(),
         )
       ) {
         failedIndexes.push(index);
@@ -73,7 +74,8 @@ export default defineEventHandler(async (event) => {
     });
     throw createError({
       statusCode: 599,
-      message: "Some students already exist in other groups. Please check highlighted fields.",
+      message:
+        "Some students already exist in other groups. Please check highlighted fields.",
       data: { failedIndexes },
     });
   }
