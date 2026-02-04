@@ -2,12 +2,14 @@
   <div class="flex justify-center items-center min-h-screen bg-gray-500">
     <NuxtLink
       @click="edittingForm = true"
-      class="absolute top-3.5 right-15 bg-primary px-4 py-2 rounded shadow hover:bg-black transition"
       v-if="!edittingForm"
       to="/StudentEdit"
+      class="absolute right-3.5 top-3.5 bg-primary rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
     >
-      Want to edit a form? Click here
+      <span class="md:hidden">Edit</span>
+      <span class="hidden md:inline"> Want to edit a form? Click here </span>
     </NuxtLink>
+
     <div
       class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6"
     >
@@ -21,7 +23,7 @@
           v-model="groupLeader.firstName"
           type="text"
           placeholder="Enter here"
-          :class="hasError(0) ? 'border-red-500 border-2' : ''"
+          :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <FormInput
           category="Last Name"
@@ -29,7 +31,7 @@
           v-model="groupLeader.lastName"
           type="text"
           placeholder="Enter here"
-          :class="hasError(0) ? 'border-red-500 border-2' : ''"
+          :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <FormInput
           category="NYC Students Email"
@@ -37,7 +39,7 @@
           v-model="groupLeader.email"
           type="email"
           placeholder="examples@nycstudents.net"
-          :class="hasError(0) ? 'border-red-500 border-2' : ''"
+          :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <FormInput
           category="OSIS"
@@ -45,7 +47,7 @@
           v-model="groupLeader.osis"
           type="text"
           placeholder="123456789"
-          :class="hasError(0) ? 'border-red-500 border-2' : ''"
+          :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <h2 class="text-black text-lg font-semibold">
           Are you registering for a group?
@@ -72,7 +74,6 @@
               @input="organizeGroup()"
               :disabled="loggedIn"
             />
-            <!-- MIGHT REMOVE :DISABLED, DEPENDS ON IF WE ALLOW ADDITIONAL STUDENTS TO BE ADDED/REMOVED FROM A GROUP AFTER SUBMISSION -->
             <div class="flex justify-between px-2.5 mt-2 text-xs">
               <span v-for="i in 11">|</span>
             </div>
@@ -85,9 +86,10 @@
         <div v-if="InGroup" class="mt-6 space-y-3">
           <div
             v-for="i in GroupSize - 1"
+            :key="i"
             class="collapse collapse-arrow bg-base-100 border border-base-300 space-y-2"
           >
-            <input type="radio" :name="'group-accordion'" :checked="i === 1" />
+            <input type="checkbox" v-model="openDropdowns[i]" />
             <div class="collapse-title font-semibold">Member {{ i + 1 }}</div>
             <div class="collapse-content text-sm space-y-2">
               <FormInput
@@ -96,7 +98,7 @@
                 v-model="Group[i]!.firstName"
                 type="text"
                 placeholder="Enter"
-                :class="hasError(i) ? 'border-red-500 border-2' : ''"
+                :class="hasError(i) ? 'border-red-500 border-4 rounded' : ''"
               />
               <FormInput
                 category="Last Name"
@@ -104,7 +106,7 @@
                 v-model="Group[i]!.lastName"
                 type="text"
                 placeholder="Enter"
-                :class="hasError(i) ? 'border-red-500 border-2' : ''"
+                :class="hasError(i) ? 'border-red-500 border-4 rounded' : ''"
               />
               <FormInput
                 category="NYC Students Email"
@@ -112,7 +114,7 @@
                 v-model="Group[i]!.email"
                 type="email"
                 placeholder="examples@nycstudents.net"
-                :class="hasError(i) ? 'border-red-500 border-2' : ''"
+                :class="hasError(i) ? 'border-red-500 border-4 rounded' : ''"
               />
             </div>
           </div>
@@ -128,7 +130,7 @@
 
 <script lang="ts" setup>
 import { navigateTo } from "#app";
-
+//open all dropdowns on submit
 const groupLeader = reactive<Student>({
   firstName: "",
   lastName: "",
@@ -140,13 +142,12 @@ const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
 const edittingForm = ref(false);
 const loggedIn = ref(false);
-
+const openDropdowns = ref<boolean[]>([]);
 // error handling for if students fail validation/duplicate checks
 const failedIndexes = ref<number[]>([]);
 function hasError(index: number) {
   return failedIndexes.value.includes(index);
 }
-
 function organizeGroup() {
   if (!InGroup.value) {
     Group.value = [groupLeader];
@@ -155,6 +156,10 @@ function organizeGroup() {
   for (let i = Group.value.length; i < GroupSize.value; i++) {
     Group.value.push({ firstName: "", lastName: "", email: "" });
     Group.value[0] = groupLeader;
+  }
+  openDropdowns.value = [];
+  for (let i = 0; i < GroupSize.value; i++) {
+    openDropdowns.value.push(false);
   }
 }
 function clearGroup() {
@@ -194,6 +199,18 @@ async function submit() {
     failedIndexes.value = [];
     if (!res.ok) {
       failedIndexes.value = data.data.failedIndexes;
+      for (let i = 0; i < failedIndexes.value.length; i++) {
+        const failedIndex = failedIndexes.value[i];
+        if (failedIndex !== undefined) {
+          if (
+            failedIndex !== 0 &&
+            openDropdowns.value[failedIndex] !== undefined
+          ) {
+            openDropdowns.value[failedIndex] = true;
+          }
+        }
+      }
+
       alert(data.message);
     } else {
       alert("Submission successful!");
@@ -201,7 +218,6 @@ async function submit() {
     }
   } catch (err) {
     alert("couldnt push data to mongodb");
-    console.log(err);
   }
 }
 </script>

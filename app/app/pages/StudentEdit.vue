@@ -4,7 +4,9 @@
       <!-- leader login -->
 
       <div v-if="!groupLoaded">
-        <h1 class="text-2xl font-bold mb-4 text-center text-black">Find Your Group</h1>
+        <h1 class="text-2xl font-bold mb-4 text-center text-black">
+          Find Your Group
+        </h1>
 
         <FormInput
           category="First Name"
@@ -42,7 +44,9 @@
 
       <!-- populate the groups / actual editing forms-->
       <div v-else>
-        <h1 class="text-2xl font-bold mb-4 text-center text-black">Edit Your Group</h1>
+        <h1 class="text-2xl font-bold mb-4 text-center text-black">
+          Edit Your Group
+        </h1>
 
         <div class="opacity-60 pointer-events-none">
           <FormInput
@@ -82,9 +86,7 @@
             class="border p-3 rounded relative"
             :class="hasError(i + 1) ? 'border-red-500 border-2' : ''"
           >
-            <h3 class="font-semibold mb-2 text-black">
-              Member {{ i + 1 }}
-            </h3>
+            <h3 class="font-semibold mb-2 text-black">Member {{ i + 1 }}</h3>
 
             <button
               class="absolute top-2 right-2 text-red-600 text-sm"
@@ -135,7 +137,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import {navigateTo} from '#app';
+import { navigateTo } from "#app";
 
 const leader = reactive<Student>({
   firstName: "",
@@ -144,7 +146,7 @@ const leader = reactive<Student>({
   osis: "",
 });
 
-const maxMembers = 11; 
+const maxMembers = 11;
 
 function addMember() {
   if (members.value.length >= maxMembers) return;
@@ -161,10 +163,9 @@ function removeMember(index: number) {
 
   // clear errors tied to shifted indexes
   failedIndexes.value = failedIndexes.value
-    .filter(i => i !== index + 1)
-    .map(i => (i > index + 1 ? i - 1 : i));
+    .filter((i) => i !== index + 1)
+    .map((i) => (i > index + 1 ? i - 1 : i));
 }
-
 
 const members = ref<Student[]>([]);
 const groupLoaded = ref(false);
@@ -181,12 +182,10 @@ async function fetchGroup() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ leader }),
     });
-    console.log(JSON.stringify({ leader }));
     if (!res.ok) throw new Error("Group not found");
     const data = await res.json();
     members.value = data.members || [];
     groupLoaded.value = true;
-    console.log(data);
   } catch {
     alert("Could not find group for this leader");
   }
@@ -214,7 +213,7 @@ async function submitEdits() {
     }
 
     alert("Group updated successfully");
-    await navigateTo('/')
+    await navigateTo("/");
   } catch {
     alert("Server error while updating group");
   }
