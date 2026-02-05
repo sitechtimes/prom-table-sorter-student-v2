@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div>You are currently not logged in.</div>
 </template>
 
 <script setup></script>

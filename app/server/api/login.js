@@ -12,6 +12,11 @@ export default defineEventHandler(async (event) => {
       message: "Invalid login credentials, please try again.",
     });
   } else {
+    await setUserSession(event, {
+      user: {
+        name: "Admin",
+      },
+    });
     return {
       statusCode: 200,
       message: "Successfully logged in",

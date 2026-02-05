@@ -4,7 +4,7 @@
   <legend class="fieldset-legend">Login</legend>
 
   <label class="label">Email</label>
-  <input type="email" class="input" placeholder="Email" v-model="user"/>
+  <input type="email" class="input" placeholder="Email" v-model="username"/>
 
   <label class="label">Password</label>
   <input type="password" class="input" placeholder="Password" v-model="pass"/>
@@ -16,11 +16,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+const { loggedIn, user, fetch: refreshSession } = useUserSession()
 
-const user = ref<string>("")
+const username = ref<string>("")
 const pass = ref<string>("")
 async function login(){
-  const email = user.value
+  const email = username.value
   const password = pass.value
   console.log(email, password)
   try {
