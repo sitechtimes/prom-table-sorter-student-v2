@@ -194,6 +194,10 @@
 </template>
 <script lang="ts" setup>
 import ExcelJS from "exceljs";
+definePageMeta({
+  middleware: "auth"
+})
+
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
 const maxSeats = ref<number>();
@@ -349,6 +353,7 @@ const Groups = ref<Group[]>([
     ],
   },
 ]);
+
 
 const Tables = ref<Table[]>([]);
 let showPaidExample = ref(false);

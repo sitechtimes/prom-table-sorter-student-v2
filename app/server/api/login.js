@@ -5,21 +5,30 @@ export default defineEventHandler(async (event) => {
   await connectDB();
   const body = await readBody(event);
   const { email, password } = body;
-  const login = await User.findOne({ email: email, password: password });
-  if (!login) {
-    throw createError({
-      statusCode: 404,
-      message: "Invalid login credentials, please try again.",
+  const userInfo = await User.findOne({
+    email: email,
+  });
+  if (await verifyPassword(userInfo.password, password)) {
+    const login = await User.findOne({
+      email: email,
+      password: userInfo.password,
     });
-  } else {
-    await setUserSession(event, {
-      user: {
-        name: "Admin",
-      },
-    });
-    return {
-      statusCode: 200,
-      message: "Successfully logged in",
-    };
+
+    if (!login) {
+      throw createError({
+        statusCode: 404,
+        message: "Invalid login credentials, please try again.",
+      });
+    } else {
+      await setUserSession(event, {
+        user: {
+          name: "Admin",
+        },
+      });
+      return {
+        statusCode: 200,
+        message: "Successfully logged in",
+      };
+    }
   }
 });

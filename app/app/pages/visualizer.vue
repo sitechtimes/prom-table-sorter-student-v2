@@ -1,7 +1,11 @@
 <template>
-  <div>You are currently not logged in.</div>
+    hi
 </template>
 
-<script setup></script>
+<script setup>
+definePageMeta({
+  middleware: "auth"
+})
+</script>
 
 <style scoped></style>
