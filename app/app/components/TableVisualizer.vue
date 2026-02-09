@@ -82,7 +82,7 @@
               v-model="table.occupants"
               :group="{ name: 'groups', pull: true, put: true }"
               item-key="leader.osis"
-              :move="(evt: any) => moveable(evt, table)"
+              :move="(evt: MoveEvent<Group>) => moveable(evt, table)"
               class="space-y-2"
             >
               <template #item="{ element: group, index }">
@@ -96,7 +96,13 @@
                   <div class="relative">
                     <button
                       class="btn btn-xs btn-outline bg-white text-gray-800 border-gray-400 hover:bg-gray-200"
-                      @click.stop="toggleDropdown(i, index, $event)"
+                      @click.stop="
+                        toggleDropdown({
+                          tableIndex: i,
+                          groupIndex: index,
+                          event: $event,
+                        })
+                      "
                     >
                       {{ group.leader.firstName }}
                       {{ group.leader.lastName }}
@@ -164,8 +170,8 @@
           :group="{ name: 'groups', pull: true, put: true }"
           item-key="leader.osis"
           v-if="tables[tableIndex]"
-          :move="(evt: any) => moveable(evt, tables[tableIndex])"
           class="space-y-2 max-h-[200px] overflow-y-auto"
+          :move="(evt: MoveEvent<Group>) => moveable(evt, tables[tableIndex])"
         >
           <template #item="{ element: group }">
             <div
@@ -187,6 +193,7 @@
 </template>
 
 <script setup lang="ts">
+import type { MoveEvent } from "sortablejs";
 import Draggable from "vuedraggable-esm";
 
 const props = defineProps<{
@@ -204,6 +211,11 @@ const dropdownPosition = reactive<{ top: string; left: string }>({
   left: "0px",
 });
 const comparisonOpen = computed(() => selectedTables.value.length > 0);
+type dropdownInput = {
+  tableIndex: number;
+  groupIndex: number;
+  event: MouseEvent;
+};
 
 watch(
   tables,
@@ -221,11 +233,7 @@ watch(
 );
 
 //below for drop to work with scrolling
-function toggleDropdown(
-  tableIndex: number,
-  groupIndex: number,
-  event: MouseEvent
-) {
+function toggleDropdown({ tableIndex, groupIndex, event }: dropdownInput) {
   event.stopPropagation();
   const groupLeader = event.currentTarget as HTMLElement;
   const rect = groupLeader.getBoundingClientRect();
@@ -244,21 +252,21 @@ window.addEventListener("click", () => {
   openDropdown.value = null;
 });
 
-function moveable(evt: any, table: Table | undefined) {
-  if (table == undefined) return false;
+function moveable(evt: MoveEvent<Group>, table: Table | undefined) {
   const group = evt.draggedContext.element;
-  if (evt.relatedContext.list === table.occupants) {
-    return false;
+  const targetList = evt.relatedContext?.list as Group[];
+  if (!targetList || table == undefined) return false;
+  if (targetList === table.occupants) {
+    return true;
   }
   const incomingSeats = group.members.length + 1;
-  const occupiedAfterIncomingGroup = evt.relatedContext.list.reduce(
+  const occupiedAfterIncomingGroup = targetList.reduce(
     (sum: number, group: Group) => sum + group.members.length + 1,
     0
   );
   const remainingSeats = table.capacity - occupiedAfterIncomingGroup;
   if (!(incomingSeats <= remainingSeats))
     alert("Too many students at one table");
-
   return true;
 }
 function addTable(tableCapacity: number) {
