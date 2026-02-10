@@ -17,9 +17,12 @@
     "mongoose": "^9.0.1",
     "nuxt": "^4.1.2",
     "prettier": "3.6.2",
+    "sortablejs": "^1.15.6",
     "tailwindcss": "^4.1.13",
     "vue": "^3.5.21",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vuedraggable": "^2.24.3",
+    "vuedraggable-esm": "^4.1.0"
   },
   "devDependencies": {
     "baseline-browser-mapping": "^2.9.6",
