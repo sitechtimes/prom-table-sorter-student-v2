@@ -19,7 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 const { loggedIn, clear: clearSession, fetch: refreshSession } = useUserSession()
 
 const username = ref<string>("")
