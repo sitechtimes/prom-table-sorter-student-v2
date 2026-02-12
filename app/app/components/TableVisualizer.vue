@@ -82,7 +82,7 @@
               v-model="table.occupants"
               :group="{ name: 'groups', pull: true, put: true }"
               item-key="leader.osis"
-              :move="(evt: MoveEvent<Group>) => moveable(evt, table)"
+              @change="moveable(tables[i])"
               class="space-y-2"
             >
               <template #item="{ element: group, index }">
@@ -171,7 +171,7 @@
           item-key="leader.osis"
           v-if="tables[tableIndex]"
           class="space-y-2 max-h-[200px] overflow-y-auto"
-          :move="(evt: MoveEvent<Group>) => moveable(evt, tables[tableIndex])"
+          @change="tables[tableIndex]"
         >
           <template #item="{ element: group }">
             <div
@@ -193,7 +193,6 @@
 </template>
 
 <script setup lang="ts">
-import type { MoveEvent } from "sortablejs";
 import Draggable from "vuedraggable-esm";
 
 const props = defineProps<{
@@ -252,21 +251,14 @@ window.addEventListener("click", () => {
   openDropdown.value = null;
 });
 
-function moveable(evt: MoveEvent<Group>, table: Table | undefined) {
-  const group = evt.draggedContext.element;
-  const targetList = evt.relatedContext?.list as Group[];
-  if (!targetList || table == undefined) return false;
-  if (targetList === table.occupants) {
-    return true;
-  }
-  const incomingSeats = group.members.length + 1;
-  const occupiedAfterIncomingGroup = targetList.reduce(
+function moveable(table: Table | undefined) {
+  if (table == undefined) return;
+  const totalSeats = table.occupants.reduce(
     (sum: number, group: Group) => sum + group.members.length + 1,
     0
   );
-  const remainingSeats = table.capacity - occupiedAfterIncomingGroup;
-  if (!(incomingSeats <= remainingSeats))
-    alert("Too many students at one table");
+  const tableCapacity = table!.capacity;
+  if (!(totalSeats <= tableCapacity)) alert("Too many students at one table");
   return true;
 }
 function addTable(tableCapacity: number) {
