@@ -171,10 +171,13 @@ function clearGroup() {
   }
 }
 
+
+
 async function submit() {
+  const membersToSubmit = InGroup.value ? Group.value.slice(1, GroupSize.value) : [];
   const dataPush = {
     leader: groupLeader,
-    members: Group.value.slice(1),
+    members: membersToSubmit,
   };
   console.log(dataPush);
 
