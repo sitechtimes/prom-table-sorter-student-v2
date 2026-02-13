@@ -35,12 +35,10 @@ export default defineEventHandler(async (event) => {
     (p) => p.email
   );
 
-  console.log("Old Emails: ", oldEmails);
 
   //get list of emails in the new group(the body) then remove the emails from the old group and run the check to see if any of the new emails are already assigned to other groups
   const newEmails = [leader, ...(members || [])].map((p) => p.email);
   const emailsToCheck = newEmails.filter((email) => !oldEmails.includes(email));
-  console.log("Emails to Check: ", emailsToCheck);
 
   const existingStudents = await Group.aggregate([
     {
