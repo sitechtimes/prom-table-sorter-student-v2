@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center min-h-screen bg-gray-500 p-6">
-    <div class="card w-full max-w-md bg-white shadow-xl p-6">
+  <div class="flex justify-center min-h-screen bg-base-200 p-6">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl p-6 border border-base-300">
       <!-- leader login -->
 
       <div v-if="!groupLoaded">
@@ -30,7 +30,7 @@
           placeholder="Enter here"
         />
         <FormInput
-          category="Osis"
+          category="OSIS"
           color="black"
           v-model="leader.osis"
           type="text"
