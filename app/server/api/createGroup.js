@@ -5,6 +5,7 @@ import Student from "../models/student";
 export default defineEventHandler(async (event) => {
   await connectDB();
   const body = await readBody(event);
+  console.log(body)
 
   const { leader, members } = body;
 
