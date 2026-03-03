@@ -179,8 +179,7 @@ async function submit() {
     leader: groupLeader,
     members: membersToSubmit,
   };
-  console.log(dataPush);
-
+  
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));

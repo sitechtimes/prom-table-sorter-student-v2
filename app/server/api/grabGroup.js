@@ -8,8 +8,12 @@ export default defineEventHandler(async (event) => {
 
   //find group by leader name osis and email
   const { firstName, lastName, email, osis } = body.leader;
-  console.log(firstName, lastName, email, osis);
-  const group = await Group.findOne({ "leader.firstName":firstName,"leader.lastName":lastName,"leader.email":email, "leader.osis":osis});
+  const group = await Group.findOne({
+    "leader.firstName": firstName,
+    "leader.lastName": lastName,
+    "leader.email": email,
+    "leader.osis": osis,
+  }).collation({ locale: "en", strength: 2 });
   if (!group) {
     throw createError({
       statusCode: 404,
