@@ -42,7 +42,7 @@ async function login(){
       alert(data.message);
       return;
     } else if (res.ok) {
-      await navigateTo("/AdminEnd")
+      await navigateTo("/admin/end")
     }
   } catch (error) {
     console.log(error)
