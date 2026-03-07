@@ -23,6 +23,7 @@
           v-model="groupLeader.firstName"
           type="text"
           placeholder="Enter here"
+          :isGuest="groupLeader.isGuest"
           :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <FormInput
@@ -31,6 +32,7 @@
           v-model="groupLeader.lastName"
           type="text"
           placeholder="Enter here"
+          :isGuest="groupLeader.isGuest"
           :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <FormInput
@@ -39,6 +41,7 @@
           v-model="groupLeader.email"
           type="email"
           placeholder="examples@nycstudents.net"
+          :isGuest="groupLeader.isGuest"
           :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
         <FormInput
@@ -47,17 +50,22 @@
           v-model="groupLeader.osis"
           type="text"
           placeholder="123456789"
+          :isGuest="groupLeader.isGuest"
           :class="hasError(0) ? 'border-red-500 border-4 rounded' : ''"
         />
-        <h2 class="text-black text-lg font-semibold">
-          Are you registering for a group?
-        </h2>
-        <input
-          type="checkbox"
-          v-model="InGroup"
-          class="checkbox checkbox-primary mb-4"
-          @change="clearGroup()"
-        />
+        <fieldset class="fieldset mb-4">
+          <label
+            class="label text-black text-lg font-semibold flex flex-col items-start gap-2"
+          >
+            <span>Are you registering for a group?</span>
+            <input
+              type="checkbox"
+              v-model="InGroup"
+              class="checkbox checkbox-primary border-2 border-black"
+              @change="clearGroup()"
+            />
+          </label>
+        </fieldset>
 
         <div v-if="InGroup" class="mb-6">
           <h2 class="text-black text-lg font-semibold">
@@ -97,6 +105,7 @@
                 v-model="Group[i]!.firstName"
                 type="text"
                 placeholder="Enter"
+                :isGuest="Group[i]!.isGuest"
                 :class="hasError(i) ? 'border-red-500 border-4 rounded' : ''"
               />
               <FormInput
@@ -105,6 +114,7 @@
                 v-model="Group[i]!.lastName"
                 type="text"
                 placeholder="Enter"
+                :isGuest="Group[i]!.isGuest"
                 :class="hasError(i) ? 'border-red-500 border-4 rounded' : ''"
               />
               <FormInput
@@ -113,8 +123,75 @@
                 v-model="Group[i]!.email"
                 type="email"
                 placeholder="examples@nycstudents.net"
+                :isGuest="Group[i]!.isGuest"
                 :class="hasError(i) ? 'border-red-500 border-4 rounded' : ''"
               />
+              <fieldset class="fieldset mb-4">
+                <label
+                  class="label text-xl font-bold flex flex-col items-start gap-2"
+                >
+                  <span>Are you bringing a guest?</span>
+                  <input
+                    type="checkbox"
+                    v-model="Group[i]!.bringingGuest"
+                    class="checkbox checkbox-primary border-2 border-white"
+                    :disabled="Group[i]!.isGuest"
+                    @click="guestChange(i)"
+                  />
+                </label>
+              </fieldset>
+              <div v-if="Group[i]!.bringingGuest === true">
+                <div>
+                  <label
+                    class="text-xl font-bold text-center mb-6 text-white"
+                    for="category"
+                    >Guest First Name</label
+                  >
+                  <input
+                    type="email"
+                    v-model="Group[i + 1]!.firstName"
+                    placeholder="Enter"
+                    class="input input-bordered w-full mb-4"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    class="text-xl font-bold text-center mb-6 text-white"
+                    for="category"
+                    >Guest Last Name</label
+                  >
+                  <input
+                    type="email"
+                    v-model="Group[i + 1]!.lastName"
+                    placeholder="Enter"
+                    class="input input-bordered w-full mb-4"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    class="text-xl font-bold text-center mb-6 text-white"
+                    for="category"
+                    >Guest Email</label
+                  >
+                  <input
+                    type="email"
+                    mail
+                    v-model="Group[i + 1]!.email"
+                    placeholder="example@nycstudents.net"
+                    class="input input-bordered w-full mb-4"
+                    required
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-error rounded"
+                @click="removeStudent(i)"
+              >
+                REMOVE STUDENT
+              </button>
             </div>
           </div>
         </div>
@@ -135,12 +212,14 @@ const groupLeader = reactive<Student>({
   lastName: "",
   email: "",
   osis: "",
+  bringingGuest: false,
+  isGuest: false,
+  guestOwner: "",
 });
 const InGroup = ref(false);
 const GroupSize = ref(1);
 const Group = ref<Student[]>([groupLeader]);
 const edittingForm = ref(false);
-const loggedIn = ref(false);
 const openDropdowns = ref<boolean[]>([]);
 // error handling for if students fail validation/duplicate checks
 const failedIndexes = ref<number[]>([]);
@@ -153,7 +232,14 @@ function organizeGroup() {
     return;
   }
   for (let i = Group.value.length; i < GroupSize.value; i++) {
-    Group.value.push({ firstName: "", lastName: "", email: "" });
+    Group.value.push({
+      firstName: "",
+      lastName: "",
+      email: "",
+      bringingGuest: false,
+      isGuest: false,
+      guestOwner: "",
+    });
     Group.value[0] = groupLeader;
   }
   openDropdowns.value = [];
@@ -170,16 +256,55 @@ function clearGroup() {
     Group.value = [groupLeader];
   }
 }
-
-
-
+function guestChange(index: number) {
+  if (Group.value[index]!.bringingGuest === true) {
+    Group.value.splice(index + 1, 1);
+    GroupSize.value = GroupSize.value - 1;
+    Group.value[index]!.bringingGuest = false;
+    return;
+  }
+  //this needs to PROPERLY delete students
+  // small issue fixes: styling, ensure theres no errors as it is rn, and make it so submit.prevent doesnt check the fields for the student when doing remove student
+  Group.value[index]!.bringingGuest = !Group.value[index]!.bringingGuest;
+  if (GroupSize.value + 1 > 12) {
+    alert(
+      "Cant add guest: too many students to one group. Please remove a student before adding a guest."
+    );
+    return;
+  }
+  GroupSize.value = GroupSize.value + 1;
+  Group.value.splice(index + 1, 0, {
+    firstName: "",
+    lastName: "",
+    email: "",
+    bringingGuest: false,
+    isGuest: true,
+    guestOwner: `${Group.value[index]?.firstName} ${Group.value[index]?.lastName}`,
+  });
+}
+function removeStudent(removeIndex: number) {
+  const removeStudent = Group.value[removeIndex];
+  for (let i = 0; i < GroupSize.value; i++) {
+    const studentName = `${removeStudent?.firstName} ${removeStudent?.lastName}`;
+    if (Group.value[i]?.guestOwner == studentName) {
+      alert(
+        "Can not remove student until the dependent guest is removed from the student."
+      );
+      return;
+    }
+  }
+  Group.value.splice(removeIndex, 1);
+  GroupSize.value = GroupSize.value - 1;
+}
 async function submit() {
-  const membersToSubmit = InGroup.value ? Group.value.slice(1, GroupSize.value) : [];
+  const membersToSubmit = InGroup.value
+    ? Group.value.slice(1, GroupSize.value)
+    : [];
   const dataPush = {
     leader: groupLeader,
     members: membersToSubmit,
   };
-  
+
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
