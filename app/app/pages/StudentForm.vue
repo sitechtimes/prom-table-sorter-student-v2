@@ -5,8 +5,8 @@
       to="/StudentEdit"
       class="absolute right-3.5 top-3.5 bg-base-200 rounded shadow hover:bg-warning transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
     >
-      <span class="md:hidden">Edit</span>
-      <span class="hidden md:inline"> Want to edit a form? Click here </span>
+      <span class="md:hidden text-base-300">Edit</span>
+      <span class="hidden md:inline text-base-300"> Want to edit a form? Click here </span>
     </NuxtLink>
   <div class="flex justify-center items-center bg-base-200 p-6">
     <div

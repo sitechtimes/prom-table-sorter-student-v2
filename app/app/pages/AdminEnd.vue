@@ -1,9 +1,9 @@
 <template>
   <div
-    class="min-h-screen bg-gray-200 flex flex-col items-center px-3 sm:px-6 py-8 gap-8"
+    class="min-h-screen bg-base-200 flex flex-col items-center px-3 sm:px-6 py-8 gap-8"
   >
     <div
-      class="w-full max-w-3xl bg-white border border-gray-300 shadow-2xl rounded-2xl p-5 sm:p-6 md:p-8"
+      class="w-full max-w-3xl bg-base-100 border border-base-300 shadow-2xl rounded-2xl p-5 sm:p-6 md:p-8"
     >
       <h1 class="text-2xl sm:text-3xl font-bold text-center text-black mb-6">
         Upload Excel file of those who paid
@@ -126,11 +126,11 @@
       </div>
 
       <TableVisualizer />
-    </div>
-
-    <button class="btn btn-primary w-full max-w-sm" @click="executeSort()">
+       <button class="btn btn-primary w-full max-w-sm" @click="executeSort()">
       List of all tables
     </button>
+    </div>
+
 
     <div v-if="Tables.length" class="w-full flex justify-center px-4">
       <div
