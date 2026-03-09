@@ -9,15 +9,13 @@ export default defineEventHandler(async (event) => {
     email: email,
   });
 
-  if (!userInfo) return;
-
-  const verify = await verifyPassword(userInfo.password, password);
-  if (!verify) {
-    throw createError({
+  if (!userInfo)
+    return {
       statusCode: 404,
-      message: "Invalid login credentials, please try again.",
-    });
-  } else {
+      message: "Unable to find user",
+    };
+
+  if (await verifyPassword(userInfo.password, password)) {
     await setUserSession(event, {
       user: {
         name: "Admin",
@@ -27,5 +25,10 @@ export default defineEventHandler(async (event) => {
       statusCode: 200,
       message: "Successfully logged in",
     };
+  } else {
+    throw createError({
+      statusCode: 404,
+      message: "Invalid login credentials, please try again.",
+    });
   }
 });
