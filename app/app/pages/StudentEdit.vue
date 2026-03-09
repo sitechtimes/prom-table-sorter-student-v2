@@ -14,6 +14,7 @@
           v-model="leader.firstName"
           type="text"
           placeholder="Enter here"
+          :isGuest="leader.isGuest"
         />
         <FormInput
           category="Last Name"
@@ -21,6 +22,7 @@
           v-model="leader.lastName"
           type="text"
           placeholder="Enter here"
+          :isGuest="leader.isGuest"
         />
         <FormInput
           category="Students Email"
@@ -28,6 +30,7 @@
           v-model="leader.email"
           type="text"
           placeholder="Enter here"
+          :isGuest="leader.isGuest"
         />
         <FormInput
           category="Osis"
@@ -35,6 +38,7 @@
           v-model="leader.osis"
           type="text"
           placeholder="Enter here"
+          :isGuest="leader.isGuest"
         />
 
         <button class="btn btn-primary w-full mt-4" @click="fetchGroup">
@@ -55,6 +59,7 @@
             v-model="leader.firstName"
             type="text"
             placeholder="Enter Here"
+            :isGuest="leader.isGuest"
           />
           <FormInput
             category="Leader Last Name"
@@ -62,6 +67,7 @@
             v-model="leader.lastName"
             type="text"
             placeholder="Enter Here"
+            :isGuest="leader.isGuest"
           />
           <FormInput
             category="Leader Email"
@@ -69,6 +75,7 @@
             v-model="leader.email"
             type="text"
             placeholder="Enter Here"
+            :isGuest="leader.isGuest"
           />
           <FormInput
             category="Leader OSIS"
@@ -76,10 +83,12 @@
             v-model="leader.osis"
             type="text"
             placeholder="Enter Here"
+            :isGuest="leader.isGuest"
           />
         </div>
 
         <div class="mt-6 space-y-3">
+          <!--button to delete ALL the students-->
           <div
             v-for="(member, i) in members"
             :key="i"
@@ -101,6 +110,7 @@
               v-model="member.firstName"
               type="text"
               placeholder="Enter here"
+              :isGuest="member.isGuest"
             />
             <FormInput
               category="Last Name"
@@ -108,6 +118,7 @@
               v-model="member.lastName"
               type="text"
               placeholder="Enter here"
+              :isGuest="member.isGuest"
             />
             <FormInput
               category="Email"
@@ -115,7 +126,67 @@
               v-model="member.email"
               type="text"
               placeholder="Enter here"
+              :isGuest="member.isGuest"
             />
+            <fieldset class="fieldset mb-4">
+              <label
+                class="label text-xl font-bold flex flex-col items-start gap-2"
+              >
+                <span>Are you bringing a guest?</span>
+                <input
+                  type="checkbox"
+                  v-model="member.bringingGuest"
+                  class="checkbox checkbox-primary border-2 border-white"
+                  :disabled="Group[i]!.isGuest"
+                  @click="guestChange(i)"
+                />
+              </label>
+            </fieldset>
+            <div v-if="Group[i]!.bringingGuest === true">
+              <div>
+                <label
+                  class="text-xl font-bold text-center mb-6 text-white"
+                  for="category"
+                  >Guest First Name</label
+                >
+                <input
+                  type="email"
+                  v-model="Group[i + 1]!.firstName"
+                  placeholder="Enter"
+                  class="input input-bordered w-full mb-4"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  class="text-xl font-bold text-center mb-6 text-white"
+                  for="category"
+                  >Guest Last Name</label
+                >
+                <input
+                  type="email"
+                  v-model="Group[i + 1]!.lastName"
+                  placeholder="Enter"
+                  class="input input-bordered w-full mb-4"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  class="text-xl font-bold text-center mb-6 text-white"
+                  for="category"
+                  >Guest Email</label
+                >
+                <input
+                  type="email"
+                  mail
+                  v-model="Group[i + 1]!.email"
+                  placeholder="example@nycstudents.net"
+                  class="input input-bordered w-full mb-4"
+                  required
+                />
+              </div>
+            </div>
           </div>
         </div>
 

@@ -179,7 +179,7 @@
                     type="email"
                     mail
                     v-model="Group[i + 1]!.email"
-                    placeholder="example@nycstudents.net"
+                    placeholder="example@gmail.com"
                     class="input input-bordered w-full mb-4"
                     required
                   />
@@ -189,6 +189,7 @@
                 type="button"
                 class="btn btn-error rounded"
                 @click="removeStudent(i)"
+                v-if="!Group[i]!.isGuest"
               >
                 REMOVE STUDENT
               </button>
@@ -263,8 +264,6 @@ function guestChange(index: number) {
     Group.value[index]!.bringingGuest = false;
     return;
   }
-  //this needs to PROPERLY delete students
-  // small issue fixes: styling, ensure theres no errors as it is rn, and make it so submit.prevent doesnt check the fields for the student when doing remove student
   Group.value[index]!.bringingGuest = !Group.value[index]!.bringingGuest;
   if (GroupSize.value + 1 > 12) {
     alert(
