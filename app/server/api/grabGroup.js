@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     "leader.lastName": lastName,
     "leader.email": email,
     "leader.osis": osis,
-  });
+  }).collation({ locale: "en", strength: 2 });
   if (!group) {
     throw createError({
       statusCode: 404,
