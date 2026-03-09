@@ -5,8 +5,9 @@ const personSchema = new mongoose.Schema({
   lastName: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true },
   osis: { type: Number, required: false, trim: true },
+  bringingGuest: { type: Boolean, required: false, default: false },
   guest: { type: Boolean, required: false, default: false },
-  guestOwnerEmail: { type: String, required: false, trim: true },
+  guestOwner: { type: String, required: false, trim: true },
 });
 
 const groupSchema = new mongoose.Schema({

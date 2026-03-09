@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     allPeople.map(async (person, index) => {
       if (person.guest) return; //skip validation for guests
       const match = await Student.findOne({
-        firstName: person.firstName, // Use original case
+        firstName: person.firstName,
         lastName: person.lastName,
         email: person.email,
       }).collation({ locale: "en", strength: 2 }); // Strength 2 ignores case
