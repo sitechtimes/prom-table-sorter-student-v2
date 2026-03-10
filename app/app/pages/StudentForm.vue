@@ -170,15 +170,13 @@ function clearGroup() {
   }
 }
 
-
-
 async function submit() {
-  const membersToSubmit = InGroup.value ? Group.value.slice(1, GroupSize.value) : [];
   const dataPush = {
     leader: groupLeader,
-    members: membersToSubmit,
+    members: Group.value.slice(1),
   };
-  
+  console.log(dataPush);
+
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
