@@ -129,62 +129,21 @@
        <button class="btn btn-primary w-full max-w-sm" @click="executeSort()">
       List of all tables
     </button>
-    </div>
-
-
-    <div v-if="Tables.length" class="w-full flex justify-center px-4">
-      <div
-        class="w-full md:w-2/3 lg:w-1/2 overflow-x-auto bg-black rounded-xl shadow-xl"
-      >
-        <table class="table table-zebra w-full rounded-xl">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Members</th>
-              <th># Of Free Seats Left</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(table, i) in Tables" :key="i">
-              <th>{{ i + 1 }}</th>
-              <td>
-                <div
-                  v-for="occupant in table.occupants"
-                  :key="occupant.leader.email"
-                  class="mb-2"
-                >
-                  <div class="dropdown dropdown-hover">
-                    <label tabindex="0" class="btn btn-sm btn-outline">
-                      {{ occupant.leader.firstName }}
-                      {{ occupant.leader.lastName }}
-                    </label>
-                    <ul
-                      tabindex="0"
-                      class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-56"
-                    >
-                      <li class="font-bold text-gray-700">Group Members:</li>
-                      <li
-                        v-for="member in occupant.members"
-                        :key="member.email"
-                      >
-                        <a> {{ member.firstName }} {{ member.lastName }} </a>
-                      </li>
-                      <li
-                        v-if="occupant.members.length === 0"
-                        class="italic text-gray-500"
-                      >
-                        Singular student, no members
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </td>
-              <td class="text-center">
-                {{ table.unoccupiedSeats }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <button
+      class="btn btn-primary w-full max-w-sm"
+      v-else
+      @click="executeSort()"
+    >
+      Refresh Sort
+    </button>
+    <div v-if="tables.length > 0" class="w-full flex justify-center px-4">
+      <div class="w-full">
+        <TableVisualizer
+          :tables="tables"
+          :notPaid="notPaid"
+          :notRegistered="notRegistered"
+          :key="updateProps"
+        />
       </div>
     </div>
   </div>

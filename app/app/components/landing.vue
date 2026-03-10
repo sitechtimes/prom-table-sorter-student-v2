@@ -50,6 +50,23 @@
           <div
             class="card-actions justify-end underline font-semibold sm:text-xl"
           >
+            <NuxtLink to="/adminLogin">Go To</NuxtLink>
+          </div>
+        </div>
+      </div>
+      <div
+        class="card bg-base-100 shadow-sm w-full"
+      >
+        <figure class="h-1/3 flex items-center place-self-center">
+          <img src="/admin-svgrepo-com.svg" class="h-24 md:h-1/2 md:hidden" />
+        </figure>
+
+        <div class="card-body">
+          <h2 class="card-title font-bold sm:text-2xl">Admin View</h2>
+          <p>Administrator, click here to go to the admin log in page.</p>
+          <div
+            class="card-actions justify-end underline font-semibold sm:text-xl"
+          >
             <NuxtLink to="/admin/login">Go To</NuxtLink>
           </div>
         </div>
