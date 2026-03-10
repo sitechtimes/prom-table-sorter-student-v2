@@ -16,7 +16,7 @@
           <div
             class="card-actions justify-end underline font-semibold sm:text-xl"
           >
-            <NuxtLink to="/studentForm">Go To</NuxtLink>
+            <NuxtLink to="/student/form">Go To</NuxtLink>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@
           <div
             class="card-actions justify-end underline font-semibold sm:text-xl"
           >
-            <NuxtLink to="/adminLogin">Go To</NuxtLink>
+            <NuxtLink to="/admin/login">Go To</NuxtLink>
           </div>
         </div>
       </div>
