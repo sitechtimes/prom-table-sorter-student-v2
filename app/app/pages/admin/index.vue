@@ -129,22 +129,7 @@
        <button class="btn btn-primary w-full max-w-sm" @click="executeSort()">
       List of all tables
     </button>
-    <button
-      class="btn btn-primary w-full max-w-sm"
-      v-else
-      @click="executeSort()"
-    >
-      Refresh Sort
-    </button>
-    <div v-if="tables.length > 0" class="w-full flex justify-center px-4">
-      <div class="w-full">
-        <TableVisualizer
-          :tables="tables"
-          :notPaid="notPaid"
-          :notRegistered="notRegistered"
-          :key="updateProps"
-        />
-      </div>
+
     </div>
   </div>
 
