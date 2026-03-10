@@ -12,19 +12,21 @@ export default defineEventHandler(async (event) => {
   await Promise.all(
     allPeople.map(async (person, index) => {
       const match = await Student.findOne({
-        firstName: person.firstName.toLowerCase(),
-        lastName: person.lastName.toLowerCase(),
-        email: person.email.toLowerCase(),
-      });
+        firstName: person.firstName, // Use original case
+        lastName: person.lastName,
+        email: person.email,
+      }).collation({ locale: "en", strength: 2 }); // Strength 2 ignores case
+
       if (!match) failedIndexes.push(index);
-    })
+    }),
   );
 
   //if some students dont exist throw an error with the indexes
   if (failedIndexes.length > 0) {
     throw createError({
       statusCode: 599,
-      message: "Some students could not be validated. Please check highlighted fields for errors.",
+      message:
+        "Some students could not be validated. Please check highlighted fields for errors.",
       data: { failedIndexes },
     });
   }
@@ -32,15 +34,12 @@ export default defineEventHandler(async (event) => {
   //Get the list of emails of the people in the old unedited group by the information of the leader
   const oldGroup = await Group.findOne({ "leader.email": leader.email });
   const oldEmails = [oldGroup.leader, ...(oldGroup.members || [])].map(
-    (p) => p.email
+    (p) => p.email,
   );
-
-  console.log("Old Emails: ", oldEmails);
 
   //get list of emails in the new group(the body) then remove the emails from the old group and run the check to see if any of the new emails are already assigned to other groups
   const newEmails = [leader, ...(members || [])].map((p) => p.email);
   const emailsToCheck = newEmails.filter((email) => !oldEmails.includes(email));
-  console.log("Emails to Check: ", emailsToCheck);
 
   const existingStudents = await Group.aggregate([
     {
@@ -67,7 +66,7 @@ export default defineEventHandler(async (event) => {
     allPeople.forEach((dict, index) => {
       if (
         existingStudents[0].matchedEmails.includes(
-          dict.email.trim().toLowerCase()
+          dict.email.trim().toLowerCase(),
         )
       ) {
         failedIndexes.push(index);
@@ -75,7 +74,8 @@ export default defineEventHandler(async (event) => {
     });
     throw createError({
       statusCode: 599,
-      message: "Some students already exist in other groups. Please check highlighted fields.",
+      message:
+        "Some students already exist in other groups. Please check highlighted fields.",
       data: { failedIndexes },
     });
   }
