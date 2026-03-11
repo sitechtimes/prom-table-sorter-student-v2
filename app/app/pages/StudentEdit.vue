@@ -201,6 +201,9 @@
         <button class="btn btn-primary w-full mt-6" @click="submitEdits">
           Submit Changes
         </button>
+        <button class="btn btn-error w-full mt-6" @click="removeGroup">
+          Remove group
+        </button>
       </div>
     </div>
   </div>
@@ -237,7 +240,18 @@ function removeMember(index: number) {
     .filter((i) => i !== index + 1)
     .map((i) => (i > index + 1 ? i - 1 : i));
 }
+async function removeGroup() {
+  try {
+    //const res = await blahblahblah("/api/whatever", {
+    //body
+    // });
 
+    alert("Group deleted successfully");
+    await navigateTo("/");
+  } catch {
+    alert("Server error while updating group");
+  }
+}
 const members = ref<Student[]>([]);
 const groupLoaded = ref(false);
 const failedIndexes = ref<number[]>([]);
