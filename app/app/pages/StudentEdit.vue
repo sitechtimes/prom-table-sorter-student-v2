@@ -137,12 +137,12 @@
                   type="checkbox"
                   v-model="member.bringingGuest"
                   class="checkbox checkbox-primary border-2 border-white"
-                  :disabled="Group[i]!.isGuest"
+                  :disabled="member.isGuest"
                   @click="guestChange(i)"
                 />
               </label>
             </fieldset>
-            <div v-if="Group[i]!.bringingGuest === true">
+            <div v-if="member.bringingGuest === true">
               <div>
                 <label
                   class="text-xl font-bold text-center mb-6 text-white"
@@ -151,7 +151,7 @@
                 >
                 <input
                   type="email"
-                  v-model="Group[i + 1]!.firstName"
+                  v-model="members[i + 1]!.firstName"
                   placeholder="Enter"
                   class="input input-bordered w-full mb-4"
                   required
@@ -165,7 +165,7 @@
                 >
                 <input
                   type="email"
-                  v-model="Group[i + 1]!.lastName"
+                  v-model="members[i + 1]!.lastName"
                   placeholder="Enter"
                   class="input input-bordered w-full mb-4"
                   required
@@ -180,7 +180,7 @@
                 <input
                   type="email"
                   mail
-                  v-model="Group[i + 1]!.email"
+                  v-model="members[i + 1]!.email"
                   placeholder="example@nycstudents.net"
                   class="input input-bordered w-full mb-4"
                   required
@@ -261,7 +261,28 @@ async function fetchGroup() {
     alert("Could not find group for this leader");
   }
 }
-
+function guestChange(index: number) {
+  if (members.value[index]!.bringingGuest === true) {
+    members.value.splice(index + 1, 1);
+    members.value[index]!.bringingGuest = false;
+    return;
+  }
+  members.value[index]!.bringingGuest = !members.value[index]!.bringingGuest;
+  if (members.value.length + 1 > 12) {
+    alert(
+      "Cant add guest: too many students to one group. Please remove a student before adding a guest."
+    );
+    return;
+  }
+  members.value.splice(index + 1, 0, {
+    firstName: "",
+    lastName: "",
+    email: "",
+    bringingGuest: false,
+    isGuest: true,
+    guestOwner: `${members.value[index]?.email}`,
+  });
+}
 async function submitEdits() {
   failedIndexes.value = [];
 

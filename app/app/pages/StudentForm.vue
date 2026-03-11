@@ -148,10 +148,14 @@
                     >Guest First Name</label
                   >
                   <input
-                    type="email"
+                    type="text"
                     v-model="Group[i + 1]!.firstName"
                     placeholder="Enter"
-                    class="input input-bordered w-full mb-4"
+                    :class="
+                      hasError(i + 1)
+                        ? 'input input-bordered w-full mb-4 border-red-500 border-4 rounded'
+                        : 'input input-bordered w-full mb-4'
+                    "
                     required
                   />
                 </div>
@@ -162,10 +166,14 @@
                     >Guest Last Name</label
                   >
                   <input
-                    type="email"
+                    type="text"
                     v-model="Group[i + 1]!.lastName"
                     placeholder="Enter"
-                    class="input input-bordered w-full mb-4"
+                    :class="
+                      hasError(i + 1)
+                        ? 'input input-bordered w-full mb-4 border-red-500 border-4 rounded'
+                        : 'input input-bordered w-full mb-4'
+                    "
                     required
                   />
                 </div>
@@ -180,7 +188,11 @@
                     mail
                     v-model="Group[i + 1]!.email"
                     placeholder="example@gmail.com"
-                    class="input input-bordered w-full mb-4"
+                    :class="
+                      hasError(i + 1)
+                        ? 'input input-bordered w-full mb-4 border-red-500 border-4 rounded'
+                        : 'input input-bordered w-full mb-4'
+                    "
                     required
                   />
                 </div>
@@ -278,14 +290,13 @@ function guestChange(index: number) {
     email: "",
     bringingGuest: false,
     isGuest: true,
-    guestOwner: `${Group.value[index]?.firstName} ${Group.value[index]?.lastName}`,
+    guestOwner: `${Group.value[index]?.email}`,
   });
 }
 function removeStudent(removeIndex: number) {
   const removeStudent = Group.value[removeIndex];
   for (let i = 0; i < GroupSize.value; i++) {
-    const studentName = `${removeStudent?.firstName} ${removeStudent?.lastName}`;
-    if (Group.value[i]?.guestOwner == studentName) {
+    if (Group.value[i]?.guestOwner == removeStudent!.email) {
       alert(
         "Can not remove student until the dependent guest is removed from the student."
       );
@@ -308,9 +319,31 @@ async function submit() {
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
   const emailCheck = groupLeader.email.includes("@nycstudents.net");
-
+  for (let i = 0; i < dataPush.members.length; i++) {
+    if (dataPush.members[i]!.isGuest === false) {
+      const emailCheck =
+        dataPush.members[i]!.email.includes("@nycstudents.net");
+      if (!emailCheck) {
+        alert(
+          "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!"
+        );
+        failedIndexes.value.push(i);
+        return;
+      }
+    } else {
+      const emailCheck = dataPush.members[i]!.email.includes("@"); //find a way to make this any valid email, can't just include @
+      if (!emailCheck) {
+        alert("Enter a valid email domain for all guests.");
+        failedIndexes.value.push(i);
+        return;
+      }
+    }
+  }
   if (!osisCheck || !emailCheck) {
-    alert("Enter a 9 digit OSIS and an @nycstudents.net email");
+    failedIndexes.value.push(0);
+    alert(
+      "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!"
+    );
     return;
   }
   try {
