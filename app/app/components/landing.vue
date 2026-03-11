@@ -1,8 +1,8 @@
 <template>
   <div class="">
-    <div class="flex flex-row bg-white m-6 mb-0 rounded-md">
-       <h1 class="text-9xl font-semibold m-4 max-md:hidden md:max-w-11/12 xl:max-w-3/5 text-shadow-lg text-base-300">SITHS Prom Table Sorter</h1>
-       <img src="/dance.svg"class="p-12"/>
+    <div class="flex flex-row bg-base-100 m-6 mb-0 rounded-md md:grid md:grid-cols-2">
+       <h1 class="text-7xl lg:text-8xl xl:text-9xl font-semibold m-6 max-md:hidden text-shadow-lg text-base-content">SITHS Prom Table Sorter</h1>
+       <img src="/dance.svg"class=" p-12 xl:w-1/2 justify-self-center"/>
     </div>
    
     <div

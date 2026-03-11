@@ -20,7 +20,7 @@
       />
 
       <button
-        class="btn btn-secondary w-full mb-4"
+        class="btn btn-neutral w-full mb-4"
         @click="showPaidExample = !showPaidExample"
       >
         Click here to open / close example
@@ -28,7 +28,7 @@
 
       <img
         v-if="showPaidExample"
-        src="../assets/paidExample.png"
+        src="/paidExample.png"
         class="mx-auto w-full sm:w-2/3 md:w-1/2 rounded-xl shadow mb-6"
       />
 
@@ -107,7 +107,7 @@
         <input
           type="checkbox"
           v-model="includeUnpaidStudents"
-          class="checkbox checkbox-primary"
+          class="checkbox checkbox-neutral"
         />
         <label class="text-black font-medium">
           Include unpaid students in table sorting
@@ -118,7 +118,7 @@
         <input
           type="checkbox"
           v-model="looseMode"
-          class="checkbox checkbox-primary"
+          class="checkbox checkbox-neutral"
         />
         <label class="text-black font-medium">
           Filter students loosely (name only) or strictly (name and email)
@@ -126,7 +126,7 @@
       </div>
 
       <TableVisualizer />
-       <button class="btn btn-primary w-full max-w-sm" @click="executeSort()">
+       <button class="btn btn-neutral w-full" @click="executeSort()">
       List of all tables
     </button>
 

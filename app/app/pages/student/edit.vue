@@ -37,7 +37,7 @@
           placeholder="Enter here"
         />
 
-        <button class="btn btn-primary w-full mt-4" @click="fetchGroup">
+        <button class="btn btn-neutral w-full mt-4" @click="fetchGroup">
           Find My Group
         </button>
       </div>
