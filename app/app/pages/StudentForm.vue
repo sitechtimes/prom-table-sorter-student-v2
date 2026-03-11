@@ -330,13 +330,6 @@ async function submit() {
         failedIndexes.value.push(i);
         return;
       }
-    } else {
-      const emailCheck = dataPush.members[i]!.email.includes("@"); //find a way to make this any valid email, can't just include @
-      if (!emailCheck) {
-        alert("Enter a valid email domain for all guests.");
-        failedIndexes.value.push(i);
-        return;
-      }
     }
   }
   if (!osisCheck || !emailCheck) {
