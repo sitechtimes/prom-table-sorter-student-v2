@@ -56,11 +56,13 @@
         </div>
       </div>
 
-      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
+    <div class="space-y-2">
+  <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+  <input type="checkbox" />
+    <h1 class="collapse-title text-xl sm:text-2xl font-bold text-center text-black">
         Students that haven't paid and are at a table
-      </h1>
-
-      <div class="mb-6">
+    </h1>
+  <div class="mb-6 collapse-content">
         <div
           v-if="notPaid.length !== 0"
           v-for="student in notPaid"
@@ -72,13 +74,15 @@
         <p v-else class="text-gray-500 text-center italic">
           Empty, enter an excel to display.
         </p>
+  </div>
       </div>
-
-      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
+      
+      <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+      <input type="checkbox" />
+      <h1 class="collapse-title text-xl sm:text-2xl font-bold text-center text-black">
         Students that have paid and are not at a table
       </h1>
-
-      <div class="mb-6">
+    <div class="mb-6 collapse-content">
         <div
           v-if="noSeat.length !== 0"
           v-for="student in noSeat"
@@ -91,7 +95,9 @@
           Empty, enter an excel to display.
         </p>
       </div>
+    </div>
 
+    <div>
       <a
         v-if="downloadExcelLink == null"
         class="btn w-full mb-4 pointer-events-none opacity-60"
@@ -102,6 +108,10 @@
       <a v-else :href="downloadExcelLink" class="btn btn-primary w-full mb-4">
         Download Comparison
       </a>
+    </div>
+    </div>
+    
+
 
       <div class="flex items-center gap-3 mb-4">
         <input
@@ -125,16 +135,28 @@
         </label>
       </div>
 
-      <TableVisualizer />
+      <!-- <TableVisualizer /> -->
        <button class="btn btn-neutral w-full" @click="executeSort()">
       List of all tables
     </button>
+  <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
 
+<button class="btn" onclick="my_modal_1.showModal()">Delete All Groups</button>
+<dialog id="my_modal_1" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Careful!</h3>
+    <p class="py-4">Continuing with this action will delete all groups. Please proceed with caution. 
+      This action should only be done once a year to refresh groups.</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
     </div>
   </div>
 
-  <button class="btn btn-primary mb-4" @click="fetchGroups">Load Groups</button>
-  <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
 </template>
 <script lang="ts" setup>
 import ExcelJS from "exceljs";
@@ -151,151 +173,151 @@ const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
 const downloadExcelLink = ref<string | null>(null);
 const Groups = ref<Group[]>([
-  {
-    leader: {
-      firstName: "Ava",
-      lastName: "Johnson",
-      email: "avaj583920174@nycstudents.net",
-      osis: "102938475",
-    },
-    members: [
-      {
-        firstName: "Mila",
-        lastName: "Chen",
-        email: "milac491027365@nycstudents.net",
-      },
-    ],
-  },
-  {
-    leader: {
-      firstName: "Leo",
-      lastName: "Rossi",
-      email: "leor839174620@nycstudents.net",
-      osis: "564738291",
-    },
-    members: [
-      {
-        firstName: "Noah",
-        lastName: "Smith",
-        email: "noahs720493158@nycstudents.net",
-      },
-      {
-        firstName: "Ella",
-        lastName: "Rivera",
-        email: "ellar@nycstudents.net",
-      },
-      {
-        firstName: "Lucas",
-        lastName: "Kim",
-        email: "lucask947205613@nycstudents.net",
-      },
-    ],
-  },
-  {
-    leader: {
-      firstName: "Sofia",
-      lastName: "Martinez",
-      email: "sofiam260591834@nycstudents.net",
-      osis: "948372615",
-    },
-    members: [
-      {
-        firstName: "Olivia",
-        lastName: "Brown",
-        email: "oliviab@nycstudents.net",
-      },
-      {
-        firstName: "Henry",
-        lastName: "Lee",
-        email: "henryl572019463@nycstudents.net",
-      },
-      {
-        firstName: "Aiden",
-        lastName: "Patel",
-        email: "aidenp604937128@nycstudents.net",
-      },
-      {
-        firstName: "Grace",
-        lastName: "Wong",
-        email: "gracew932741650@nycstudents.net",
-      },
-      {
-        firstName: "James",
-        lastName: "Lopez",
-        email: "jamesl875103942@nycstudents.net",
-      },
-      {
-        firstName: "Chloe",
-        lastName: "Adams",
-        email: "chloea514620987@nycstudents.net",
-      },
-      {
-        firstName: "Ethan",
-        lastName: "Nguyen",
-        email: "ethann309875416@nycstudents.net",
-      },
-    ],
-  },
-  {
-    leader: {
-      firstName: "Isabella",
-      lastName: "Green",
-      email: "isabellag728104563@nycstudents.net",
-      osis: "127483920",
-    },
-    members: [
-      {
-        firstName: "Daniel",
-        lastName: "King",
-        email: "danielk190473826@nycstudents.net",
-      },
-      {
-        firstName: "Ari",
-        lastName: "Gold",
-        email: "arig543298710@nycstudents.net",
-      },
-      {
-        firstName: "Luna",
-        lastName: "Castro",
-        email: "lunac817205349@nycstudents.net",
-      },
-      {
-        firstName: "Elijah",
-        lastName: "Diaz",
-        email: "elijahd605819274@nycstudents.net",
-      },
-      {
-        firstName: "Riley",
-        lastName: "Morris",
-        email: "rileym290471685@nycstudents.net",
-      },
-      {
-        firstName: "Zoe",
-        lastName: "Clark",
-        email: "zoec958201647@nycstudents.net",
-      },
-      {
-        firstName: "Mateo",
-        lastName: "Santos",
-        email: "mateos481935027@nycstudents.net",
-      },
-      {
-        firstName: "Nora",
-        lastName: "Baker",
-        email: "norab702185934@nycstudents.net",
-      },
-      {
-        firstName: "Sebastian",
-        lastName: "Reyes",
-        email: "sebastianr614209875@nycstudents.net",
-      },
-      {
-        firstName: "Liam",
-        lastName: "Turner",
-        email: "liamt879216340@nycstudents.net",
-      },
-    ],
-  },
+  // {
+  //   leader: {
+  //     firstName: "Ava",
+  //     lastName: "Johnson",
+  //     email: "avaj583920174@nycstudents.net",
+  //     osis: "102938475",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Mila",
+  //       lastName: "Chen",
+  //       email: "milac491027365@nycstudents.net",
+  //     },
+  //   ],
+  // },
+  // {
+  //   leader: {
+  //     firstName: "Leo",
+  //     lastName: "Rossi",
+  //     email: "leor839174620@nycstudents.net",
+  //     osis: "564738291",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Noah",
+  //       lastName: "Smith",
+  //       email: "noahs720493158@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Ella",
+  //       lastName: "Rivera",
+  //       email: "ellar@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Lucas",
+  //       lastName: "Kim",
+  //       email: "lucask947205613@nycstudents.net",
+  //     },
+  //   ],
+  // },
+  // {
+  //   leader: {
+  //     firstName: "Sofia",
+  //     lastName: "Martinez",
+  //     email: "sofiam260591834@nycstudents.net",
+  //     osis: "948372615",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Olivia",
+  //       lastName: "Brown",
+  //       email: "oliviab@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Henry",
+  //       lastName: "Lee",
+  //       email: "henryl572019463@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Aiden",
+  //       lastName: "Patel",
+  //       email: "aidenp604937128@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Grace",
+  //       lastName: "Wong",
+  //       email: "gracew932741650@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "James",
+  //       lastName: "Lopez",
+  //       email: "jamesl875103942@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Chloe",
+  //       lastName: "Adams",
+  //       email: "chloea514620987@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Ethan",
+  //       lastName: "Nguyen",
+  //       email: "ethann309875416@nycstudents.net",
+  //     },
+  //   ],
+  // },
+  // {
+  //   leader: {
+  //     firstName: "Isabella",
+  //     lastName: "Green",
+  //     email: "isabellag728104563@nycstudents.net",
+  //     osis: "127483920",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Daniel",
+  //       lastName: "King",
+  //       email: "danielk190473826@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Ari",
+  //       lastName: "Gold",
+  //       email: "arig543298710@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Luna",
+  //       lastName: "Castro",
+  //       email: "lunac817205349@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Elijah",
+  //       lastName: "Diaz",
+  //       email: "elijahd605819274@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Riley",
+  //       lastName: "Morris",
+  //       email: "rileym290471685@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Zoe",
+  //       lastName: "Clark",
+  //       email: "zoec958201647@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Mateo",
+  //       lastName: "Santos",
+  //       email: "mateos481935027@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Nora",
+  //       lastName: "Baker",
+  //       email: "norab702185934@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Sebastian",
+  //       lastName: "Reyes",
+  //       email: "sebastianr614209875@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Liam",
+  //       lastName: "Turner",
+  //       email: "liamt879216340@nycstudents.net",
+  //     },
+  //   ],
+  // },
 ]);
 
 const Tables = ref<Table[]>([]);
@@ -564,7 +586,7 @@ async function exportAsExcel() {
   downloadExcelLink.value = URL.createObjectURL(blob);
 }
 
-onMounted(() => {
-  // fetchGroups();
+onMounted(async() => {
+  await fetchGroups();
 });
 </script>
