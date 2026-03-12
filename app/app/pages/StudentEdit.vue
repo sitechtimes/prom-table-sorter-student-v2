@@ -130,7 +130,7 @@
             />
             <fieldset class="fieldset mb-4">
               <label
-                class="label text-xl font-bold flex flex-col items-start gap-2"
+                class="label text-xl font-bold flex flex-col items-start gap-2 text-black"
               >
                 <span>Are you bringing a guest?</span>
                 <input
@@ -145,7 +145,7 @@
             <div v-if="member.bringingGuest === true">
               <div>
                 <label
-                  class="text-xl font-bold text-center mb-6 text-white"
+                  class="text-xl font-bold text-center mb-6 text-black"
                   for="category"
                   >Guest First Name</label
                 >
@@ -159,7 +159,7 @@
               </div>
               <div>
                 <label
-                  class="text-xl font-bold text-center mb-6 text-white"
+                  class="text-xl font-bold text-center mb-6 text-black"
                   for="category"
                   >Guest Last Name</label
                 >
@@ -242,14 +242,16 @@ function removeMember(index: number) {
 }
 async function removeGroup() {
   try {
-    //const res = await blahblahblah("/api/whatever", {
-    //body
-    // });
+    const res = await fetch("/api/removeGroup", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ leader }),
+    });
 
     alert("Group deleted successfully");
     await navigateTo("/");
   } catch {
-    alert("Server error while updating group");
+    alert("Server error while deleting group");
   }
 }
 const members = ref<Student[]>([]);
