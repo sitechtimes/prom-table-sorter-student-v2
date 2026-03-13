@@ -93,7 +93,7 @@
             v-for="(member, i) in members"
             :key="i"
             class="border p-3 rounded relative"
-            :class="hasError(i + 1) ? 'border-red-500 border-2' : ''"
+
           >
             <h3 class="font-semibold mb-2 text-black">Member {{ i + 1 }}</h3>
 
@@ -110,7 +110,8 @@
               v-model="member.firstName"
               type="text"
               placeholder="Enter here"
-              :isGuest="member.isGuest"
+              :isGuest="!member.isGuest"
+              :class="hasError(i+1) ? 'border-red-500 border-4 rounded' : ''"
             />
             <FormInput
               category="Last Name"
@@ -118,7 +119,8 @@
               v-model="member.lastName"
               type="text"
               placeholder="Enter here"
-              :isGuest="member.isGuest"
+              :isGuest="!member.isGuest"
+              :class="hasError(i+1) ? 'border-red-500 border-4 rounded' : ''"
             />
             <FormInput
               category="Email"
@@ -126,7 +128,8 @@
               v-model="member.email"
               type="text"
               placeholder="Enter here"
-              :isGuest="member.isGuest"
+              :isGuest="!member.isGuest"
+              :class="hasError(i+1) ? 'border-red-500 border-4 rounded' : ''"
             />
             <fieldset class="fieldset mb-4">
               <label
@@ -136,42 +139,42 @@
                 <input
                   type="checkbox"
                   v-model="member.bringingGuest"
-                  class="checkbox checkbox-primary border-2 border-white"
-                  :disabled="member.isGuest"
+                  class="checkbox checkbox-primary border-2 border-black"
+                  :disabled="!member.isGuest"
                   @click="guestChange(i)"
                 />
               </label>
             </fieldset>
             <div v-if="member.bringingGuest === true">
-              <div>
+              <div :class="hasError(i+2) ? 'border-red-500 border-4 rounded' : ''">
                 <label
                   class="text-xl font-bold text-center mb-6 text-black"
                   for="category"
                   >Guest First Name</label
                 >
                 <input
-                  type="email"
+                  type="text"
                   v-model="members[i + 1]!.firstName"
                   placeholder="Enter"
                   class="input input-bordered w-full mb-4"
                   required
                 />
               </div>
-              <div>
+              <div :class="hasError(i+2) ? 'border-red-500 border-4 rounded' : ''">
                 <label
                   class="text-xl font-bold text-center mb-6 text-black"
                   for="category"
                   >Guest Last Name</label
                 >
                 <input
-                  type="email"
+                  type="text"
                   v-model="members[i + 1]!.lastName"
                   placeholder="Enter"
                   class="input input-bordered w-full mb-4"
                   required
                 />
               </div>
-              <div>
+              <div :class="hasError(i+2) ? 'border-red-500 border-4 rounded' : ''">
                 <label
                   class="text-xl font-bold text-center mb-6 text-white"
                   for="category"
@@ -311,7 +314,10 @@ async function submitEdits() {
         members: members.value,
       }),
     });
-
+    console.log(JSON.stringify({
+        leader,
+        members: members.value,
+      }),)
     const data = await res.json();
 
     if (!res.ok) {

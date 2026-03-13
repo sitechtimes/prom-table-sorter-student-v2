@@ -363,7 +363,7 @@ async function submit() {
           }
         }
       }
-
+      console.log(dataPush)
       alert(data.message);
     } else {
       alert("Submission successful!");
