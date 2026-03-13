@@ -69,8 +69,8 @@
   --depth: 1;
   --noise: 0;
 }
- @plugin "daisyui" {
-  themes: bumblebee --default, meow --prefersdark;
- }
-
-
+@plugin "daisyui" {
+  themes:
+    bumblebee --default,
+    meow --prefersdark;
+}

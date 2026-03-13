@@ -56,62 +56,68 @@
         </div>
       </div>
 
-    <div class="space-y-2">
-  <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
-  <input type="checkbox" />
-    <h1 class="collapse-title text-xl sm:text-2xl font-bold text-center text-black">
-        Students that haven't paid and are at a table
-    </h1>
-  <div class="mb-6 collapse-content">
-        <div
-          v-if="notPaid.length !== 0"
-          v-for="student in notPaid"
-          :key="student.osis"
-          class="text-black text-center font-medium mb-1"
-        >
-          {{ student.firstName }} {{ student.lastName }}
+      <div class="space-y-2">
+        <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+          <input type="checkbox" />
+          <h1
+            class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+          >
+            Students that haven't paid and are at a table
+          </h1>
+          <div class="mb-6 collapse-content">
+            <div
+              v-if="notPaid.length !== 0"
+              v-for="student in notPaid"
+              :key="student.osis"
+              class="text-black text-center font-medium mb-1"
+            >
+              {{ student.firstName }} {{ student.lastName }}
+            </div>
+            <p v-else class="text-gray-500 text-center italic">
+              Empty, enter an excel to display.
+            </p>
+          </div>
         </div>
-        <p v-else class="text-gray-500 text-center italic">
-          Empty, enter an excel to display.
-        </p>
-  </div>
-      </div>
-      
-      <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
-      <input type="checkbox" />
-      <h1 class="collapse-title text-xl sm:text-2xl font-bold text-center text-black">
-        Students that have paid and are not at a table
-      </h1>
-    <div class="mb-6 collapse-content">
-        <div
-          v-if="noSeat.length !== 0"
-          v-for="student in noSeat"
-          :key="student.email"
-          class="text-black text-center font-medium mb-1"
-        >
-          {{ student.name }}
+
+        <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+          <input type="checkbox" />
+          <h1
+            class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+          >
+            Students that have paid and are not at a table
+          </h1>
+          <div class="mb-6 collapse-content">
+            <div
+              v-if="noSeat.length !== 0"
+              v-for="student in noSeat"
+              :key="student.email"
+              class="text-black text-center font-medium mb-1"
+            >
+              {{ student.name }}
+            </div>
+            <p v-else class="text-gray-500 text-center italic">
+              Empty, enter an excel to display.
+            </p>
+          </div>
         </div>
-        <p v-else class="text-gray-500 text-center italic">
-          Empty, enter an excel to display.
-        </p>
+
+        <div>
+          <a
+            v-if="downloadExcelLink == null"
+            class="btn w-full mb-4 pointer-events-none opacity-60"
+          >
+            Enter an excel and sort for a download link
+          </a>
+
+          <a
+            v-else
+            :href="downloadExcelLink"
+            class="btn btn-primary w-full mb-4"
+          >
+            Download Comparison
+          </a>
+        </div>
       </div>
-    </div>
-
-    <div>
-      <a
-        v-if="downloadExcelLink == null"
-        class="btn w-full mb-4 pointer-events-none opacity-60"
-      >
-        Enter an excel and sort for a download link
-      </a>
-
-      <a v-else :href="downloadExcelLink" class="btn btn-primary w-full mb-4">
-        Download Comparison
-      </a>
-    </div>
-    </div>
-    
-
 
       <div class="flex items-center gap-3 mb-4">
         <input
@@ -136,33 +142,68 @@
       </div>
 
       <!-- <TableVisualizer /> -->
-       <button class="btn btn-neutral w-full" @click="executeSort()">
-      List of all tables
-    </button>
-  <button class="btn btn-primary mb-4" @click="logGroups">Log Groups</button>
+      <button class="btn btn-neutral w-full" @click="executeSort()">
+        Execute Sorting
+      </button>
+      <button class="btn btn-primary mb-4" @click="logGroups">
+        Log Groups
+      </button>
 
-<button class="btn" onclick="my_modal_1.showModal()">Delete All Groups</button>
-<dialog id="my_modal_1" class="modal">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold">Careful!</h3>
-    <p class="py-4">Continuing with this action will delete all groups. Please proceed with caution. 
-      This action should only be done once a year to refresh groups.</p>
-    <div class="modal-action">
-      <form method="dialog">
-        <button class="btn">Close</button>
-      </form>
+      <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+          <input type="checkbox" />
+          <h1
+            class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+          >
+            List of All Tables
+          </h1>
+          <div class="mb-6 collapse-content">
+            <div
+              v-if="Groups.length !== 0"
+            >
+            <div v-for="group in Groups"
+              :key="group.leader.email"
+              class="border border-white grid grid-cols-2 text-black text-center font-medium mb-1">
+             {{ group.leader.firstName }}
+             <div v-for="member in group.members"
+             class="flex flex-col">
+              {{ member.firstName }}
+             </div>
+            </div>
+            </div>
+            <p v-else class="text-gray-500 text-center italic">
+              Empty, enter an excel to display.
+            </p>
+          </div>
+        </div>
+
+      <button class="btn btn-error mt-2" onclick="my_modal_1.showModal()">
+        Delete All Groups
+      </button>
+      <dialog id="my_modal_1" class="modal">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold">Careful!</h3>
+          <p class="py-4">
+            This action is irreversible. Please proceed with caution. This
+            action should only be done once a year to refresh groups.
+          </p>
+          <div class="modal-action">
+            <form method="dialog" class="space-x-2">
+              <button class="btn btn-primary" onclick="my_modal_1.close()">
+                Cancel
+              </button>
+              <button class="btn btn-error">Delete All Groups</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   </div>
-</dialog>
-    </div>
-  </div>
-
 </template>
 <script lang="ts" setup>
 import ExcelJS from "exceljs";
 definePageMeta({
-  middleware: "auth"
-})
+  middleware: "auth",
+});
 
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
@@ -381,7 +422,7 @@ async function compareSeatAndPay() {
       return !paidList.some(
         (paidStudent) =>
           paidStudent.name.toLowerCase() ===
-          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
+          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase(),
       );
     });
     noSeat.value = paidList.filter((paidStudent) => {
@@ -395,7 +436,7 @@ async function compareSeatAndPay() {
   } else {
     const paidEmails = paidList.map((student) => student.email.toLowerCase());
     const groupEmails = groupStudents.map((student) =>
-      student.email.toLowerCase()
+      student.email.toLowerCase(),
     );
     notPaid.value = groupStudents.filter(
       (groupStudent) =>
@@ -403,8 +444,8 @@ async function compareSeatAndPay() {
         !paidList.some(
           (paidStudent) =>
             paidStudent.name.toLowerCase() ===
-            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
-        )
+            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase(),
+        ),
     );
     noSeat.value = paidList.filter(
       (paidStudent) =>
@@ -412,13 +453,12 @@ async function compareSeatAndPay() {
         !groupStudents.some(
           (groupStudent) =>
             `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
-            paidStudent.name.toLowerCase()
-        )
+            paidStudent.name.toLowerCase(),
+        ),
     );
   }
 }
 async function executeSort() {
-  // await fetchGroups();
   try {
     if (
       typeof maxSeats.value !== "number" ||
@@ -539,7 +579,7 @@ async function executeSort() {
       groupsCopy,
       algoFunctionOptions,
       maxSeats.value,
-      minSeats.value
+      minSeats.value,
     ) as Table[];
     exportAsExcel();
   } catch (error: any) {
@@ -586,7 +626,7 @@ async function exportAsExcel() {
   downloadExcelLink.value = URL.createObjectURL(blob);
 }
 
-onMounted(async() => {
+onMounted(async () => {
   await fetchGroups();
 });
 </script>

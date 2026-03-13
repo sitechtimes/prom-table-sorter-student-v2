@@ -17,14 +17,15 @@ export default defineEventHandler(async (event) => {
         email: person.email.toLowerCase(),
       });
       if (!match) failedIndexes.push(index);
-    })
+    }),
   );
 
   //if some students dont exist throw an error with the indexes
   if (failedIndexes.length > 0) {
     throw createError({
       statusCode: 599,
-      message: "Some students could not be validated. Please check highlighted fields for errors.",
+      message:
+        "Some students could not be validated. Please check highlighted fields for errors.",
       data: { failedIndexes },
     });
   }
@@ -32,7 +33,7 @@ export default defineEventHandler(async (event) => {
   //Get the list of emails of the people in the old unedited group by the information of the leader
   const oldGroup = await Group.findOne({ "leader.email": leader.email });
   const oldEmails = [oldGroup.leader, ...(oldGroup.members || [])].map(
-    (p) => p.email
+    (p) => p.email,
   );
 
   console.log("Old Emails: ", oldEmails);
@@ -67,7 +68,7 @@ export default defineEventHandler(async (event) => {
     allPeople.forEach((dict, index) => {
       if (
         existingStudents[0].matchedEmails.includes(
-          dict.email.trim().toLowerCase()
+          dict.email.trim().toLowerCase(),
         )
       ) {
         failedIndexes.push(index);
@@ -75,7 +76,8 @@ export default defineEventHandler(async (event) => {
     });
     throw createError({
       statusCode: 599,
-      message: "Some students already exist in other groups. Please check highlighted fields.",
+      message:
+        "Some students already exist in other groups. Please check highlighted fields.",
       data: { failedIndexes },
     });
   }

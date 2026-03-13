@@ -1,6 +1,8 @@
 <template>
   <div class="flex justify-center min-h-screen bg-base-200 p-6">
-    <div class="card w-full max-w-md bg-base-100 shadow-xl p-6 border border-base-300">
+    <div
+      class="card w-full max-w-md bg-base-100 shadow-xl p-6 border border-base-300"
+    >
       <!-- leader login -->
 
       <div v-if="!groupLoaded">

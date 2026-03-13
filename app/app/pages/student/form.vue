@@ -1,13 +1,15 @@
 <template>
   <NuxtLink
-      @click="edittingForm = true"
-      v-if="!edittingForm"
-      to="/student/edit"
-      class="absolute right-3.5 top-3.5 bg-base-300 rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
-    >
-      <span class="md:hidden text-base-content">Edit</span>
-      <span class="hidden md:inline text-base-content"> Want to edit a form? Click here </span>
-    </NuxtLink>
+    @click="edittingForm = true"
+    v-if="!edittingForm"
+    to="/student/edit"
+    class="absolute right-3.5 top-3.5 bg-base-300 rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
+  >
+    <span class="md:hidden text-base-content">Edit</span>
+    <span class="hidden md:inline text-base-content">
+      Want to edit a form? Click here
+    </span>
+  </NuxtLink>
   <div class="flex justify-center items-center bg-base-200 p-6">
     <div
       class="card w-full border border-black max-w-md bg-base-100 shadow-xl p-6 cursor-default"
