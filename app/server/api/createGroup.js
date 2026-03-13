@@ -5,6 +5,7 @@ import Student from "../models/student";
 export default defineEventHandler(async (event) => {
   await connectDB();
   const body = await readBody(event);
+  console.log(body);
 
   const { leader, members } = body;
 
@@ -19,11 +20,10 @@ export default defineEventHandler(async (event) => {
   await Promise.all(
     allPeople.map(async (person, index) => {
       const match = await Student.findOne({
-        firstName: person.firstName, // Use original case
-        lastName: person.lastName,
-        email: person.email,
-      }).collation({ locale: "en", strength: 2 }); // Strength 2 ignores case
-
+        firstName: person.firstName.toLowerCase(),
+        lastName: person.lastName.toLowerCase(),
+        email: person.email.toLowerCase(),
+      });
       if (!match) failedIndexes.push(index);
     }),
   );

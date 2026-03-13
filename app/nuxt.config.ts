@@ -13,5 +13,5 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  modules: ["nuxt-auth-utils"]
+  modules: ["nuxt-auth-utils"],
 });
