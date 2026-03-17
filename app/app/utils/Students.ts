@@ -1,6 +1,6 @@
 export interface Student {
-    firstName: string;
-    lastName: string;
-    email: string;
-    osis?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  osis?: string;
 }

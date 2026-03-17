@@ -12,11 +12,10 @@ export default defineEventHandler(async (event) => {
   await Promise.all(
     allPeople.map(async (person, index) => {
       const match = await Student.findOne({
-        firstName: person.firstName, // Use original case
-        lastName: person.lastName,
-        email: person.email,
-      }).collation({ locale: "en", strength: 2 }); // Strength 2 ignores case
-
+        firstName: person.firstName.toLowerCase(),
+        lastName: person.lastName.toLowerCase(),
+        email: person.email.toLowerCase(),
+      });
       if (!match) failedIndexes.push(index);
     }),
   );
@@ -37,9 +36,12 @@ export default defineEventHandler(async (event) => {
     (p) => p.email,
   );
 
+  console.log("Old Emails: ", oldEmails);
+
   //get list of emails in the new group(the body) then remove the emails from the old group and run the check to see if any of the new emails are already assigned to other groups
   const newEmails = [leader, ...(members || [])].map((p) => p.email);
   const emailsToCheck = newEmails.filter((email) => !oldEmails.includes(email));
+  console.log("Emails to Check: ", emailsToCheck);
 
   const existingStudents = await Group.aggregate([
     {

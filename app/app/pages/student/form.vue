@@ -1,17 +1,18 @@
 <template>
-  <div class="flex justify-center items-center min-h-screen bg-gray-500">
-    <NuxtLink
-      @click="edittingForm = true"
-      v-if="!edittingForm"
-      to="/student/edit"
-      class="absolute right-3.5 top-3.5 bg-primary rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
-    >
-      <span class="md:hidden">Edit</span>
-      <span class="hidden md:inline"> Want to edit a form? Click here </span>
-    </NuxtLink>
-
+  <NuxtLink
+    @click="edittingForm = true"
+    v-if="!edittingForm"
+    to="/student/edit"
+    class="absolute right-3.5 top-3.5 bg-base-300 rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
+  >
+    <span class="md:hidden text-base-content">Edit</span>
+    <span class="hidden md:inline text-base-content">
+      Want to edit a form? Click here
+    </span>
+  </NuxtLink>
+  <div class="flex justify-center items-center bg-base-200 p-6">
     <div
-      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6"
+      class="card w-full border border-black max-w-md bg-base-100 shadow-xl p-6 cursor-default"
     >
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Student Form
@@ -55,7 +56,7 @@
         <input
           type="checkbox"
           v-model="InGroup"
-          class="checkbox checkbox-primary mb-4"
+          class="checkbox checkbox-neutral mb-4"
           @change="clearGroup()"
         />
 
@@ -68,7 +69,7 @@
               type="range"
               min="2"
               max="12"
-              class="range range-primary"
+              class="range range-neutral"
               step="1"
               v-model.number="GroupSize"
               @input="organizeGroup()"
@@ -119,7 +120,7 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-full mt-6">
+        <button type="submit" class="btn btn-neutral w-full mt-6">
           Submit Form
         </button>
       </form>
@@ -171,15 +172,13 @@ function clearGroup() {
   }
 }
 
-
-
 async function submit() {
-  const membersToSubmit = InGroup.value ? Group.value.slice(1, GroupSize.value) : [];
   const dataPush = {
     leader: groupLeader,
-    members: membersToSubmit,
+    members: Group.value.slice(1),
   };
-  
+  console.log(dataPush);
+
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
