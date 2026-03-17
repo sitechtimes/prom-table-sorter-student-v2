@@ -150,31 +150,38 @@
       </button>
 
       <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
-          <input type="checkbox" />
-          <h1
-            class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
-          >
-            List of All Tables
-          </h1>
-          <div class="mb-6 collapse-content">
+        <input type="checkbox" />
+        <h1
+          class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+        >
+          List of All Tables
+        </h1>
+        <div class=" collapse-content">
+          <div v-if="Groups.length !== 0">
             <div
-              v-if="Groups.length !== 0"
-            >
-            <div v-for="group in Groups"
+              v-for="group in Groups"
               :key="group.leader.email"
-              class="border border-white grid grid-cols-2 text-black text-center font-medium mb-1">
-             {{ group.leader.firstName }}
-             <div v-for="member in group.members"
-             class="flex flex-col">
-              {{ member.firstName }}
-             </div>
+              class="border border-base-300 rounded-md text-black text-center flex flex-row items-stretch overflow-x-auto pl-2 font-medium mb-1"
+            >
+            <button class="pr-2 text-primary">Edit </button>
+              <div class="underline">
+               {{ group.leader.firstName }}
+              </div>
+             
+              <div
+                v-for="member in group.members"
+                class="pl-4 "
+              >
+                {{ member.firstName }}
+              </div>
             </div>
-            </div>
-            <p v-else class="text-gray-500 text-center italic">
-              Empty, enter an excel to display.
-            </p>
           </div>
+          <p v-else class="text-gray-500 text-center italic">
+            Empty, enter an excel to display.
+          </p>
+          ___ (underline) = group leader, hover to see email
         </div>
+      </div>
 
       <button class="btn btn-error mt-2" onclick="my_modal_1.showModal()">
         Delete All Groups
