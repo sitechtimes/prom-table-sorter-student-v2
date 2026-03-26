@@ -157,13 +157,15 @@
           List of All Tables
         </h1>
         <div class=" collapse-content">
+          <button class="btn btn-error my-2" :disabled="deleting">Delete Groups</button>
           <div v-if="Groups.length !== 0">
             <div
               v-for="group in Groups"
               :key="group.leader.email"
-              class="border border-base-300 rounded-md text-black text-center flex flex-row items-stretch overflow-x-auto pl-2 font-medium mb-1"
+              class="border border-base-300 rounded-md text-black text-center flex flex-row items-stretch overflow-x-auto font-medium mb-1"
             >
-            <button class="pr-2 text-primary">Edit </button>
+            <input type="checkbox" class="checkbox checkbox-base-content"/>
+            <button class="px-2 text-primary">Edit </button>
               <div class="underline">
                {{ group.leader.firstName }}
               </div>
@@ -179,10 +181,9 @@
           <p v-else class="text-gray-500 text-center italic">
             Empty, enter an excel to display.
           </p>
-          ___ (underline) = group leader, hover to see email
         </div>
       </div>
-
+      <p>___ (underline) = group leader, hover to see email</p>
       <button class="btn btn-error mt-2" onclick="my_modal_1.showModal()">
         Delete All Groups
       </button>
@@ -220,6 +221,7 @@ const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
 const downloadExcelLink = ref<string | null>(null);
+const deleting = ref(true)
 const Groups = ref<Group[]>([
   // {
   //   leader: {
