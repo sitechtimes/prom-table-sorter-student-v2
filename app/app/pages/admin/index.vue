@@ -1,35 +1,41 @@
 <template>
   <div
-    class="min-h-screen bg-gray-200 flex flex-col items-center px-3 sm:px-6 py-8 gap-8"
+    class="min-h-screen bg-base-200 flex flex-col items-center px-3 sm:px-6 py-8 gap-8"
   >
     <div
-      class="w-full max-w-3xl bg-white border border-gray-300 shadow-2xl rounded-2xl p-5 sm:p-6 md:p-8"
+      class="w-full max-w-3xl bg-base-100 border border-base-300 shadow-2xl rounded-2xl p-5 sm:p-6 md:p-8"
     >
       <h1 class="text-2xl sm:text-3xl font-bold text-center text-black mb-6">
         Upload Excel file of those who paid
       </h1>
+
       <input
         id="upload-file2"
         class="file-input file-input-bordered w-full mb-4"
         type="file"
+        name="input-groups"
         ref="paidFile"
         accept=".xlsx"
         @change="compareSeatAndPay"
       />
+
       <button
-        class="btn btn-secondary w-full mb-4"
+        class="btn btn-neutral w-full mb-4"
         @click="showPaidExample = !showPaidExample"
       >
         Click here to open / close example
       </button>
+
       <img
         v-if="showPaidExample"
-        src="../assets/paidExample.png"
+        src="/paidExample.png"
         class="mx-auto w-full sm:w-2/3 md:w-1/2 rounded-xl shadow mb-6"
       />
+
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black mb-4">
         Enter a range for table sizes
       </h1>
+
       <div class="flex flex-col sm:flex-row gap-4 justify-center mb-6">
         <div class="w-full sm:w-32">
           <h2 class="font-semibold text-black text-center mb-1">From</h2>
@@ -39,6 +45,7 @@
             v-model.number="minSeats"
           />
         </div>
+
         <div class="w-full sm:w-32">
           <h2 class="font-semibold text-black text-center mb-1">To</h2>
           <input
@@ -48,106 +55,328 @@
           />
         </div>
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
-        Students that haven't paid and are registered
-      </h1>
-      <div class="mb-6">
-        <div
-          v-if="notPaid.length !== 0"
-          v-for="student in notPaid"
-          :key="student.osis"
-          class="text-black text-center font-medium mb-1"
-        >
-          {{ student.firstName }} {{ student.lastName }}
+
+      <div class="space-y-2">
+        <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+          <input type="checkbox" />
+          <h1
+            class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+          >
+            Students that haven't paid and are at a table
+          </h1>
+          <div class="mb-6 collapse-content">
+            <div
+              v-if="notPaid.length !== 0"
+              v-for="student in notPaid"
+              :key="student.osis"
+              class="text-black text-center font-medium mb-1"
+            >
+              {{ student.firstName }} {{ student.lastName }}
+            </div>
+            <p v-else class="text-gray-500 text-center italic">
+              Empty, enter an excel to display.
+            </p>
+          </div>
         </div>
-        <p v-else class="text-gray-500 text-center italic">
-          Empty, enter an excel to display.
-        </p>
-      </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
-        Students that have paid and arent registered
-      </h1>
-      <div class="mb-6">
-        <div
-          v-if="notRegistered.length !== 0"
-          v-for="student in notRegistered"
-          :key="student.email"
-          class="text-black text-center font-medium mb-1"
-        >
-          {{ student.name }}
+
+        <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+          <input type="checkbox" />
+          <h1
+            class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+          >
+            Students that have paid and are not at a table
+          </h1>
+          <div class="mb-6 collapse-content">
+            <div
+              v-if="noSeat.length !== 0"
+              v-for="student in noSeat"
+              :key="student.email"
+              class="text-black text-center font-medium mb-1"
+            >
+              {{ student.name }}
+            </div>
+            <p v-else class="text-gray-500 text-center italic">
+              Empty, enter an excel to display.
+            </p>
+          </div>
         </div>
-        <p v-else class="text-gray-500 text-center italic">
-          Empty, enter an excel to display.
-        </p>
+
+        <div>
+          <a
+            v-if="downloadExcelLink == null"
+            class="btn w-full mb-4 pointer-events-none opacity-60"
+          >
+            Enter an excel and sort for a download link
+          </a>
+
+          <a
+            v-else
+            :href="downloadExcelLink"
+            class="btn btn-primary w-full mb-4"
+          >
+            Download Comparison
+          </a>
+        </div>
       </div>
+
       <div class="flex items-center gap-3 mb-4">
         <input
           type="checkbox"
           v-model="includeUnpaidStudents"
-          class="checkbox checkbox-primary"
+          class="checkbox checkbox-neutral"
         />
         <label class="text-black font-medium">
           Include unpaid students in table sorting
         </label>
       </div>
+
       <div class="flex items-center gap-3 mb-6">
         <input
           type="checkbox"
           v-model="looseMode"
-          class="checkbox checkbox-primary"
+          class="checkbox checkbox-neutral"
         />
         <label class="text-black font-medium">
-          Filter students loosely (name only)
+          Filter students loosely (name only) or strictly (name and email)
         </label>
-        <h4 class="text-black font-small">
-          (Filtering strictly uses both name & email)
-        </h4>
       </div>
-    </div>
-    <button
-      class="btn btn-primary w-full max-w-sm"
-      v-if="tables.length == 0"
-      @click="executeSort()"
-    >
-      Sort Tables
-    </button>
-    <button
-      class="btn btn-primary w-full max-w-sm"
-      v-else
-      @click="executeSort()"
-    >
-      Refresh Sort
-    </button>
-    <div v-if="tables.length > 0" class="w-full flex justify-center px-4">
-      <div class="w-full">
-        <TableVisualizer
-          :tables="tables"
-          :notPaid="notPaid"
-          :notRegistered="notRegistered"
-          :key="updateProps"
-        />
+
+      <!-- <TableVisualizer /> -->
+      <button class="btn btn-neutral w-full" @click="executeSort()">
+        Execute Sorting
+      </button>
+      <button class="btn btn-primary mb-4" @click="logGroups">
+        Log Groups
+      </button>
+
+      <div class="collapse collapse-arrow bg-base-100 border-base-300 border">
+        <input type="checkbox" />
+        <h1
+          class="collapse-title text-xl sm:text-2xl font-bold text-center text-black"
+        >
+          List of All Tables
+        </h1>
+        <div class=" collapse-content">
+          <button class="btn btn-error my-2" :disabled="deleting">Delete Groups</button>
+          <div v-if="Groups.length !== 0">
+            <div
+              v-for="group in Groups"
+              :key="group.leader.email"
+              class="border border-base-300 rounded-md text-black text-center flex flex-row items-stretch overflow-x-auto font-medium mb-1"
+            >
+            <input type="checkbox" class="checkbox checkbox-base-content"/>
+            <button class="px-2 text-primary">Edit </button>
+              <div class="underline">
+               {{ group.leader.firstName }}
+              </div>
+             
+              <div
+                v-for="member in group.members"
+                class="pl-4 "
+              >
+                {{ member.firstName }}
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-gray-500 text-center italic">
+            Empty, enter an excel to display.
+          </p>
+        </div>
       </div>
+      <p>___ (underline) = group leader, hover to see email</p>
+      <button class="btn btn-error mt-2" onclick="my_modal_1.showModal()">
+        Delete All Groups
+      </button>
+      <dialog id="my_modal_1" class="modal">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold">Careful!</h3>
+          <p class="py-4">
+            This action is irreversible. Please proceed with caution. This
+            action should only be done once a year to refresh groups.
+          </p>
+          <div class="modal-action">
+            <form method="dialog" class="space-x-2">
+              <button class="btn btn-primary" onclick="my_modal_1.close()">
+                Cancel
+              </button>
+              <button class="btn btn-error">Delete All Groups</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   </div>
 </template>
-
 <script lang="ts" setup>
 import ExcelJS from "exceljs";
 definePageMeta({
-  middleware: "auth"
-})
+  middleware: "auth",
+});
 
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
 const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
-const notRegistered = ref<ImportedStudent[]>([]);
+const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
-const tables = ref<Table[]>([]);
-const showPaidExample = ref(false);
-const updateProps = ref(0);
-const Groups = ref<Group[]>();
+const downloadExcelLink = ref<string | null>(null);
+const deleting = ref(true)
+const Groups = ref<Group[]>([
+  // {
+  //   leader: {
+  //     firstName: "Ava",
+  //     lastName: "Johnson",
+  //     email: "avaj583920174@nycstudents.net",
+  //     osis: "102938475",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Mila",
+  //       lastName: "Chen",
+  //       email: "milac491027365@nycstudents.net",
+  //     },
+  //   ],
+  // },
+  // {
+  //   leader: {
+  //     firstName: "Leo",
+  //     lastName: "Rossi",
+  //     email: "leor839174620@nycstudents.net",
+  //     osis: "564738291",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Noah",
+  //       lastName: "Smith",
+  //       email: "noahs720493158@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Ella",
+  //       lastName: "Rivera",
+  //       email: "ellar@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Lucas",
+  //       lastName: "Kim",
+  //       email: "lucask947205613@nycstudents.net",
+  //     },
+  //   ],
+  // },
+  // {
+  //   leader: {
+  //     firstName: "Sofia",
+  //     lastName: "Martinez",
+  //     email: "sofiam260591834@nycstudents.net",
+  //     osis: "948372615",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Olivia",
+  //       lastName: "Brown",
+  //       email: "oliviab@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Henry",
+  //       lastName: "Lee",
+  //       email: "henryl572019463@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Aiden",
+  //       lastName: "Patel",
+  //       email: "aidenp604937128@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Grace",
+  //       lastName: "Wong",
+  //       email: "gracew932741650@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "James",
+  //       lastName: "Lopez",
+  //       email: "jamesl875103942@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Chloe",
+  //       lastName: "Adams",
+  //       email: "chloea514620987@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Ethan",
+  //       lastName: "Nguyen",
+  //       email: "ethann309875416@nycstudents.net",
+  //     },
+  //   ],
+  // },
+  // {
+  //   leader: {
+  //     firstName: "Isabella",
+  //     lastName: "Green",
+  //     email: "isabellag728104563@nycstudents.net",
+  //     osis: "127483920",
+  //   },
+  //   members: [
+  //     {
+  //       firstName: "Daniel",
+  //       lastName: "King",
+  //       email: "danielk190473826@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Ari",
+  //       lastName: "Gold",
+  //       email: "arig543298710@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Luna",
+  //       lastName: "Castro",
+  //       email: "lunac817205349@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Elijah",
+  //       lastName: "Diaz",
+  //       email: "elijahd605819274@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Riley",
+  //       lastName: "Morris",
+  //       email: "rileym290471685@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Zoe",
+  //       lastName: "Clark",
+  //       email: "zoec958201647@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Mateo",
+  //       lastName: "Santos",
+  //       email: "mateos481935027@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Nora",
+  //       lastName: "Baker",
+  //       email: "norab702185934@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Sebastian",
+  //       lastName: "Reyes",
+  //       email: "sebastianr614209875@nycstudents.net",
+  //     },
+  //     {
+  //       firstName: "Liam",
+  //       lastName: "Turner",
+  //       email: "liamt879216340@nycstudents.net",
+  //     },
+  //   ],
+  // },
+]);
+
+const Tables = ref<Table[]>([]);
+let showPaidExample = ref(false);
+
+interface ImportedStudent {
+  name: string;
+  email: string;
+}
 
 async function fetchGroups() {
   try {
@@ -158,6 +387,9 @@ async function fetchGroups() {
   } catch (error) {
     alert(error);
   }
+}
+function logGroups() {
+  console.log(Groups.value);
 }
 async function getPaidList() {
   const file = paidFile.value?.files?.[0];
@@ -189,7 +421,6 @@ async function getPaidList() {
 async function compareSeatAndPay() {
   const paidList = await getPaidList();
   if (!paidList) return;
-  if (!Groups.value) return;
   const groupStudents: Student[] = Groups.value.flatMap((group: Group) => [
     group.leader,
     ...group.members,
@@ -200,10 +431,10 @@ async function compareSeatAndPay() {
       return !paidList.some(
         (paidStudent) =>
           paidStudent.name.toLowerCase() ===
-          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
+          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase(),
       );
     });
-    notRegistered.value = paidList.filter((paidStudent) => {
+    noSeat.value = paidList.filter((paidStudent) => {
       return !groupStudents.some((groupStudent) => {
         return (
           `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
@@ -214,7 +445,7 @@ async function compareSeatAndPay() {
   } else {
     const paidEmails = paidList.map((student) => student.email.toLowerCase());
     const groupEmails = groupStudents.map((student) =>
-      student.email.toLowerCase()
+      student.email.toLowerCase(),
     );
     notPaid.value = groupStudents.filter(
       (groupStudent) =>
@@ -222,22 +453,21 @@ async function compareSeatAndPay() {
         !paidList.some(
           (paidStudent) =>
             paidStudent.name.toLowerCase() ===
-            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
-        )
+            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase(),
+        ),
     );
-    notRegistered.value = paidList.filter(
+    noSeat.value = paidList.filter(
       (paidStudent) =>
         !groupEmails.includes(paidStudent.email.toLowerCase()) &&
         !groupStudents.some(
           (groupStudent) =>
             `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
-            paidStudent.name.toLowerCase()
-        )
+            paidStudent.name.toLowerCase(),
+        ),
     );
   }
 }
 async function executeSort() {
-  // await fetchGroups();
   try {
     if (
       typeof maxSeats.value !== "number" ||
@@ -247,7 +477,7 @@ async function executeSort() {
     const file = paidFile.value?.files?.[0];
     if (!file) return alert("Please upload a paid list Excel file.");
     await compareSeatAndPay();
-    if (!Groups.value) return;
+
     let groupsCopy: Group[] = Groups.value.map((group) => ({
       leader: { ...group.leader },
       members: group.members.map((member) => ({ ...member })),
@@ -334,16 +564,15 @@ async function executeSort() {
     }
 
     const extraStudents: ImportedStudent[] = [];
-    for (let i = 0; i < notRegistered.value.length; i++) {
-      if (!allGroupEmails.includes(notRegistered.value[i]?.email ?? "")) {
-        extraStudents.push(notRegistered.value[i]!);
+    for (let i = 0; i < noSeat.value.length; i++) {
+      if (!allGroupEmails.includes(noSeat.value[i]?.email ?? "")) {
+        extraStudents.push(noSeat.value[i]!);
       }
     }
 
     for (let i = 0; i < extraStudents.length; i++) {
       const student = extraStudents[i];
       if (!student?.name || !student?.email) continue;
-      updateProps.value += 1;
       groupsCopy.push({
         leader: {
           firstName: student.name.split(" ")[0] ?? "",
@@ -355,17 +584,58 @@ async function executeSort() {
       });
     }
 
-    tables.value = rangeSort(
+    Tables.value = rangeSort(
       groupsCopy,
       algoFunctionOptions,
       maxSeats.value,
-      minSeats.value
+      minSeats.value,
     ) as Table[];
+    exportAsExcel();
   } catch (error: any) {
     alert(error.message);
   }
 }
-onMounted(() => {
-  fetchGroups();
+async function exportAsExcel() {
+  const exportWorkbook = new ExcelJS.Workbook();
+  const sortedWorksheet = exportWorkbook.addWorksheet("Comparison Worksheet");
+  sortedWorksheet.getCell("A1").value = "All Tables";
+  sortedWorksheet.getCell("B1").value = "Emails";
+  sortedWorksheet.getCell("F1").value = "Haven't paid & @ Table";
+  sortedWorksheet.getCell("H1").value = "Paid & Not @ Table";
+
+  let tableIndex = 1;
+  let rowIndex = tableIndex;
+  Tables.value.forEach((table) => {
+    sortedWorksheet.getRow(rowIndex).getCell(1).value = `Table ${tableIndex}`;
+    tableIndex += 1;
+    rowIndex += 1;
+    table.occupants.forEach((occupant) => {
+      occupant.members.forEach((member) => {
+        sortedWorksheet.getRow(rowIndex).getCell(1).value =
+          `${member.firstName} ${member.lastName}`;
+        sortedWorksheet.getRow(rowIndex).getCell(2).value = member.email;
+        rowIndex += 1;
+      });
+    });
+  });
+
+  for (let i = 0; i < notPaid.value.length; i++) {
+    sortedWorksheet.getRow(i + 2).getCell(6).value =
+      `${notPaid.value[i]?.firstName} ${notPaid.value[i]?.lastName}`;
+  }
+
+  for (let i = 0; i < noSeat.value.length; i++) {
+    sortedWorksheet.getRow(i + 2).getCell(8).value = noSeat.value[i]?.name;
+  }
+
+  const buffer = await exportWorkbook.xlsx.writeBuffer();
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const blob = new Blob([buffer], { type: fileType });
+  downloadExcelLink.value = URL.createObjectURL(blob);
+}
+
+onMounted(async () => {
+  await fetchGroups();
 });
 </script>

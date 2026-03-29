@@ -41,7 +41,7 @@ function sortTableSeats(
   groups: Array<Group>,
   tables: Array<Table>,
   groupSortFunc: (a: Group, b: Group) => number,
-  tableSortFunc: Function
+  tableSortFunc: Function,
 ): Table[] | null {
   let tableObjs = <Array<Table>>[];
   tables.forEach((table) => {
@@ -49,7 +49,6 @@ function sortTableSeats(
       capacity: table.capacity ?? 0,
       unoccupiedSeats: table.unoccupiedSeats ?? 0,
       occupants: [...table.occupants],
-      overCapacity: false,
     });
   });
   groups.sort(groupSortFunc);
@@ -74,7 +73,7 @@ function sortTableSeats(
 function mainSort( //delete if not used, doesnt handle edge cases currently
   mainGroups: Array<Group>,
   mainTables: Array<Table>,
-  algoOptions: Array<any>
+  algoOptions: Array<any>,
 ) {
   let result = null;
   for (let i = 0; i < algoOptions.length; i++) {
@@ -82,7 +81,7 @@ function mainSort( //delete if not used, doesnt handle edge cases currently
       mainGroups,
       mainTables,
       algoOptions[i].groupSort,
-      algoOptions[i].tableSort
+      algoOptions[i].tableSort,
     );
     if (result != null) break;
   }
@@ -93,7 +92,7 @@ function rangeSort(
   groupArr: Array<Group>,
   algoOptions: Array<any>,
   maxSeats: number,
-  minSeats = 0
+  minSeats = 0,
 ) {
   const totalGuests = arrayLen2D(groupArr);
   const tableCount = Math.ceil(totalGuests / maxSeats);
@@ -104,7 +103,6 @@ function rangeSort(
       capacity: maxSeats,
       unoccupiedSeats: maxSeats,
       occupants: [],
-      overCapacity: false,
     });
   }
 
@@ -117,7 +115,7 @@ function rangeSort(
         groupArr,
         tableArr,
         algoOptions[i].groupSort,
-        algoOptions[i].tableSort
+        algoOptions[i].tableSort,
       );
 
       if (result != null) {
@@ -137,14 +135,13 @@ function rangeSort(
       capacity: maxSeats,
       unoccupiedSeats: maxSeats,
       occupants: [],
-      overCapacity: false,
     });
     additionalTables.value += 1;
     //should return additionalTables.value
   }
 
   throw Error(
-    `ERROR: Groups cannot be sorted into tables with current settings, as a group will end up split up no matter what or a table can not be filled to the minimum. Try lowering the minimum or increasing the maximum table size.`
+    `ERROR: Groups cannot be sorted into tables with current settings, as a group will end up split up no matter what or a table can not be filled to the minimum. Try lowering the minimum or increasing the maximum table size.`,
   );
 }
 
