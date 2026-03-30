@@ -156,7 +156,7 @@
         >
           List of All Tables
         </h1>
-        <div class=" collapse-content">
+        <div class="collapse-content">
           <button class="btn btn-error my-2" :disabled="deleting">Delete Groups</button>
           <div v-if="Groups.length !== 0">
             <div
@@ -164,8 +164,8 @@
               :key="group.leader.email"
               class="border border-base-300 rounded-md text-black text-center flex flex-row items-stretch overflow-x-auto font-medium mb-1"
             >
-            <input type="checkbox" class="checkbox checkbox-base-content"/>
-            <button class="px-2 text-primary">Edit </button>
+            <input type="checkbox" class="checkbox checkbox-neutral"/>
+            <p onclick="editing_modal.showModal()" class="cursor-pointer text-primary mx-2">Edit</p>
               <div class="underline">
                {{ group.leader.firstName }}
               </div>
@@ -184,10 +184,10 @@
         </div>
       </div>
       <p>___ (underline) = group leader, hover to see email</p>
-      <button class="btn btn-error mt-2" onclick="my_modal_1.showModal()">
+      <button class="btn btn-error mt-2" onclick="delete_All.showModal()">
         Delete All Groups
       </button>
-      <dialog id="my_modal_1" class="modal">
+      <dialog id="delete_All" class="modal">
         <div class="modal-box">
           <h3 class="text-lg font-bold">Careful!</h3>
           <p class="py-4">
@@ -196,7 +196,7 @@
           </p>
           <div class="modal-action">
             <form method="dialog" class="space-x-2">
-              <button class="btn btn-primary" onclick="my_modal_1.close()">
+              <button class="btn btn-primary" onclick="delete_All.close()">
                 Cancel
               </button>
               <button class="btn btn-error">Delete All Groups</button>
@@ -204,6 +204,20 @@
           </div>
         </div>
       </dialog>
+      <!-- Open the modal using ID.showModal() method -->
+
+<dialog id="editing_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Hello!</h3>
+    <p class="py-4">Press ESC key or click the button below to close</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button in form, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
     </div>
   </div>
 </template>
@@ -369,13 +383,29 @@ const Groups = ref<Group[]>([
   //   ],
   // },
 ]);
-
+const deletingGroups = ref<Group[]>([])
 const Tables = ref<Table[]>([]);
 let showPaidExample = ref(false);
 
 interface ImportedStudent {
   name: string;
   email: string;
+}
+
+
+async function deleteGroup(){
+  try {
+    const res = await fetch("/api/deleteGroup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        deletingGroups
+      }),
+    });
+  } catch (error) {
+    
+  }
+
 }
 
 async function fetchGroups() {
