@@ -157,23 +157,28 @@
           List of All Tables
         </h1>
         <div class="collapse-content">
-          <button class="btn btn-error my-2" :disabled="deleting">Delete Groups</button>
+          <button class="btn btn-error my-2" :disabled="deleting">
+            Delete Groups
+          </button>
           <div v-if="Groups.length !== 0">
             <div
               v-for="group in Groups"
               :key="group.leader.email"
               class="border border-base-300 rounded-md text-black text-center flex flex-row items-stretch overflow-x-auto font-medium mb-1"
             >
-            <input type="checkbox" class="checkbox checkbox-neutral"/>
-            <p onclick="editing_modal.showModal()" class="cursor-pointer text-primary mx-2">Edit</p>
-              <div class="underline">
-               {{ group.leader.firstName }}
-              </div>
-             
-              <div
-                v-for="member in group.members"
-                class="pl-4 "
+              <input type="checkbox" class="checkbox checkbox-neutral" />
+              <p
+                onclick="editing_modal.showModal()"
+                class="cursor-pointer text-primary mx-2"
+                @click="fetchGroup(group.leader.firstName, group.leader.lastName, group.leader.email, group.leader?.osis)"
               >
+                Edit
+              </p>
+              <div class="underline">
+                {{ group.leader.firstName }}
+              </div>
+
+              <div v-for="member in group.members" class="pl-4">
                 {{ member.firstName }}
               </div>
             </div>
@@ -206,18 +211,73 @@
       </dialog>
       <!-- Open the modal using ID.showModal() method -->
 
-<dialog id="editing_modal" class="modal">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold">Hello!</h3>
-    <p class="py-4">Press ESC key or click the button below to close</p>
-    <div class="modal-action">
-      <form method="dialog">
-        <!-- if there is a button in form, it will close the modal -->
-        <button class="btn">Close</button>
-      </form>
-    </div>
-  </div>
-</dialog>
+      <dialog id="editing_modal" class="modal">
+        <div class="modal-box">
+          <div>
+        <h1 class="text-2xl font-bold mb-4 text-center text-black">
+          Edit Your Group
+        </h1>
+
+        <div class="mt-6 space-y-3">
+          <div
+            v-for="(member, i) in members"
+            :key="i"
+            class="border p-3 rounded relative"
+            :class="hasError(i + 1) ? 'border-red-500 border-2' : ''"
+          >
+            <h3 class="font-semibold mb-2 text-black">Member {{ i + 1 }}</h3>
+
+            <button
+              class="absolute top-2 right-2 text-red-600 text-sm"
+              @click="removeMember(i)"
+            >
+              Remove
+            </button>
+
+            <FormInput
+              category="First Name"
+              color="black"
+              v-model="member.firstName"
+              type="text"
+              placeholder="Enter here"
+            />
+            <FormInput
+              category="Last Name"
+              color="black"
+              v-model="member.lastName"
+              type="text"
+              placeholder="Enter here"
+            />
+            <FormInput
+              category="Email"
+              color="black"
+              v-model="member.email"
+              type="text"
+              placeholder="Enter here"
+            />
+          </div>
+        </div>
+
+        <button
+          class="btn btn-outline w-full mt-4 text-black hover:text-white"
+          @click="addMember"
+          :disabled="members.length >= maxMembers"
+        >
+          Add Member
+        </button>
+
+        <button class="btn btn-primary w-full mt-6" @click="submitEdits">
+          Submit Changes
+        </button>
+      </div>
+          <div class="modal-action">
+            <form method="dialog">
+              <!-- if there is a button in form, it will close the modal -->
+              <button class="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   </div>
 </template>
@@ -227,6 +287,7 @@ definePageMeta({
   middleware: "auth",
 });
 
+const maxMembers = 11
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
 const maxSeats = ref<number>();
@@ -235,7 +296,7 @@ const noSeat = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
 const looseMode = ref(false);
 const downloadExcelLink = ref<string | null>(null);
-const deleting = ref(true)
+const deleting = ref(true);
 const Groups = ref<Group[]>([
   // {
   //   leader: {
@@ -383,29 +444,55 @@ const Groups = ref<Group[]>([
   //   ],
   // },
 ]);
-const deletingGroups = ref<Group[]>([])
+const deletingGroups = ref<Group[]>([]);
 const Tables = ref<Table[]>([]);
 let showPaidExample = ref(false);
+const members = ref<Student[]>([]);
+
 
 interface ImportedStudent {
   name: string;
   email: string;
 }
 
+async function fetchGroup(
+  first: string,
+  last: string,
+  email: string,
+  osis: string | undefined,
+) {
+  try {
+    const leader = reactive<Student>({
+      firstName: first,
+      lastName: last,
+      email: email,
+      osis: osis,
+    });
 
-async function deleteGroup(){
+    const res = await fetch("/api/grabGroup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ leader }),
+    });
+    if (!res.ok) throw new Error("Group not found");
+    const data = await res.json();
+    members.value = data.members || [];
+    //groupLoaded.value = true;
+  } catch {
+    alert("Could not find group for this leader");
+  }
+}
+
+async function deleteGroup() {
   try {
     const res = await fetch("/api/deleteGroup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        deletingGroups
+        deletingGroups,
       }),
     });
-  } catch (error) {
-    
-  }
-
+  } catch (error) {}
 }
 
 async function fetchGroups() {
@@ -421,6 +508,7 @@ async function fetchGroups() {
 function logGroups() {
   console.log(Groups.value);
 }
+
 async function getPaidList() {
   const file = paidFile.value?.files?.[0];
   if (!file) {
