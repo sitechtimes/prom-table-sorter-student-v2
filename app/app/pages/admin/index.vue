@@ -24,9 +24,9 @@
       </button>
       <img
         v-if="showPaidExample"
-        src="../assets/paidExample.png"
+        :src="paidExample"
         class="mx-auto w-full sm:w-2/3 md:w-1/2 rounded-xl shadow mb-6"
-      />
+      />  
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black mb-4">
         Enter a range for table sizes
       </h1>
@@ -132,6 +132,7 @@
 </template>
 
 <script lang="ts" setup>
+import paidExample from '~/assets/paidExample.png';
 import ExcelJS from "exceljs";
 definePageMeta({
   middleware: "auth"
