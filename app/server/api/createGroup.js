@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
       }).collation({ locale: "en", strength: 2 }); // Strength 2 ignores case
 
       if (!match) failedIndexes.push(index);
-    })
+    }),
   );
 
   //if some students dont exist throw an error with the indexes
@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
     allPeople.forEach((dict, index) => {
       if (
         existingStudents[0].matchedEmails.includes(
-          dict.email.trim().toLowerCase()
+          dict.email.trim().toLowerCase(),
         )
       ) {
         failedIndexes.push(index);
