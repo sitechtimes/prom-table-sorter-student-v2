@@ -1,10 +1,20 @@
 <template>
-  <div class="flex justify-center min-h-screen bg-gray-500 p-6">
-    <div class="card w-full max-w-md bg-white shadow-xl p-6">
+  <div class="flex justify-center items-center min-h-screen bg-gray-500 p-6">
+    <NuxtLink
+      to="/StudentForm"
+      class="absolute right-3.5 top-3.5 bg-primary rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
+    >
+      <span class="md:hidden">Back</span>
+      <span class="hidden md:inline">Back to Student Form</span>
+    </NuxtLink>
+
+    <div
+      class="card w-full border-2 border-black max-w-md bg-white shadow-xl p-6 cursor-default mt-6"
+    >
       <!-- leader login -->
 
       <div v-if="!groupLoaded">
-        <h1 class="text-2xl font-bold mb-4 text-center text-black">
+        <h1 class="text-3xl font-bold mb-4 text-center text-black">
           Find Your Group
         </h1>
 
@@ -28,7 +38,7 @@
           category="Students Email"
           color="black"
           v-model="leader.email"
-          type="text"
+          type="email"
           placeholder="Enter here"
           :isGuest="leader.isGuest"
         />
@@ -48,7 +58,7 @@
 
       <!-- populate the groups / actual editing forms-->
       <div v-else>
-        <h1 class="text-2xl font-bold mb-4 text-center text-black">
+        <h1 class="text-3xl font-bold mb-4 text-center text-black">
           Edit Your Group
         </h1>
 
@@ -73,7 +83,7 @@
             category="Leader Email"
             color="black"
             v-model="leader.email"
-            type="text"
+            type="email"
             placeholder="Enter Here"
             :isGuest="leader.isGuest"
           />
@@ -88,21 +98,26 @@
         </div>
 
         <div class="mt-6 space-y-3">
-          <!--button to delete ALL the students-->
           <div
             v-for="(member, i) in members"
             :key="i"
-            class="border p-3 rounded relative"
-
+            class="collapse collapse-arrow bg-base-100 border border-base-300 space-y-2"
+            :class="hasError(i + 1) ? 'border-red-500 border-2' : ''"
           >
-            <h3 class="font-semibold mb-2 text-black">Member {{ i + 1 }}</h3>
+            <input type="checkbox" v-model="openDropdowns[i]" />
+            <div class="collapse-title font-semibold text-black">
+              <span v-if="member.isGuest">Guest {{ i + 1 }}</span>
+              <span v-else>Member {{ i + 1 }}</span>
+            </div>
 
-            <button
-              class="absolute top-2 right-2 text-red-600 text-sm"
-              @click="removeMember(i)"
-            >
-              Remove
-            </button>
+            <div class="collapse-content text-sm space-y-2 relative">
+              <button
+                type="button"
+                class="absolute top-0 right-0 btn btn-error btn-xs"
+                @click="removeMember(i)"
+              >
+                Remove
+              </button>
 
             <FormInput
               category="First Name"
@@ -110,8 +125,7 @@
               v-model="member.firstName"
               type="text"
               placeholder="Enter here"
-              :isGuest="!member.isGuest"
-              :class="hasError(i+1) ? 'border-red-500 border-4 rounded' : ''"
+              :isGuest="member.isGuest"
             />
             <FormInput
               category="Last Name"
@@ -119,8 +133,7 @@
               v-model="member.lastName"
               type="text"
               placeholder="Enter here"
-              :isGuest="!member.isGuest"
-              :class="hasError(i+1) ? 'border-red-500 border-4 rounded' : ''"
+              :isGuest="member.isGuest"
             />
             <FormInput
               category="Email"
@@ -128,53 +141,52 @@
               v-model="member.email"
               type="text"
               placeholder="Enter here"
-              :isGuest="!member.isGuest"
-              :class="hasError(i+1) ? 'border-red-500 border-4 rounded' : ''"
+              :isGuest="member.isGuest"
             />
             <fieldset class="fieldset mb-4">
               <label
-                class="label text-xl font-bold flex flex-col items-start gap-2 text-black"
+                class="label text-xl font-bold flex flex-col items-start gap-2"
               >
                 <span>Are you bringing a guest?</span>
                 <input
                   type="checkbox"
                   v-model="member.bringingGuest"
-                  class="checkbox checkbox-primary border-2 border-black"
-                  :disabled="!member.isGuest"
+                  class="checkbox checkbox-primary border-2 border-white"
+                  :disabled="member.isGuest"
                   @click="guestChange(i)"
                 />
               </label>
             </fieldset>
             <div v-if="member.bringingGuest === true">
-              <div :class="hasError(i+2) ? 'border-red-500 border-4 rounded' : ''">
+              <div>
                 <label
-                  class="text-xl font-bold text-center mb-6 text-black"
+                  class="text-xl font-bold text-center mb-6 text-white"
                   for="category"
                   >Guest First Name</label
                 >
                 <input
-                  type="text"
+                  type="email"
                   v-model="members[i + 1]!.firstName"
                   placeholder="Enter"
                   class="input input-bordered w-full mb-4"
                   required
                 />
               </div>
-              <div :class="hasError(i+2) ? 'border-red-500 border-4 rounded' : ''">
+              <div>
                 <label
-                  class="text-xl font-bold text-center mb-6 text-black"
+                  class="text-xl font-bold text-center mb-6 text-white"
                   for="category"
                   >Guest Last Name</label
                 >
                 <input
-                  type="text"
+                  type="email"
                   v-model="members[i + 1]!.lastName"
                   placeholder="Enter"
                   class="input input-bordered w-full mb-4"
                   required
                 />
               </div>
-              <div :class="hasError(i+2) ? 'border-red-500 border-4 rounded' : ''">
+              <div>
                 <label
                   class="text-xl font-bold text-center mb-6 text-white"
                   for="category"
@@ -221,6 +233,9 @@ const leader = reactive<Student>({
   lastName: "",
   email: "",
   osis: "",
+  bringingGuest: false,
+  isGuest: false,
+  guestOwner: "",
 });
 
 const maxMembers = 11;
@@ -232,11 +247,36 @@ function addMember() {
     firstName: "",
     lastName: "",
     email: "",
+    bringingGuest: false,
+    isGuest: false,
+    guestOwner: "",
   });
+
+  openDropdowns.value.push(true);
 }
 
 function removeMember(index: number) {
+  const member = members.value[index];
+  if (!member) return;
+
+  const nextMember = members.value[index + 1];
+
+  if (!member.isGuest && member.bringingGuest && nextMember?.isGuest) {
+    alert(
+      "Can not remove student until the dependent guest is removed from the student.",
+    );
+    return;
+  }
+
+  if (member.isGuest && index > 0) {
+    const owner = members.value[index - 1];
+    if (owner && !owner.isGuest) {
+      owner.bringingGuest = false;
+    }
+  }
+
   members.value.splice(index, 1);
+  openDropdowns.value.splice(index, 1);
 
   // clear errors tied to shifted indexes
   failedIndexes.value = failedIndexes.value
@@ -260,6 +300,76 @@ async function removeGroup() {
 const members = ref<Student[]>([]);
 const groupLoaded = ref(false);
 const failedIndexes = ref<number[]>([]);
+const openDropdowns = ref<boolean[]>([]);
+
+function normalizeStudent(student: Partial<Student>): Student {
+  const legacyStudent = student as Partial<Student> & { guest?: boolean };
+  return {
+    firstName: student.firstName || "",
+    lastName: student.lastName || "",
+    email: student.email || "",
+    osis: student.osis,
+    bringingGuest: student.bringingGuest || false,
+    isGuest: student.isGuest || legacyStudent.guest || false,
+    guestOwner: student.guestOwner || "",
+  };
+}
+
+function normalizeMembers(rawMembers: Partial<Student>[]): Student[] {
+  const normalized = rawMembers.map((member) => normalizeStudent(member));
+  const owners = normalized.filter((member) => !member.isGuest);
+  const guests = normalized.filter((member) => member.isGuest);
+
+  const guestsByOwner = new Map<string, Student>();
+  for (const guest of guests) {
+    const ownerKey = (guest.guestOwner || "").trim().toLowerCase();
+    if (ownerKey && !guestsByOwner.has(ownerKey)) {
+      guestsByOwner.set(ownerKey, guest);
+    }
+  }
+
+  const rebuiltMembers: Student[] = [];
+  for (const owner of owners) {
+    owner.bringingGuest = false;
+    rebuiltMembers.push(owner);
+
+    const ownerKey = owner.email.trim().toLowerCase();
+    const dependentGuest = guestsByOwner.get(ownerKey);
+    if (dependentGuest) {
+      dependentGuest.isGuest = true;
+      dependentGuest.bringingGuest = false;
+      dependentGuest.guestOwner = owner.email;
+      owner.bringingGuest = true;
+      rebuiltMembers.push(dependentGuest);
+      guestsByOwner.delete(ownerKey);
+    }
+  }
+
+  return rebuiltMembers;
+}
+
+function buildMembersForSubmit(): Student[] {
+  const normalized = normalizeMembers(members.value);
+
+  for (let i = 0; i < normalized.length; i++) {
+    const current = normalized[i];
+    if (!current) continue;
+
+    if (current.isGuest) {
+      current.bringingGuest = false;
+      continue;
+    }
+
+    const next = normalized[i + 1];
+    current.bringingGuest = Boolean(next?.isGuest);
+
+    if (next?.isGuest) {
+      next.guestOwner = current.email;
+    }
+  }
+
+  return normalized;
+}
 
 function hasError(index: number) {
   return failedIndexes.value.includes(index);
@@ -274,44 +384,56 @@ async function fetchGroup() {
     });
     if (!res.ok) throw new Error("Group not found");
     const data = await res.json();
-    members.value = data.members || [];
+    Object.assign(leader, normalizeStudent(data.leader || {}));
+    members.value = normalizeMembers(data.members || []);
+    openDropdowns.value = members.value.map(() => false);
     groupLoaded.value = true;
   } catch {
     alert("Could not find group for this leader");
   }
 }
 function guestChange(index: number) {
-  if (members.value[index]!.bringingGuest === true) {
+  const member = members.value[index];
+  if (!member || member.isGuest) return;
+
+  const nextMember = members.value[index + 1];
+
+  if (member.bringingGuest && nextMember?.isGuest) {
     members.value.splice(index + 1, 1);
-    members.value[index]!.bringingGuest = false;
+    openDropdowns.value.splice(index + 1, 1);
+    member.bringingGuest = false;
     return;
   }
-  members.value[index]!.bringingGuest = !members.value[index]!.bringingGuest;
+
   if (members.value.length + 1 > 12) {
     alert(
-      "Cant add guest: too many students to one group. Please remove a student before adding a guest."
+      "Cant add guest: too many students to one group. Please remove a student before adding a guest.",
     );
     return;
   }
+
+  member.bringingGuest = true;
   members.value.splice(index + 1, 0, {
     firstName: "",
     lastName: "",
     email: "",
     bringingGuest: false,
     isGuest: true,
-    guestOwner: `${members.value[index]?.email}`,
+    guestOwner: member.email || "",
   });
+  openDropdowns.value.splice(index + 1, 0, true);
 }
 async function submitEdits() {
   failedIndexes.value = [];
-
+  const normalizedMembers = buildMembersForSubmit();
+  console.log("Submitting edits", { leader, members: normalizedMembers });
   try {
     const res = await fetch("/api/editGroup", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         leader,
-        members: members.value,
+        members: normalizedMembers,
       }),
     });
     console.log(JSON.stringify({

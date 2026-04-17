@@ -10,13 +10,12 @@ export default defineEventHandler(async (event) => {
 
   //check if the guest owner email matches with email of another student in the group, and check that not more than one guest is assigned to each student
 
-
   //validate students (check if they exist in the big excel)
   await Promise.all(
     allPeople.map(async (person, index) => {
-      if (person.guest) return; //skip validation for guests
+      if (person.isGuest) return; //skip validation for guests
       const match = await Student.findOne({
-        firstName: person.firstName, 
+        firstName: person.firstName,
         lastName: person.lastName,
         email: person.email,
       }).collation({ locale: "en", strength: 2 }); // strength 2 ignores case

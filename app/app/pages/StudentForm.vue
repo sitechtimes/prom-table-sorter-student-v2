@@ -279,7 +279,7 @@ function guestChange(index: number) {
   Group.value[index]!.bringingGuest = !Group.value[index]!.bringingGuest;
   if (GroupSize.value + 1 > 12) {
     alert(
-      "Cant add guest: too many students to one group. Please remove a student before adding a guest."
+      "Cant add guest: too many students to one group. Please remove a student before adding a guest.",
     );
     return;
   }
@@ -294,15 +294,17 @@ function guestChange(index: number) {
   });
 }
 function removeStudent(removeIndex: number) {
-  const removeStudent = Group.value[removeIndex];
-  for (let i = 0; i < GroupSize.value; i++) {
-    if (Group.value[i]?.guestOwner == removeStudent!.email) {
-      alert(
-        "Can not remove student until the dependent guest is removed from the student."
-      );
-      return;
-    }
+  const student = Group.value[removeIndex];
+  const nextMember = Group.value[removeIndex + 1];
+
+  // Guests are inserted directly after their owner, so block if this student still has that guest row.
+  if (student?.bringingGuest && nextMember?.isGuest) {
+    alert(
+      "Can not remove student until the dependent guest is removed from the student.",
+    );
+    return;
   }
+
   Group.value.splice(removeIndex, 1);
   GroupSize.value = GroupSize.value - 1;
 }
@@ -314,7 +316,7 @@ async function submit() {
     leader: groupLeader,
     members: membersToSubmit,
   };
-
+  console.log(dataPush);
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&
     !isNaN(Number(groupLeader.osis));
@@ -325,7 +327,7 @@ async function submit() {
         dataPush.members[i]!.email.includes("@nycstudents.net");
       if (!emailCheck) {
         alert(
-          "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!"
+          "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!",
         );
         failedIndexes.value.push(i);
         return;
@@ -335,7 +337,7 @@ async function submit() {
   if (!osisCheck || !emailCheck) {
     failedIndexes.value.push(0);
     alert(
-      "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!"
+      "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!",
     );
     return;
   }
