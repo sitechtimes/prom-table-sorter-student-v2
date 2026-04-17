@@ -23,9 +23,9 @@
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
         >
           <li><NuxtLink to="/">Home</NuxtLink></li>
-          <li><NuxtLink to="/studentForm">Make Groups</NuxtLink></li>
-          <li><NuxtLink to="/studentEdit">Edit Groups</NuxtLink></li>
-          <li><NuxtLink to="/adminLogin">Admin Login</NuxtLink></li>
+          <li><NuxtLink to="/student/form">Make Groups</NuxtLink></li>
+          <li><NuxtLink to="/student/edit">Edit Groups</NuxtLink></li>
+          <li><NuxtLink to="/admin/login">Admin Login</NuxtLink></li>
         </ul>
       </div>
     </div>
