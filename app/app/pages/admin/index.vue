@@ -157,9 +157,14 @@
           List of All Tables
         </h1>
         <div class="collapse-content">
-          <button class="btn btn-error my-2" :disabled="deleting">
+          <div class= "space-x-1">
+ <button class="btn btn-error my-2" :disabled="deleting">
             Delete Groups
           </button>
+          <button class="btn btn-warning" @click="showEmails =! showEmails">Show Emails</button>
+          <button class="btn btn-info">Download Sheets</button>
+          </div>
+         
           <div v-if="Groups.length !== 0">
             <div
               v-for="group in Groups"
@@ -174,12 +179,14 @@
               >
                 Edit
               </p>
-              <div class="underline">
-                {{ group.leader.firstName }}
+              <div>
+                <div class="underline">{{ group.leader.firstName }} {{ group.leader.lastName }}</div>
+                <div v-if="showEmails" class="badge badge-outline badge-neutral-content">{{ group.leader.email }}</div>
               </div>
 
               <div v-for="member in group.members" class="pl-4">
                 {{ member.firstName }}
+                <div v-if="showEmails" class="badge badge-outline badge-neutral-content">{{ member.email }}</div>
               </div>
             </div>
           </div>
@@ -188,7 +195,7 @@
           </p>
         </div>
       </div>
-      <p>___ (underline) = group leader, hover to see email</p>
+      <p>___ (underline) = group leader</p>
       <button class="btn btn-error mt-2" onclick="delete_All.showModal()">
         Delete All Groups
       </button>
@@ -287,7 +294,7 @@ definePageMeta({
   middleware: "auth",
 });
 
-const maxMembers = 11
+const showEmails = ref(false)
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
 const maxSeats = ref<number>();
@@ -448,7 +455,8 @@ const deletingGroups = ref<Group[]>([]);
 const Tables = ref<Table[]>([]);
 let showPaidExample = ref(false);
 const members = ref<Student[]>([]);
-
+const failedIndexes = ref<number[]>([]);
+const maxMembers = 11
 
 interface ImportedStudent {
   name: string;
@@ -477,6 +485,7 @@ async function fetchGroup(
     if (!res.ok) throw new Error("Group not found");
     const data = await res.json();
     members.value = data.members || [];
+    
     //groupLoaded.value = true;
   } catch {
     alert("Could not find group for this leader");
@@ -495,6 +504,29 @@ async function deleteGroup() {
   } catch (error) {}
 }
 
+async function addMember() {
+  if (members.value.length >= maxMembers) return;
+
+  members.value.push({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
+}
+
+function hasError(index: number) {
+  return failedIndexes.value.includes(index);
+}
+
+function removeMember(index: number) {
+  members.value.splice(index, 1);
+
+  // clear errors tied to shifted indexes
+  failedIndexes.value = failedIndexes.value
+    .filter((i) => i !== index + 1)
+    .map((i) => (i > index + 1 ? i - 1 : i));
+}
+
 async function fetchGroups() {
   try {
     const res = await fetch("/api/allGroups"); //backend
@@ -507,6 +539,33 @@ async function fetchGroups() {
 }
 function logGroups() {
   console.log(Groups.value);
+}
+
+async function submitEdits() {
+  failedIndexes.value = [];
+
+  try {
+    const res = await fetch("/api/editGroup", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        leader,
+        members: members.value,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      failedIndexes.value = data.data.failedIndexes || [];
+      alert(data.message);
+      return;
+    }
+
+    alert("Group updated successfully");
+  } catch {
+    alert("Server error while updating group");
+  }
 }
 
 async function getPaidList() {
@@ -708,12 +767,12 @@ async function executeSort() {
       maxSeats.value,
       minSeats.value,
     ) as Table[];
-    exportAsExcel();
+    exportPaidAsExcel();
   } catch (error: any) {
     alert(error.message);
   }
 }
-async function exportAsExcel() {
+async function exportPaidAsExcel() {
   const exportWorkbook = new ExcelJS.Workbook();
   const sortedWorksheet = exportWorkbook.addWorksheet("Comparison Worksheet");
   sortedWorksheet.getCell("A1").value = "All Tables";
@@ -751,6 +810,10 @@ async function exportAsExcel() {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const blob = new Blob([buffer], { type: fileType });
   downloadExcelLink.value = URL.createObjectURL(blob);
+}
+
+async function exportTablesAsExcel(){
+ //for the tables 
 }
 
 onMounted(async () => {

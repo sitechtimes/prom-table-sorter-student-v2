@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const { firstName, lastName, email, osis } = body.leader;
   //console.log(firstName, lastName, email, osis);
   const group = await Group.findOne({
-    "leader.firstName": firstName,
+    "leader.firstName": firstName, //make it not case sensitive later
     "leader.lastName": lastName,
     "leader.email": email,
     "leader.osis": osis,
