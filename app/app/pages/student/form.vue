@@ -309,6 +309,7 @@ function removeStudent(removeIndex: number) {
   GroupSize.value = GroupSize.value - 1;
 }
 async function submit() {
+  failedIndexes.value = [];
   const membersToSubmit = InGroup.value
     ? Group.value.slice(1, GroupSize.value)
     : [];
@@ -329,7 +330,8 @@ async function submit() {
         alert(
           "Enter a valid @nycstudents.net email for all members. Note: guests do not need a @nycstudents.net email!",
         );
-        failedIndexes.value.push(i);
+        // membersToSubmit is 0-based, while Group/hasError uses 1-based member indexes (leader is 0).
+        failedIndexes.value.push(i + 1);
         return;
       }
     }
@@ -343,7 +345,6 @@ async function submit() {
   }
   try {
     const res = await fetch("/api/createGroup", {
-      //push data here (using backend)
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -365,7 +366,7 @@ async function submit() {
           }
         }
       }
-      console.log(dataPush)
+      console.log(dataPush);
       alert(data.message);
     } else {
       alert("Submission successful!");
