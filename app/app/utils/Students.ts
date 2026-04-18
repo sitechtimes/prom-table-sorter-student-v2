@@ -3,4 +3,7 @@ export interface Student {
     lastName: string;
     email: string;
     osis?: string;
+    bringingGuest?: boolean;
+    isGuest?: boolean;
+    guestOwner?: string;
 }

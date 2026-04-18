@@ -18,8 +18,9 @@ export default defineEventHandler(async (event) => {
   //validate students (check if they exist in the big excel)
   await Promise.all(
     allPeople.map(async (person, index) => {
+      if (person.isGuest) return; //skip validation for guests
       const match = await Student.findOne({
-        firstName: person.firstName, // Use original case
+        firstName: person.firstName,
         lastName: person.lastName,
         email: person.email,
       }).collation({ locale: "en", strength: 2 }); // Strength 2 ignores case

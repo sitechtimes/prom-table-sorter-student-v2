@@ -11,6 +11,7 @@
       v-model="vModel"
       :placeholder="placeholder"
       class="input input-bordered w-full mb-4"
+      :disabled="isGuest === true"
       required
     />
   </div>
@@ -22,5 +23,6 @@ const props = defineProps<{
   type: string;
   color: string;
   placeholder: string;
+  isGuest: boolean | undefined;
 }>();
 </script>
