@@ -18,8 +18,10 @@
             />
           </svg>
         </div>
+        <!-- 1. Added @click="closeDropdown" here -->
         <ul
           tabindex="0"
+          @click="closeDropdown"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
         >
           <li><NuxtLink to="/">Home</NuxtLink></li>
@@ -50,12 +52,16 @@
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <!-- update this later for admin view -->
       </button>
     </div>
   </div>
 </template>
 
-<script setup></script>
-
-<style scoped></style>
+<script setup>
+// Function to remove focus and close the menu
+const closeDropdown = () => {
+  if (process.client && document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur()
+  }
+}
+</script>

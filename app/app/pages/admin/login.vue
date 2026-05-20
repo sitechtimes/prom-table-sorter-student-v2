@@ -1,7 +1,7 @@
 <template>
   <div v-if="!loggedIn" class="place-items-center">
     <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-xs border p-4">
-  <legend class="fieldset-legend">Login</legend>
+  <legend class="fieldset-legend px-1 ">Login</legend>
 
   <label class="label">Email</label>
   <input type="email" class="input" placeholder="Email" v-model="username"/>
