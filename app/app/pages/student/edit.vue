@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center items-center min-h-screen bg-gray-500 p-6">
     <NuxtLink
-      to="/StudentForm"
+      to="/student/form"
       class="absolute right-3.5 top-3.5 bg-primary rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
     >
       <span class="md:hidden">Back</span>
@@ -14,9 +14,12 @@
       <!-- leader login -->
 
       <div v-if="!groupLoaded">
-        <h1 class="text-3xl font-bold mb-4 text-center text-black">
-          Find Your Group
+        <h1 class="text-3xl font-bold mb-2 text-center text-black">
+          Edit Existing Group
         </h1>
+        <p class="text-center text-gray-600 mb-6">
+          Enter the group leader's information to start editing your group
+        </p>
 
         <FormInput
           category="First Name"
@@ -121,7 +124,7 @@
 
               <FormInput
                 category="First Name"
-                color="white"
+                :color="labelColor"
                 v-model="member.firstName"
                 type="text"
                 placeholder="Enter"
@@ -129,7 +132,7 @@
               />
               <FormInput
                 category="Last Name"
-                color="white"
+                :color="labelColor"
                 v-model="member.lastName"
                 type="text"
                 placeholder="Enter"
@@ -137,7 +140,7 @@
               />
               <FormInput
                 category="Email"
-                color="white"
+                :color="labelColor"
                 v-model="member.email"
                 type="email"
                 :placeholder="
@@ -156,7 +159,7 @@
                   <input
                     type="checkbox"
                     :checked="member.bringingGuest"
-                    class="checkbox checkbox-primary border-2 border-white"
+                    class="checkbox checkbox-primary border-2 border-black dark:border-white"
                     @change="guestChange(i)"
                   />
                 </label>
@@ -173,7 +176,7 @@
               >
                 <div>
                   <label
-                    class="text-xl font-bold text-center mb-6 text-white"
+                    class="text-xl font-bold text-center mb-6 text-dark dark:text-white"
                     for="category"
                     >Guest First Name</label
                   >
@@ -187,7 +190,7 @@
                 </div>
                 <div>
                   <label
-                    class="text-xl font-bold text-center mb-6 text-white"
+                    class="text-xl font-bold text-center mb-6 text-dark dark:text-white"
                     for="category"
                     >Guest Last Name</label
                   >
@@ -201,7 +204,7 @@
                 </div>
                 <div>
                   <label
-                    class="text-xl font-bold text-center mb-6 text-white"
+                    class="text-xl font-bold text-center mb-6 text-dark dark:text-white"
                     for="category"
                     >Guest Email</label
                   >
@@ -240,6 +243,13 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { navigateTo } from "#app";
+
+// weird CSS override for FormInput component bc I couldnt find another way
+const colorMode = useColorMode();
+
+const labelColor = computed(() => {
+  return colorMode.value === "dark" ? "white" : "black";
+});
 
 const leader = reactive<Student>({
   firstName: "",
@@ -314,8 +324,6 @@ const members = ref<Student[]>([]);
 const groupLoaded = ref(false);
 const failedIndexes = ref<number[]>([]);
 const openDropdowns = ref<boolean[]>([]);
-
-
 
 function hasError(index: number) {
   return failedIndexes.value.includes(index);

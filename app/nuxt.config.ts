@@ -14,9 +14,9 @@ export default defineNuxtConfig({
   },
 
   devServer: {
-        host: '0.0.0.0',
-        port: 3000
-    },
-    
-  modules: ["nuxt-auth-utils"]
+    host: "0.0.0.0",
+    port: 3000,
+  },
+
+  modules: ["nuxt-auth-utils", "@nuxtjs/color-mode"],
 });

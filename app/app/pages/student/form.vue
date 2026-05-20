@@ -101,7 +101,7 @@
             <div class="collapse-content text-sm space-y-2">
               <FormInput
                 category="First Name"
-                color="white"
+                :color="labelColor"
                 v-model="Group[i]!.firstName"
                 type="text"
                 placeholder="Enter"
@@ -110,7 +110,7 @@
               />
               <FormInput
                 category="Last Name"
-                color="white"
+                :color="labelColor"
                 v-model="Group[i]!.lastName"
                 type="text"
                 placeholder="Enter"
@@ -119,7 +119,7 @@
               />
               <FormInput
                 category="NYC Students Email"
-                color="white"
+                :color="labelColor"
                 v-model="Group[i]!.email"
                 type="email"
                 placeholder="examples@nycstudents.net"
@@ -134,7 +134,7 @@
                   <input
                     type="checkbox"
                     v-model="Group[i]!.bringingGuest"
-                    class="checkbox checkbox-primary border-2 border-white"
+                    class="checkbox checkbox-primary border-2 border-black dark:border-white"
                     :disabled="Group[i]!.isGuest"
                     @click="guestChange(i)"
                   />
@@ -143,7 +143,7 @@
               <div v-if="Group[i]!.bringingGuest === true">
                 <div>
                   <label
-                    class="text-xl font-bold text-center mb-6 text-white"
+                    class="text-xl font-bold text-center mb-6 text-black dark:text-white"
                     for="category"
                     >Guest First Name</label
                   >
@@ -161,7 +161,7 @@
                 </div>
                 <div>
                   <label
-                    class="text-xl font-bold text-center mb-6 text-white"
+                    class="text-xl font-bold text-center mb-6 text-black dark:text-white"
                     for="category"
                     >Guest Last Name</label
                   >
@@ -179,7 +179,7 @@
                 </div>
                 <div>
                   <label
-                    class="text-xl font-bold text-center mb-6 text-white"
+                    class="text-xl font-bold text-center mb-6 text-black dark:text-white"
                     for="category"
                     >Guest Email</label
                   >
@@ -219,6 +219,12 @@
 
 <script lang="ts" setup>
 import { navigateTo } from "#app";
+// weird CSS override for FormInput component bc I couldnt find another way
+const colorMode = useColorMode();
+
+const labelColor = computed(() => {
+  return colorMode.value === "dark" ? "white" : "black";
+});
 
 const groupLeader = reactive<Student>({
   firstName: "",
