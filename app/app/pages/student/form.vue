@@ -6,8 +6,10 @@
       to="/student/edit"
       class="absolute right-3.5 top-3.5 bg-primary rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
     >
-      <span class="md:hidden">Edit</span>
-      <span class="hidden md:inline"> Want to edit a form? Click here </span>
+      <span class="md:hidden text-white">Edit</span>
+      <span class="hidden md:inline text-white">
+        Want to edit a form? Click here
+      </span>
     </NuxtLink>
 
     <div
@@ -16,6 +18,12 @@
       <h1 class="text-black text-3xl font-bold text-center mb-6">
         Student Form
       </h1>
+      <p class="text-center text-gray-600 mb-6">
+        Please ensure the student information entered is spelled exactly the
+        same as the official school records to avoid issues with validation. If
+        you repeatedly have issues with validation, please contact Mr.Whalen or
+        Mr. Terusa.
+      </p>
       <form @submit.prevent="submit">
         <FormInput
           category="First Name"
@@ -130,7 +138,7 @@
                 <label
                   class="label text-xl font-bold flex flex-col items-start gap-2"
                 >
-                  <span>Are you bringing a guest?</span>
+                  <span>Are you bringing an outside guest?</span>
                   <input
                     type="checkbox"
                     v-model="Group[i]!.bringingGuest"

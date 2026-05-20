@@ -4,8 +4,8 @@
       to="/student/form"
       class="absolute right-3.5 top-3.5 bg-primary rounded shadow hover:bg-black transition px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base"
     >
-      <span class="md:hidden">Back</span>
-      <span class="hidden md:inline">Back to Student Form</span>
+      <span class="md:hidden text-white">Back</span>
+      <span class="hidden md:inline text-white">Back to Student Form</span>
     </NuxtLink>
 
     <div
