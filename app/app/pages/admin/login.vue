@@ -27,6 +27,9 @@
   <div v-else class="m-2">
     You are currently logged in.
     <button class="btn bg-base-100" @click="logout">Sign Out</button>
+    <button class="btn btn-neutral mt-4 block" @click="navigateTo('/admin/')">
+      Admin Dashboard
+    </button>
   </div>
 </template>
 

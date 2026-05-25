@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     session: {
       password: sessionPassword,
       cookie: {
+        secure: false,
         sameSite: "lax",
       },
     },
