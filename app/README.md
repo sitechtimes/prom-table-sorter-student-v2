@@ -73,3 +73,14 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## PM2
+
+To host the built app on your local network with PM2, build first and then start the ecosystem file:
+
+```bash
+npm run build
+pm2 start ecosystem.config.cjs
+```
+
+Make sure the machine running PM2 has `NUXT_SESSION_PASSWORD` available in `.env` or in the PM2 environment.
