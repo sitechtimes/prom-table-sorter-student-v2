@@ -1,7 +1,7 @@
 <template>
-  <div class="h-screen">
+  <div class="min-h-screen">
     <div
-      class="flex flex-col sm:flex-row sm:justify-between items-center h-7/8 sm:h-3/4 max-w-7xl mx-auto px-6 py-12 sm:py-20 space-y-8 sm:space-y-0"
+      class="flex flex-col sm:flex-row sm:justify-between items-center max-w-7xl mx-auto px-6 py-8 sm:py-20 space-y-8 sm:space-y-0 pb-12 sm:pb-0"
     >
       <div
         class="card bg-base-100 shadow-sm w-72 h-96 sm:w-[32rem] sm:h-[40rem]"
