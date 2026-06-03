@@ -13,6 +13,7 @@ const personSchema = new mongoose.Schema({
 const groupSchema = new mongoose.Schema({
   leader: { type: personSchema, required: true },
   members: [personSchema],
+  preferredNeighbor: { type: String, required: false, trim: true },
 });
 
 module.exports = mongoose.model("Group", groupSchema);

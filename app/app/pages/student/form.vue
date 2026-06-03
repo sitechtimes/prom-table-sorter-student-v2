@@ -217,6 +217,22 @@
           </div>
         </div>
 
+        <div class="mt-6">
+          <label class="text-black text-lg font-semibold block mb-1">
+            Which group would you like to sit next to? (Optional)
+          </label>
+          <p class="text-gray-500 text-sm mb-2">
+            Enter the <strong>first and last name of that group's leader</strong>.
+            This is a preference, not a guarantee.
+          </p>
+          <input
+            type="text"
+            v-model="preferredNeighbor"
+            placeholder="e.g. Jane Smith"
+            class="input input-bordered w-full"
+          />
+        </div>
+
         <button type="submit" class="btn btn-primary w-full mt-6">
           Submit Form
         </button>
@@ -233,6 +249,8 @@ const colorMode = useColorMode();
 const labelColor = computed(() => {
   return colorMode.value === "dark" ? "white" : "black";
 });
+
+const preferredNeighbor = ref('');
 
 const groupLeader = reactive<Student>({
   firstName: "",
@@ -330,6 +348,7 @@ async function submit() {
   const dataPush = {
     leader: groupLeader,
     members: membersToSubmit,
+    preferredNeighbor: preferredNeighbor.value.trim() || undefined,
   };
   const osisCheck =
     (groupLeader.osis as string).length === 9 &&

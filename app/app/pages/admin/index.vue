@@ -252,6 +252,7 @@ async function executeSort() {
     let groupsCopy: Group[] = Groups.value.map((group) => ({
       leader: { ...group.leader },
       members: group.members.map((member) => ({ ...member })),
+      preferredNeighbor: group.preferredNeighbor,
     }));
 
     if (includeUnpaidStudents.value === false) {
@@ -302,6 +303,7 @@ async function executeSort() {
                   osis: newLeader.email, // not OSIS but has to be set for GL
                 },
                 members: newMembers,
+                preferredNeighbor: group.preferredNeighbor,
               });
             }
           }
@@ -310,6 +312,7 @@ async function executeSort() {
             filteredGroups.push({
               leader: group.leader,
               members: filteredMembers,
+              preferredNeighbor: group.preferredNeighbor,
             });
           }
         }

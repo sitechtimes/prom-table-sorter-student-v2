@@ -229,6 +229,22 @@
           Add Member
         </button>
 
+        <div class="mt-6">
+          <label class="text-black text-lg font-semibold block mb-1">
+            Which group would you like to sit next to? (Optional)
+          </label>
+          <p class="text-gray-500 text-sm mb-2">
+            Enter the <strong>first and last name of that group's leader</strong>.
+            This is a preference, not a guarantee.
+          </p>
+          <input
+            type="text"
+            v-model="preferredNeighbor"
+            placeholder="e.g. Jane Smith"
+            class="input input-bordered w-full"
+          />
+        </div>
+
         <button class="btn btn-primary w-full mt-6" @click="submitEdits">
           Submit Changes
         </button>
@@ -324,6 +340,7 @@ const members = ref<Student[]>([]);
 const groupLoaded = ref(false);
 const failedIndexes = ref<number[]>([]);
 const openDropdowns = ref<boolean[]>([]);
+const preferredNeighbor = ref('');
 
 function hasError(index: number) {
   return failedIndexes.value.includes(index);
@@ -348,6 +365,7 @@ async function fetchGroup() {
       guestOwner: "",
     });
     members.value = data.members;
+    preferredNeighbor.value = data.preferredNeighbor || '';
     openDropdowns.value = members.value.map(() => false);
     groupLoaded.value = true;
   } catch {
@@ -402,6 +420,7 @@ async function submitEdits() {
       body: JSON.stringify({
         leader,
         members: members.value,
+        preferredNeighbor: preferredNeighbor.value.trim() || undefined,
       }),
     });
 
