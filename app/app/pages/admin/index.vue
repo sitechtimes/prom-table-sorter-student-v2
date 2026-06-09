@@ -26,7 +26,7 @@
         v-if="showPaidExample"
         :src="paidExample"
         class="mx-auto w-full sm:w-2/3 md:w-1/2 rounded-xl shadow mb-6"
-      />  
+      />
       <h1 class="text-xl sm:text-2xl font-bold text-center text-black mb-4">
         Enter a range for table sizes
       </h1>
@@ -48,38 +48,157 @@
           />
         </div>
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
-        Students that haven't paid and are registered
-      </h1>
-      <div class="mb-6">
-        <div
-          v-if="notPaid.length !== 0"
-          v-for="student in notPaid"
-          :key="student.osis"
-          class="text-black text-center font-medium mb-1"
+      <details
+        class="group mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm"
+      >
+        <summary
+          class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-lg sm:text-xl font-bold text-slate-900 hover:bg-slate-50"
         >
-          {{ student.firstName }} {{ student.lastName }}
+          <span
+            >Students that haven't paid and are registered ({{
+              notPaid.length
+            }})</span
+          >
+          <span class="text-sm font-medium text-slate-500 group-open:hidden"
+            >Click to open</span
+          >
+          <span
+            class="hidden text-sm font-medium text-slate-500 group-open:inline"
+            >Click to close</span
+          >
+        </summary>
+        <div class="border-t border-slate-200 bg-slate-50 px-5 py-5">
+          <div
+            v-if="notPaid.length !== 0"
+            class="max-h-80 space-y-3 overflow-y-auto"
+          >
+            <div
+              v-for="student in notPaid"
+              :key="student.osis || student.email"
+              class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm"
+            >
+              <div class="text-base font-semibold">
+                {{ student.firstName }} {{ student.lastName }}
+              </div>
+              <div class="text-sm text-slate-500">
+                {{ student.email }}
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-center italic text-slate-500">
+            Empty, enter an excel to display.
+          </p>
         </div>
-        <p v-else class="text-gray-500 text-center italic">
-          Empty, enter an excel to display.
-        </p>
-      </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-center text-black my-6">
-        Students that have paid and arent registered
-      </h1>
-      <div class="mb-6">
-        <div
-          v-if="notRegistered.length !== 0"
-          v-for="student in notRegistered"
-          :key="student.email"
-          class="text-black text-center font-medium mb-1"
+      </details>
+      <details
+        class="group mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm"
+      >
+        <summary
+          class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-lg sm:text-xl font-bold text-slate-900 hover:bg-slate-50"
         >
-          {{ student.name }}
+          <span
+            >Students that have paid and aren't registered ({{
+              notRegistered.length
+            }})</span
+          >
+          <span class="text-sm font-medium text-slate-500 group-open:hidden"
+            >Click to open</span
+          >
+          <span
+            class="hidden text-sm font-medium text-slate-500 group-open:inline"
+            >Click to close</span
+          >
+        </summary>
+        <div class="border-t border-slate-200 bg-slate-50 px-4 py-4">
+          <div
+            v-if="notRegistered.length !== 0"
+            class="max-h-64 space-y-2 overflow-y-auto"
+          >
+            <div
+              v-for="student in notRegistered"
+              :key="student.email"
+              class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 shadow-sm"
+            >
+              <div class="font-semibold">{{ student.name }}</div>
+              <div class="text-xs text-slate-500">
+                {{ student.email }}
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-center italic text-slate-500">
+            Empty, enter an excel to display.
+          </p>
         </div>
-        <p v-else class="text-gray-500 text-center italic">
-          Empty, enter an excel to display.
-        </p>
-      </div>
+      </details>
+      <details
+        class="group mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm"
+      >
+        <summary
+          class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-lg sm:text-xl font-bold text-slate-900 hover:bg-slate-50"
+        >
+          <span>Guests and guest owners ({{ guestPairs.length }})</span>
+          <span class="text-sm font-medium text-slate-500 group-open:hidden"
+            >Click to open</span
+          >
+          <span
+            class="hidden text-sm font-medium text-slate-500 group-open:inline"
+            >Click to close</span
+          >
+        </summary>
+        <div class="border-t border-slate-200 bg-slate-50 px-4 py-4">
+          <div v-if="guestPairs.length !== 0" class="overflow-x-auto">
+            <table
+              class="min-w-full divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white text-left text-sm text-slate-800 shadow-sm"
+            >
+              <thead class="bg-slate-100 text-slate-700">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Guest owner</th>
+                  <th class="px-4 py-3 font-semibold">Guest</th>
+                  <th class="px-4 py-3 font-semibold">Paid count</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr
+                  v-for="pair in guestPairs"
+                  :key="pair.owner.email + pair.guest.email"
+                >
+                  <td class="px-4 py-3">
+                    <div class="font-medium text-slate-900">
+                      {{ pair.owner.firstName }} {{ pair.owner.lastName }}
+                    </div>
+                    <div class="text-xs text-slate-500">
+                      {{ pair.owner.email }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="font-medium text-slate-900">
+                      {{ pair.guest.firstName }} {{ pair.guest.lastName }}
+                    </div>
+                    <div class="text-xs text-slate-500">
+                      {{ pair.guest.email }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+                      :class="
+                        pair.paidCount === 2
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-amber-100 text-amber-800'
+                      "
+                    >
+                      {{ pair.paidCount }}/2
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p v-else class="text-center italic text-slate-500">
+            Empty, enter an excel to display.
+          </p>
+        </div>
+      </details>
       <div class="flex items-center gap-3 mb-4">
         <input
           type="checkbox"
@@ -88,6 +207,16 @@
         />
         <label class="text-black font-medium">
           Include unpaid students in table sorting
+        </label>
+      </div>
+      <div class="flex items-center gap-3 mb-4">
+        <input
+          type="checkbox"
+          v-model="includeUnregisteredStudents"
+          class="checkbox checkbox-primary"
+        />
+        <label class="text-black font-medium">
+          Include paid but unregistered students in table sorting
         </label>
       </div>
       <div class="flex items-center gap-3 mb-6">
@@ -132,11 +261,11 @@
 </template>
 
 <script lang="ts" setup>
-import paidExample from '~/assets/paidExample.png';
+import paidExample from "~/assets/paidExample.png";
 import ExcelJS from "exceljs";
 definePageMeta({
-  middleware: "auth"
-})
+  middleware: "auth",
+});
 
 const paidFile = ref<HTMLInputElement | null>(null);
 const minSeats = ref<number>();
@@ -144,11 +273,123 @@ const maxSeats = ref<number>();
 const notPaid = ref<Student[]>([]);
 const notRegistered = ref<ImportedStudent[]>([]);
 const includeUnpaidStudents = ref(false);
+const includeUnregisteredStudents = ref(false);
 const looseMode = ref(false);
 const tables = ref<Table[]>([]);
 const showPaidExample = ref(false);
 const updateProps = ref(0);
 const Groups = ref<Group[]>();
+const guestPairs = ref<
+  Array<{
+    owner: Student;
+    guest: Student;
+    paidCount: number;
+  }>
+>([]);
+
+function normalizeText(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function cellValueToText(value: unknown) {
+  if (value == null) return "";
+
+  if (typeof value === "object") {
+    const typedValue = value as {
+      text?: unknown;
+      result?: unknown;
+      richText?: Array<{ text?: string }>;
+    };
+
+    if (typeof typedValue.text === "string") return typedValue.text;
+    if (typeof typedValue.result === "string") return typedValue.result;
+    if (Array.isArray(typedValue.richText)) {
+      return typedValue.richText.map((part) => part.text ?? "").join("");
+    }
+  }
+
+  return String(value);
+}
+
+function normalizeCellText(value: unknown) {
+  return cellValueToText(value).replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function getStudentName(student: Student) {
+  return `${student.firstName} ${student.lastName}`.trim();
+}
+
+function matchesPaidEntry(student: Student, paidStudent: ImportedStudent) {
+  const studentName = normalizeCellText(getStudentName(student));
+  const studentEmail = normalizeCellText(student.email);
+  const paidName = normalizeCellText(paidStudent.name);
+  const paidEmail = normalizeCellText(paidStudent.email);
+
+  if (looseMode.value === true) {
+    return paidName === studentName;
+  }
+
+  return paidEmail === studentEmail || paidName === studentName;
+}
+
+function countStudentPayments(student: Student, paidList: ImportedStudent[]) {
+  return paidList.reduce(
+    (count, paidStudent) =>
+      count + (matchesPaidEntry(student, paidStudent) ? 1 : 0),
+    0,
+  );
+}
+
+function isStudentPaid(student: Student, paidList: ImportedStudent[]) {
+  return countStudentPayments(student, paidList) > 0;
+}
+
+function buildGuestPairs(
+  groupStudents: Student[],
+  paidList: ImportedStudent[],
+) {
+  const pairedGuests = groupStudents.filter((student) => student.isGuest);
+  const pairs: Array<{
+    owner: Student;
+    guest: Student;
+    paidCount: number;
+  }> = [];
+
+  for (const guest of pairedGuests) {
+    const ownerEmail = normalizeText(guest.guestOwner ?? "");
+    const owner = groupStudents.find(
+      (student) =>
+        !student.isGuest && normalizeText(student.email) === ownerEmail,
+    );
+
+    if (!owner) continue;
+
+    const ownerPaid = countStudentPayments(owner, paidList);
+    const guestPaid = countStudentPayments(guest, paidList);
+
+    pairs.push({
+      owner,
+      guest,
+      paidCount: Math.min(2, ownerPaid + guestPaid),
+    });
+  }
+
+  return pairs;
+}
+
+function refreshGuestPairsFromGroups(paidList: ImportedStudent[] = []) {
+  if (!Groups.value) {
+    guestPairs.value = [];
+    return;
+  }
+
+  const groupStudents: Student[] = Groups.value.flatMap((group: Group) => [
+    group.leader,
+    ...group.members,
+  ]);
+
+  guestPairs.value = buildGuestPairs(groupStudents, paidList);
+}
 
 async function fetchGroups() {
   try {
@@ -156,6 +397,7 @@ async function fetchGroups() {
     if (!res.ok) throw Error("couldnt fetch data");
     const data: Group[] = await res.json();
     Groups.value = data;
+    refreshGuestPairsFromGroups();
   } catch (error) {
     alert(error);
   }
@@ -175,10 +417,10 @@ async function getPaidList() {
     const paidList = <ImportedStudent[]>[];
     if (!paidSheet) return;
     for (let i = 1; i <= paidSheet.actualRowCount; i++) {
-      const name = paidSheet.getCell(`A${i}`).value;
-      const email = paidSheet.getCell(`B${i}`).value ?? i;
-      if (name && typeof email === "string") {
-        paidList.push({ name: String(name), email });
+      const name = cellValueToText(paidSheet.getCell(`A${i}`).value).trim();
+      const email = cellValueToText(paidSheet.getCell(`B${i}`).value).trim();
+      if (name && email) {
+        paidList.push({ name, email });
       }
     }
     return paidList;
@@ -195,47 +437,42 @@ async function compareSeatAndPay() {
     group.leader,
     ...group.members,
   ]);
+  const nonGuestStudents = groupStudents.filter((student) => !student.isGuest);
 
   if (looseMode.value === true) {
-    notPaid.value = groupStudents.filter((groupStudent) => {
-      return !paidList.some(
-        (paidStudent) =>
-          paidStudent.name.toLowerCase() ===
-          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
-      );
+    notPaid.value = nonGuestStudents.filter((groupStudent) => {
+      return !isStudentPaid(groupStudent, paidList);
     });
     notRegistered.value = paidList.filter((paidStudent) => {
-      return !groupStudents.some((groupStudent) => {
-        return (
-          `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
-          paidStudent.name.toLowerCase()
-        );
-      });
+      return !groupStudents.some(
+        (groupStudent) =>
+          normalizeText(
+            `${groupStudent.firstName} ${groupStudent.lastName}`,
+          ) === normalizeText(paidStudent.name),
+      );
     });
   } else {
     const paidEmails = paidList.map((student) => student.email.toLowerCase());
     const groupEmails = groupStudents.map((student) =>
-      student.email.toLowerCase()
+      student.email.toLowerCase(),
     );
-    notPaid.value = groupStudents.filter(
+    notPaid.value = nonGuestStudents.filter(
       (groupStudent) =>
         !paidEmails.includes(groupStudent.email.toLowerCase()) &&
-        !paidList.some(
-          (paidStudent) =>
-            paidStudent.name.toLowerCase() ===
-            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase()
-        )
+        !isStudentPaid(groupStudent, paidList),
     );
     notRegistered.value = paidList.filter(
       (paidStudent) =>
         !groupEmails.includes(paidStudent.email.toLowerCase()) &&
         !groupStudents.some(
           (groupStudent) =>
-            `${groupStudent.firstName} ${groupStudent.lastName}`.toLowerCase() ===
-            paidStudent.name.toLowerCase()
-        )
+            normalizeText(
+              `${groupStudent.firstName} ${groupStudent.lastName}`,
+            ) === normalizeText(paidStudent.name),
+        ),
     );
   }
+  refreshGuestPairsFromGroups(paidList);
 }
 async function executeSort() {
   // await fetchGroups();
@@ -257,6 +494,9 @@ async function executeSort() {
 
     if (includeUnpaidStudents.value === false) {
       const filteredGroups: Group[] = [];
+      const unpaidEmailSet = new Set(
+        notPaid.value.map((student) => normalizeText(student.email)),
+      );
 
       for (let groupIndex = 0; groupIndex < groupsCopy.length; groupIndex++) {
         const group = groupsCopy[groupIndex];
@@ -268,25 +508,26 @@ async function executeSort() {
           memberIndex < group.members.length;
           memberIndex++
         ) {
-          let isUnpaid = false;
-          for (let i = 0; i < notPaid.value.length; i++) {
-            if (notPaid.value[i]!.email === group.members[memberIndex]?.email) {
-              isUnpaid = true;
-              break;
-            }
+          const member = group.members[memberIndex];
+          if (!member) continue;
+
+          // Keep guests out of paid-only sorting when their owner is unpaid.
+          if (
+            member.isGuest &&
+            unpaidEmailSet.has(normalizeText(member.guestOwner ?? ""))
+          ) {
+            continue;
           }
-          if (!isUnpaid && group.members[memberIndex]) {
-            filteredMembers.push(group.members[memberIndex]!);
+
+          const isUnpaid = unpaidEmailSet.has(normalizeText(member.email));
+          if (!isUnpaid) {
+            filteredMembers.push(member);
           }
         }
 
-        let leaderIsUnpaid = false;
-        for (let i = 0; i < notPaid.value.length; i++) {
-          if (notPaid.value[i]?.email === group.leader?.email) {
-            leaderIsUnpaid = true;
-            break;
-          }
-        }
+        const leaderIsUnpaid = unpaidEmailSet.has(
+          normalizeText(group.leader?.email ?? ""),
+        );
 
         if (leaderIsUnpaid) {
           //assigns new GL if the leader is unpaid, don't actually become group leaders, just for displaying data
@@ -337,33 +578,35 @@ async function executeSort() {
       }
     }
 
-    const extraStudents: ImportedStudent[] = [];
-    for (let i = 0; i < notRegistered.value.length; i++) {
-      if (!allGroupEmails.includes(notRegistered.value[i]?.email ?? "")) {
-        extraStudents.push(notRegistered.value[i]!);
+    if (includeUnregisteredStudents.value) {
+      const extraStudents: ImportedStudent[] = [];
+      for (let i = 0; i < notRegistered.value.length; i++) {
+        if (!allGroupEmails.includes(notRegistered.value[i]?.email ?? "")) {
+          extraStudents.push(notRegistered.value[i]!);
+        }
       }
-    }
 
-    for (let i = 0; i < extraStudents.length; i++) {
-      const student = extraStudents[i];
-      if (!student?.name || !student?.email) continue;
-      updateProps.value += 1;
-      groupsCopy.push({
-        leader: {
-          firstName: student.name.split(" ")[0] ?? "",
-          lastName: student.name.split(" ")[1] ?? "",
-          email: student.email,
-          osis: student.email, //no OSIS to use for them but need to be displayed
-        },
-        members: [],
-      });
+      for (let i = 0; i < extraStudents.length; i++) {
+        const student = extraStudents[i];
+        if (!student?.name || !student?.email) continue;
+        updateProps.value += 1;
+        groupsCopy.push({
+          leader: {
+            firstName: student.name.split(" ")[0] ?? "",
+            lastName: student.name.split(" ")[1] ?? "",
+            email: student.email,
+            osis: student.email, //no OSIS to use for them but need to be displayed
+          },
+          members: [],
+        });
+      }
     }
 
     tables.value = rangeSort(
       groupsCopy,
       algoFunctionOptions,
       maxSeats.value,
-      minSeats.value
+      minSeats.value,
     ) as Table[];
   } catch (error: any) {
     alert(error.message);

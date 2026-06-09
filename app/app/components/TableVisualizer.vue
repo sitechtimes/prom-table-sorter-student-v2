@@ -31,7 +31,7 @@
         <div
           v-for="(table, i) in tables"
           :key="i"
-          class="bg-white rounded-2xl shadow-lg border border-gray-300 w-[300px] h-[300px] flex flex-col relative ring-offset-2 overflow-visible rounded-lg"
+          class="bg-white rounded-2xl shadow-lg border border-gray-300 w-75 h-75 flex flex-col relative ring-offset-2 overflow-visible"
           :class="selectedTables.includes(i) ? 'ring-2 ring-purple-500' : ''"
         >
           <div
@@ -83,7 +83,7 @@
               :group="{ name: 'groups', pull: true, put: true }"
               item-key="leader.osis"
               @change="moveable(tables[i])"
-              class="space-y-2 min-h-[32px]"
+              class="space-y-2 min-h-8"
               :forceFallback="true"
               :fallbackOnBody="true"
               handle=".drag-handle"
@@ -96,9 +96,18 @@
                   <div
                     class="drag-handle cursor-move flex items-center justify-center gap-1 py-1 text-gray-400 hover:text-gray-600 border-b border-gray-200 select-none"
                   >
-                    <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor">
-                      <circle cx="3" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/><circle cx="13" cy="2" r="1.5"/>
-                      <circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
+                    <svg
+                      width="16"
+                      height="10"
+                      viewBox="0 0 16 10"
+                      fill="currentColor"
+                    >
+                      <circle cx="3" cy="2" r="1.5" />
+                      <circle cx="8" cy="2" r="1.5" />
+                      <circle cx="13" cy="2" r="1.5" />
+                      <circle cx="3" cy="8" r="1.5" />
+                      <circle cx="8" cy="8" r="1.5" />
+                      <circle cx="13" cy="8" r="1.5" />
                     </svg>
                   </div>
                   <div class="p-2">
@@ -139,10 +148,16 @@
                             v-if="group.preferredNeighbor"
                             class="px-2 py-1 bg-blue-50 border-b border-blue-100"
                           >
-                            <span class="font-bold text-blue-700">Wants next to:</span>
-                            <span class="ml-1 text-blue-600">{{ group.preferredNeighbor }}</span>
+                            <span class="font-bold text-blue-700"
+                              >Wants next to:</span
+                            >
+                            <span class="ml-1 text-blue-600">{{
+                              group.preferredNeighbor
+                            }}</span>
                           </li>
-                          <li class="font-bold mb-1 px-2 py-1">Group Members:</li>
+                          <li class="font-bold mb-1 px-2 py-1">
+                            Group Members:
+                          </li>
                           <li
                             v-for="member in group.members"
                             :key="member.email"
@@ -170,7 +185,7 @@
     </div>
     <div
       v-if="selectedTables.length"
-      class="w-full lg:w-[420px] bg-white border border-gray-300 rounded-xl shadow-lg p-4 space-y-4 lg:max-h-[calc(100vh-120px)] lg:overflow-y-auto"
+      class="w-full lg:w-105 bg-white border border-gray-300 rounded-xl shadow-lg p-4 space-y-4 lg:max-h-[calc(100vh-120px)] lg:overflow-y-auto"
     >
       <h3 class="text-lg font-bold text-gray-800">Selected Tables</h3>
       <h4 class="text-sm italic text-gray-500">
@@ -183,10 +198,15 @@
       >
         <div class="flex justify-between items-center mb-2">
           <div>
-            <h4 class="font-semibold text-gray-800">Table {{ tableIndex + 1 }}</h4>
+            <h4 class="font-semibold text-gray-800">
+              Table {{ tableIndex + 1 }}
+            </h4>
             <p class="text-[11px] text-gray-500">
-              {{ tables[tableIndex]!.capacity - tables[tableIndex]!.unoccupiedSeats }} /
-              {{ tables[tableIndex]!.capacity }} seats filled
+              {{
+                tables[tableIndex]!.capacity -
+                tables[tableIndex]!.unoccupiedSeats
+              }}
+              / {{ tables[tableIndex]!.capacity }} seats filled
             </p>
           </div>
           <button
@@ -201,7 +221,7 @@
           :group="{ name: 'groups', pull: true, put: true }"
           item-key="leader.osis"
           v-if="tables[tableIndex]"
-          class="space-y-2 max-h-[200px] overflow-y-auto min-h-[32px]"
+          class="space-y-2 max-h-50 overflow-y-auto min-h-8"
           @change="moveable(tables[tableIndex]!)"
           :forceFallback="true"
           :fallbackOnBody="true"
@@ -214,9 +234,18 @@
               <div
                 class="drag-handle cursor-move flex items-center justify-center py-1 text-gray-400 hover:text-gray-600 border-b border-gray-100 select-none"
               >
-                <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor">
-                  <circle cx="3" cy="2" r="1.5"/><circle cx="8" cy="2" r="1.5"/><circle cx="13" cy="2" r="1.5"/>
-                  <circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
+                <svg
+                  width="16"
+                  height="10"
+                  viewBox="0 0 16 10"
+                  fill="currentColor"
+                >
+                  <circle cx="3" cy="2" r="1.5" />
+                  <circle cx="8" cy="2" r="1.5" />
+                  <circle cx="13" cy="2" r="1.5" />
+                  <circle cx="3" cy="8" r="1.5" />
+                  <circle cx="8" cy="8" r="1.5" />
+                  <circle cx="13" cy="8" r="1.5" />
                 </svg>
               </div>
               <div class="px-2 py-1 flex justify-between items-start gap-1">
@@ -233,7 +262,8 @@
                 </div>
                 <span
                   class="shrink-0 text-gray-600 text-[10px] px-1 bg-gray-200 rounded-full"
-                >{{ group.members.length + 1 }}</span>
+                  >{{ group.members.length + 1 }}</span
+                >
               </div>
             </div>
           </template>
@@ -251,10 +281,10 @@ const props = defineProps<{
   notPaid: Student[];
   notRegistered: ImportedStudent[];
 }>();
-const tables = props.tables;
+const tables = toRef(props, "tables");
 const selectedTables = ref<number[]>([]);
 const openDropdown = ref<{ tableIndex: number; groupIndex: number } | null>(
-  null
+  null,
 );
 const dropdownPosition = reactive<{ top: string; left: string }>({
   top: "0px",
@@ -273,13 +303,13 @@ watch(
     tables.forEach((table) => {
       const occupiedSeats = table.occupants.reduce(
         (sum, group) => sum + group.members.length + 1,
-        0
+        0,
       );
       table.unoccupiedSeats = table.capacity - occupiedSeats;
       table.overCapacity = occupiedSeats > table.capacity;
     });
   },
-  { deep: true }
+  { deep: true },
 );
 
 //below for drop to work with scrolling
@@ -308,7 +338,7 @@ function moveable(table: Table | undefined) {
   if (table == undefined) return;
   const totalSeats = table.occupants.reduce(
     (sum: number, group: Group) => sum + group.members.length + 1,
-    0
+    0,
   );
   const tableCapacity = table!.capacity;
   if (!(totalSeats <= tableCapacity)) alert("Too many students at one table");
