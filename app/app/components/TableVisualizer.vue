@@ -185,7 +185,7 @@
     </div>
     <div
       v-if="selectedTables.length"
-      class="w-full lg:w-105 bg-white border border-gray-300 rounded-xl shadow-lg p-4 space-y-4 lg:max-h-[calc(100vh-120px)] lg:overflow-y-auto"
+      class="w-full lg:w-105 bg-white border border-gray-300 rounded-xl shadow-lg p-4 space-y-4 lg:max-h-[calc(100vh-120px)] lg:overflow-y-auto lg:sticky lg:top-4 self-start z-10"
     >
       <h3 class="text-lg font-bold text-gray-800">Selected Tables</h3>
       <h4 class="text-sm italic text-gray-500">

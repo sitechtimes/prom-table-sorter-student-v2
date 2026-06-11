@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-base-200 min-h-screen overflow-x-hidden">
+  <div class="bg-base-200 min-h-screen">
     <NuxtLayout>
       <navbar />
       <NuxtPage />
